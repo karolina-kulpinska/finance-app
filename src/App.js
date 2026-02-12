@@ -1,9 +1,7 @@
+import LoginPage from "./pages/Login";
+
 function App() {
-  return (
-    <div>
-      <h1>Moja aplikacja finansowa</h1>
-    </div>
-  );
+  return <LoginPage />;
 }
 
 export default App;

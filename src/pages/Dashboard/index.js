@@ -1,8 +1,17 @@
 import React from "react";
-import * as S from "./styled";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  toggleModal,
+  selectIsModalOpen,
+} from "../../features/payments/paymentSlice";
 import Button from "../../components/Button";
+import AddPaymentForm from "./Form";
+import * as S from "./styled";
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  const isModalOpen = useSelector(selectIsModalOpen);
+
   const summaryData = [
     { id: 1, title: "Suma płatności", amount: "2 450,00 zł" },
     { id: 2, title: "Do zapłaty", amount: "820,00 zł" },
@@ -13,8 +22,12 @@ const Dashboard = () => {
     <S.Wrapper>
       <S.Header>
         <S.Title>Twoje Zestawienie</S.Title>
-        <Button>+ Dodaj nową płatność</Button>
+        <Button onClick={() => dispatch(toggleModal())}>
+          + Dodaj nową płatność
+        </Button>
       </S.Header>
+
+      {isModalOpen && <AddPaymentForm />}
 
       <S.Grid>
         {summaryData.map((item) => (

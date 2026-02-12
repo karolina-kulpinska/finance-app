@@ -1,37 +1,77 @@
-import { call, put, takeLatest, select } from "redux-saga/effects";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { call, put, takeLatest, select, take } from "redux-saga/effects";
+import { eventChannel } from "redux-saga";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  query,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "../../api/firebase";
-import { addPaymentRequest, addPaymentSuccess } from "./paymentSlice";
+import {
+  addPaymentRequest,
+  addPaymentSuccess,
+  fetchPaymentsRequest,
+  setPayments,
+} from "./paymentSlice";
 import { selectUser } from "../auth/authSlice";
+
+function createPaymentsChannel(userId) {
+  return eventChannel((emitter) => {
+    const q = query(collection(db, "payments"), where("userId", "==", userId));
+    return onSnapshot(q, (snapshot) => {
+      const payments = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      emitter(payments);
+    });
+  });
+}
+
+function* fetchPaymentsHandler() {
+  const user = yield select(selectUser);
+  if (!user) return;
+  const channel = yield call(createPaymentsChannel, user.uid);
+  try {
+    while (true) {
+      const payments = yield take(channel);
+      yield put(setPayments(payments));
+    }
+  } finally {
+    channel.close();
+  }
+}
 
 function* addPaymentHandler({ payload }) {
   try {
     const user = yield select(selectUser);
-
-    if (!user) throw new Error("Musisz być zalogowana!");
+    if (!user) {
+      alert("Błąd: Nie jesteś zalogowana!");
+      return;
+    }
 
     const paymentData = {
-      ...payload,
+      name: payload.name,
+      amount: parseFloat(payload.amount),
+      date: payload.date,
       userId: user.uid,
       createdAt: serverTimestamp(),
-      amount: parseFloat(payload.amount),
+      paid: false,
     };
 
     const docRef = yield call(addDoc, collection(db, "payments"), paymentData);
 
-    yield put(
-      addPaymentSuccess({
-        id: docRef.id,
-        ...paymentData,
-      }),
-    );
-
-    console.log("Płatność zapisana w bazie!");
+    yield put(addPaymentSuccess({ id: docRef.id, ...paymentData }));
+    alert("Sukces! Płatność zapisana w bazie.");
   } catch (error) {
-    console.error("Błąd zapisu:", error);
+    console.error("Szczegóły błędu Firebase:", error);
+    alert("Błąd Firebase: " + error.message);
   }
 }
 
 export function* paymentSaga() {
   yield takeLatest(addPaymentRequest.type, addPaymentHandler);
+  yield takeLatest(fetchPaymentsRequest.type, fetchPaymentsHandler);
 }

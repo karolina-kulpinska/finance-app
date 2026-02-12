@@ -19,11 +19,25 @@ const paymentSlice = createSlice({
       state.loading = false;
       state.isModalOpen = false;
     },
+    setPayments: (state, { payload }) => {
+      state.items = payload;
+      state.loading = false;
+    },
+    fetchPaymentsRequest: (state) => {
+      state.loading = true;
+    },
   },
 });
 
-export const { toggleModal, addPaymentRequest, addPaymentSuccess } =
-  paymentSlice.actions;
+export const {
+  toggleModal,
+  addPaymentRequest,
+  addPaymentSuccess,
+  setPayments,
+  fetchPaymentsRequest,
+} = paymentSlice.actions;
+
 export const selectIsModalOpen = (state) => state.payments.isModalOpen;
+export const selectPayments = (state) => state.payments.items;
 
 export default paymentSlice.reducer;

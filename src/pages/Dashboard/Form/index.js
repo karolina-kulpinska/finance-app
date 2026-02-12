@@ -17,19 +17,30 @@ const AddPaymentForm = () => {
   } = useForm();
 
   const onSubmit = (data) => {
+    alert("Przycisk działa! Formularz wysyła dane.");
+    console.log("Dane wysyłane do Sagi:", data);
     dispatch(addPaymentRequest(data));
+  };
+
+  const onError = (errors) => {
+    console.log("Błędy walidacji formularza:", errors);
   };
 
   return (
     <S.Overlay onClick={() => dispatch(toggleModal())}>
       <S.Modal onClick={(e) => e.stopPropagation()}>
         <S.FormTitle>Nowa Płatność</S.FormTitle>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <S.Label>Nazwa rachunku</S.Label>
           <S.Input
             {...register("name", { required: "Podaj nazwę" })}
             placeholder="np. Prąd, Czynsz"
           />
+          {errors.name && (
+            <p style={{ color: "red", fontSize: "12px" }}>
+              {errors.name.message}
+            </p>
+          )}
 
           <S.Label>Kwota (zł)</S.Label>
           <S.Input
@@ -37,12 +48,22 @@ const AddPaymentForm = () => {
             step="0.01"
             {...register("amount", { required: "Podaj kwotę" })}
           />
+          {errors.amount && (
+            <p style={{ color: "red", fontSize: "12px" }}>
+              {errors.amount.message}
+            </p>
+          )}
 
           <S.Label>Termin płatności</S.Label>
           <S.Input
             type="date"
             {...register("date", { required: "Wybierz datę" })}
           />
+          {errors.date && (
+            <p style={{ color: "red", fontSize: "12px" }}>
+              {errors.date.message}
+            </p>
+          )}
 
           <S.Label>Załącznik (PDF/Zdjęcie)</S.Label>
           <S.Input type="file" {...register("attachment")} />
@@ -52,7 +73,10 @@ const AddPaymentForm = () => {
             <Button
               type="button"
               secondary
-              onClick={() => dispatch(toggleModal())}
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch(toggleModal());
+              }}
             >
               Anuluj
             </Button>

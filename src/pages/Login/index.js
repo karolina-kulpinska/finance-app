@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { loginRequest, selectAuthLoading } from "../../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
+import {
+  loginRequest,
+  selectAuthLoading,
+  selectUser,
+} from "../../features/auth/authSlice";
+import { toDashboard } from "../../routes";
 import * as S from "./styled";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const isLoading = useSelector(selectAuthLoading);
+  const navigate = useNavigate();
+  const user = useSelector(selectUser);
 
   const {
     register,
@@ -17,6 +25,12 @@ const LoginPage = () => {
   const onSubmit = (data) => {
     dispatch(loginRequest(data));
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate(toDashboard());
+    }
+  }, [user, navigate]);
 
   return (
     <S.Wrapper>

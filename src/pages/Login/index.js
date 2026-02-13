@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   loginRequest,
+  loginWithGoogleRequest,
   selectAuthLoading,
   selectUser,
 } from "../../features/auth/authSlice";
-import { toDashboard } from "../../routes";
+import { toDashboard, toRegistration } from "../../routes";
+import { GoogleIcon } from "../../components/Icons";
 import * as S from "./styled";
 
 const LoginPage = () => {
@@ -27,7 +29,7 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    dispatch({ type: "auth/loginWithGoogleRequest" });
+    dispatch(loginWithGoogleRequest());
   };
 
   useEffect(() => {
@@ -39,31 +41,36 @@ const LoginPage = () => {
   return (
     <S.Wrapper>
       <S.Form onSubmit={handleSubmit(onSubmit)}>
-        <S.Title>Zaloguj się</S.Title>
+        <S.Title>Witaj ponownie</S.Title>
+        <S.Subtitle>Zaloguj się do swojego konta</S.Subtitle>
 
-        <S.Input
-          type="email"
-          placeholder="E-mail"
-          {...register("email", { required: "E-mail jest wymagany" })}
-        />
-        {errors.email && (
-          <S.ErrorMessage>{errors.email.message}</S.ErrorMessage>
-        )}
+        <S.InputWrapper>
+          <S.Input
+            type="email"
+            placeholder="Adres e-mail"
+            {...register("email", { required: "E-mail jest wymagany" })}
+          />
+          {errors.email && (
+            <S.ErrorMessage>{errors.email.message}</S.ErrorMessage>
+          )}
+        </S.InputWrapper>
 
-        <S.Input
-          type="password"
-          placeholder="Hasło"
-          {...register("password", {
-            required: "Hasło jest wymagane",
-            minLength: { value: 6, message: "Hasło musi mieć min. 6 znaków" },
-          })}
-        />
-        {errors.password && (
-          <S.ErrorMessage>{errors.password.message}</S.ErrorMessage>
-        )}
+        <S.InputWrapper>
+          <S.Input
+            type="password"
+            placeholder="Hasło"
+            {...register("password", {
+              required: "Hasło jest wymagane",
+              minLength: { value: 6, message: "Hasło musi mieć min. 6 znaków" },
+            })}
+          />
+          {errors.password && (
+            <S.ErrorMessage>{errors.password.message}</S.ErrorMessage>
+          )}
+        </S.InputWrapper>
 
         <S.StyledButton type="submit" disabled={isLoading}>
-          {isLoading ? "Logowanie..." : "Wejdź"}
+          {isLoading ? "Logowanie..." : "Zaloguj się"}
         </S.StyledButton>
 
         <S.Divider>lub</S.Divider>
@@ -73,8 +80,13 @@ const LoginPage = () => {
           onClick={handleGoogleLogin}
           disabled={isLoading}
         >
-          🚀 Zaloguj przez Google
+          <GoogleIcon width={22} height={22} />
+          <span>Kontynuuj przez Google</span>
         </S.GoogleButton>
+
+        <S.LinkContainer>
+          Nie masz konta?<Link to={toRegistration()}>Zarejestruj się</Link>
+        </S.LinkContainer>
       </S.Form>
     </S.Wrapper>
   );

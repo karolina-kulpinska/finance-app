@@ -1,11 +1,33 @@
-import { call, put, takeLatest } from "redux-saga/effects";
+import { call, put, takeLatest, fork } from "redux-saga/effects";
 import {
   signInWithEmailAndPassword,
-  signInWithPopup,
-  createUserWithEmailAndPassword,
+  signInWithRedirect,
+  getRedirectResult,
 } from "firebase/auth";
 import { auth, googleProvider } from "../../api/firebase";
-import { loginRequest, loginSuccess, loginError } from "./authSlice";
+import {
+  loginRequest,
+  loginWithGoogleRequest,
+  loginSuccess,
+  loginError,
+} from "./authSlice";
+
+function* checkRedirectResult() {
+  try {
+    const result = yield call(getRedirectResult, auth);
+    if (result && result.user) {
+      yield put(
+        loginSuccess({
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+        }),
+      );
+    }
+  } catch (error) {
+    yield put(loginError(error.message));
+  }
+}
 
 function* loginHandler({ payload }) {
   try {
@@ -25,39 +47,15 @@ function* loginHandler({ payload }) {
 
 function* loginWithGoogleHandler() {
   try {
-    const result = yield call(signInWithPopup, auth, googleProvider);
-    const user = result.user;
-    yield put(
-      loginSuccess({
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-      }),
-    );
+    googleProvider.setCustomParameters({ prompt: "select_account" });
+    yield call(signInWithRedirect, auth, googleProvider);
   } catch (error) {
     yield put(loginError(error.message));
   }
 }
 
-function* registerHandler({ payload }) {
-  try {
-    const { email, password } = payload;
-    const userCredential = yield call(
-      createUserWithEmailAndPassword,
-      auth,
-      email,
-      password,
-    );
-    const user = userCredential.user;
-    yield put(loginSuccess({ uid: user.uid, email: user.email }));
-    alert("Konto zostało utworzone pomyślnie!");
-  } catch (error) {
-    yield put(loginError(error.message));
-    alert("Błąd rejestracji: " + error.message);
-  }
-}
 export function* authSaga() {
+  yield fork(checkRedirectResult);
   yield takeLatest(loginRequest.type, loginHandler);
-  yield takeLatest("auth/loginWithGoogleRequest", loginWithGoogleHandler);
-  yield takeLatest("auth/registerRequest", registerHandler);
+  yield takeLatest(loginWithGoogleRequest.type, loginWithGoogleHandler);
 }

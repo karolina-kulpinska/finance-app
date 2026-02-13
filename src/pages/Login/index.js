@@ -26,6 +26,10 @@ const LoginPage = () => {
     dispatch(loginRequest(data));
   };
 
+  const handleGoogleLogin = () => {
+    dispatch({ type: "auth/loginWithGoogleRequest" });
+  };
+
   useEffect(() => {
     if (user) {
       navigate(toDashboard());
@@ -58,9 +62,19 @@ const LoginPage = () => {
           <S.ErrorMessage>{errors.password.message}</S.ErrorMessage>
         )}
 
-        <S.Button type="submit" disabled={isLoading}>
+        <S.StyledButton type="submit" disabled={isLoading}>
           {isLoading ? "Logowanie..." : "Wejdź"}
-        </S.Button>
+        </S.StyledButton>
+
+        <S.Divider>lub</S.Divider>
+
+        <S.GoogleButton
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={isLoading}
+        >
+          🚀 Zaloguj przez Google
+        </S.GoogleButton>
       </S.Form>
     </S.Wrapper>
   );

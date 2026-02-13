@@ -7,6 +7,9 @@ import {
   query,
   where,
   onSnapshot,
+  doc,
+  deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../../api/firebase";
 import {
@@ -14,6 +17,8 @@ import {
   addPaymentSuccess,
   fetchPaymentsRequest,
   setPayments,
+  deletePaymentRequest,
+  updatePaymentStatusRequest,
 } from "./paymentSlice";
 import { selectUser } from "../auth/authSlice";
 
@@ -62,7 +67,6 @@ function* addPaymentHandler({ payload }) {
     };
 
     const docRef = yield call(addDoc, collection(db, "payments"), paymentData);
-
     yield put(addPaymentSuccess({ id: docRef.id, ...paymentData }));
     alert("Sukces! Płatność zapisana w bazie.");
   } catch (error) {
@@ -71,7 +75,28 @@ function* addPaymentHandler({ payload }) {
   }
 }
 
+function* deletePaymentHandler({ payload }) {
+  try {
+    yield call(deleteDoc, doc(db, "payments", payload));
+  } catch (error) {
+    console.error("Błąd usuwania:", error);
+  }
+}
+
+function* updateStatusHandler({ payload }) {
+  try {
+    const paymentRef = doc(db, "payments", payload.id);
+    yield call(updateDoc, paymentRef, {
+      paid: !payload.currentStatus,
+    });
+  } catch (error) {
+    console.error("Błąd aktualizacji statusu:", error);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(addPaymentRequest.type, addPaymentHandler);
   yield takeLatest(fetchPaymentsRequest.type, fetchPaymentsHandler);
+  yield takeLatest(deletePaymentRequest.type, deletePaymentHandler);
+  yield takeLatest(updatePaymentStatusRequest.type, updateStatusHandler);
 }

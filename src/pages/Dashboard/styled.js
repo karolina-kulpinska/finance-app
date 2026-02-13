@@ -1,14 +1,14 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.main`
-  padding: 40px;
+  padding: 10px;
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: 100vh;
-  background-color: ${({ theme }) => theme.colors.background};
+  box-sizing: border-box;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 20px;
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 40px;
   }
 `;
 
@@ -34,8 +34,13 @@ export const Title = styled.h1`
 
 export const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: 1fr;
+  gap: 2px;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
 `;
 
 export const Tile = styled.div`

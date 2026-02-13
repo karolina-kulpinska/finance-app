@@ -1,15 +1,18 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { selectPayments } from "../../../features/payments/paymentSlice";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  selectPayments,
+  deletePaymentRequest,
+  updatePaymentStatusRequest,
+} from "../../../features/payments/paymentSlice";
 import * as S from "./styled";
 
 const PaymentsList = () => {
+  const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
 
-  if (payments.length === 0) {
-    return (
-      <S.NoData>Brak zarejestrowanych płatności. Dodaj pierwszą!</S.NoData>
-    );
+  if (!payments || payments.length === 0) {
+    return <S.NoData>Brak płatności.</S.NoData>;
   }
 
   return (
@@ -20,16 +23,41 @@ const PaymentsList = () => {
             <th>Nazwa</th>
             <th>Kwota</th>
             <th>Termin</th>
-            <th>Status</th>
+            <th>Akcje</th>
           </tr>
         </thead>
         <tbody>
           {payments.map((payment) => (
             <tr key={payment.id}>
               <td>{payment.name}</td>
-              <td>{payment.amount.toFixed(2)} zł</td>
+              <td>{Number(payment.amount).toFixed(2)} zł</td>
               <td>{payment.date}</td>
-              <td>{payment.paid ? "✅ Opłacone" : "⏳ Do zapłaty"}</td>
+              <td>
+                <S.ActionGroup>
+                  <S.IconButton
+                    $type="status"
+                    onClick={() =>
+                      dispatch(
+                        updatePaymentStatusRequest({
+                          id: payment.id,
+                          currentStatus: payment.paid,
+                        }),
+                      )
+                    }
+                  >
+                    {payment.paid ? "✅" : "⏳"}
+                  </S.IconButton>
+                  <S.IconButton
+                    $type="delete"
+                    onClick={() => {
+                      if (window.confirm("Usunąć ten rachunek?"))
+                        dispatch(deletePaymentRequest(payment.id));
+                    }}
+                  >
+                    🗑️
+                  </S.IconButton>
+                </S.ActionGroup>
+              </td>
             </tr>
           ))}
         </tbody>

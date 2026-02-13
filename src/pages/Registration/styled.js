@@ -15,7 +15,8 @@ export const Form = styled.form`
   padding: 40px;
   background-color: ${({ theme }) => theme.colors.white};
   border-radius: 20px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
+  box-shadow: ${({ theme }) =>
+    theme.shadows.tile || "0 10px 25px rgba(0, 0, 0, 0.05)"};
 `;
 
 export const Title = styled.h1`
@@ -41,11 +42,6 @@ export const Input = styled.input`
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
   }
-
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.secondary};
-    opacity: 0.7;
-  }
 `;
 
 export const ErrorMessage = styled.p`
@@ -65,12 +61,13 @@ export const StyledButton = styled.button`
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: filter 0.2s;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s;
 
   &:disabled {
     background-color: ${({ theme }) => theme.colors.secondary};
     cursor: not-allowed;
-    opacity: 0.6;
   }
 
   &:hover:not(:disabled) {
@@ -116,5 +113,22 @@ export const GoogleButton = styled(Button)`
   &:hover {
     background: ${({ theme }) => theme.colors.background};
     filter: none;
+  }
+`;
+
+export const LinkContainer = styled.div`
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.secondary};
+
+  a {
+    color: ${({ theme }) => theme.colors.primary};
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `;

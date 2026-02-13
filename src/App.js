@@ -1,16 +1,17 @@
 import React from "react";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/Landing";
 import LoginPage from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import { toLogin, toDashboard } from "./routes";
+import { toLanding, toLogin, toDashboard } from "./routes";
 
 function App() {
   return (
     <HashRouter>
       <Routes>
+        <Route path={toLanding()} element={<LandingPage />} />
         <Route path={toLogin()} element={<LoginPage />} />
         <Route path={toDashboard()} element={<Dashboard />} />
-        <Route path="/" element={<Navigate to={toLogin()} />} />
       </Routes>
     </HashRouter>
   );

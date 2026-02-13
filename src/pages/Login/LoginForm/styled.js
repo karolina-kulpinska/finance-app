@@ -146,7 +146,7 @@ export const Input = styled.input`
 `;
 
 export const ErrorMessage = styled.p`
-  color: ${({ theme }) => theme.colors.error || "#ff4d4f"};
+  color: ${({ theme }) => theme.colors.error};
   font-size: 13px;
   margin-top: 8px;
   padding-left: 4px;

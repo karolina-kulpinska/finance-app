@@ -8,6 +8,8 @@ import LandingPage from "./pages/Landing";
 import LoginPage from "./pages/Login";
 import RegistrationPage from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
+import NotificationModal from "./components/NotificationModal";
+import ConfirmModal from "./components/ConfirmModal";
 import { toLanding, toLogin, toDashboard, toRegistration } from "./routes";
 
 function App() {
@@ -32,14 +34,18 @@ function App() {
   }, [dispatch]);
 
   return (
-    <HashRouter>
-      <Routes>
-        <Route path={toLanding()} element={<LandingPage />} />
-        <Route path={toLogin()} element={<LoginPage />} />
-        <Route path={toRegistration()} element={<RegistrationPage />} />
-        <Route path={toDashboard()} element={<Dashboard />} />
-      </Routes>
-    </HashRouter>
+    <>
+      <HashRouter>
+        <Routes>
+          <Route path={toLanding()} element={<LandingPage />} />
+          <Route path={toLogin()} element={<LoginPage />} />
+          <Route path={toRegistration()} element={<RegistrationPage />} />
+          <Route path={toDashboard()} element={<Dashboard />} />
+        </Routes>
+      </HashRouter>
+      <NotificationModal />
+      <ConfirmModal />
+    </>
   );
 }
 

@@ -7,6 +7,8 @@ import { authSaga } from "./features/auth/authSaga";
 import { registrationSaga } from "./features/auth/registrationSaga";
 import paymentReducer from "./features/payments/paymentSlice";
 import { paymentSaga } from "./features/payments/paymentSaga";
+import notificationReducer from "./features/notification/notificationSlice";
+import confirmReducer from "./features/notification/confirmSlice";
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (error) => {
@@ -27,6 +29,8 @@ export const store = configureStore({
     auth: authReducer,
     registration: registrationReducer,
     payments: paymentReducer,
+    notification: notificationReducer,
+    confirm: confirmReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

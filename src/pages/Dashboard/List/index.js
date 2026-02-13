@@ -2,9 +2,9 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectPayments,
-  deletePaymentRequest,
   updatePaymentStatusRequest,
 } from "../../../features/payments/paymentSlice";
+import { showConfirm } from "../../../features/notification/confirmSlice";
 import * as S from "./styled";
 
 const PaymentsList = () => {
@@ -50,8 +50,12 @@ const PaymentsList = () => {
                   <S.IconButton
                     $type="delete"
                     onClick={() => {
-                      if (window.confirm("Usunąć ten rachunek?"))
-                        dispatch(deletePaymentRequest(payment.id));
+                      dispatch(
+                        showConfirm({
+                          message: "Czy na pewno chcesz usunąć tę płatność?",
+                          paymentId: payment.id,
+                        }),
+                      );
                     }}
                   >
                     🗑️

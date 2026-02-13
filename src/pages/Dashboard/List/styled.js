@@ -4,11 +4,11 @@ export const TableWrapper = styled.div`
   margin-top: 20px;
   background: ${({ theme }) => theme.colors.white};
   border-radius: 15px;
-  padding: 8px; // Minimalny odstęp, by nie marnować miejsca
+  padding: 8px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
   width: 100%;
   box-sizing: border-box;
-  overflow: hidden; // Całkowity zakaz wychodzenia poza ekran
+  overflow: hidden;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
     padding: 25px;
@@ -19,15 +19,15 @@ export const TableWrapper = styled.div`
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; // KLUCZ: Wymusza sztywne trzymanie się procentów
+  table-layout: fixed;
 
   th,
   td {
-    padding: 10px 4px; // Ciasno, by wszystko weszło
+    padding: 10px 4px;
     text-align: left;
-    font-size: 11px; // Mały font na mobile
+    font-size: 11px;
     border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-    word-break: break-all; // Zawija tekst, jeśli nazwa jest za długa
+    word-break: break-all;
     vertical-align: middle;
 
     @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
@@ -37,24 +37,23 @@ export const Table = styled.table`
     }
   }
 
-  /* Procentowe szerokości kolumn - dopasowane do zawartości */
   th:nth-child(1),
   td:nth-child(1) {
     width: 40%;
-  } // Nazwa (najwięcej miejsca)
+  }
   th:nth-child(2),
   td:nth-child(2) {
     width: 25%;
-  } // Kwota
+  }
   th:nth-child(3),
   td:nth-child(3) {
     width: 25%;
-  } // Termin
+  }
   th:nth-child(4),
   td:nth-child(4) {
     width: 10%;
     text-align: center;
-  } // Status
+  }
 `;
 
 export const StatusIcon = styled.div`

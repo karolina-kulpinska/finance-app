@@ -21,6 +21,7 @@ import {
   updatePaymentStatusRequest,
 } from "./paymentSlice";
 import { selectUser } from "../auth/authSlice";
+import { showNotification } from "../notification/notificationSlice";
 
 function createPaymentsChannel(userId) {
   return eventChannel((emitter) => {
@@ -54,7 +55,12 @@ function* addPaymentHandler({ payload }) {
   try {
     const user = yield select(selectUser);
     if (!user) {
-      alert("Błąd: Nie jesteś zalogowana!");
+      yield put(
+        showNotification({
+          message: "Musisz być zalogowany, aby dodać płatność.",
+          type: "error",
+        }),
+      );
       return;
     }
 
@@ -69,10 +75,22 @@ function* addPaymentHandler({ payload }) {
 
     const docRef = yield call(addDoc, collection(db, "payments"), paymentData);
     yield put(addPaymentSuccess({ id: docRef.id, ...paymentData }));
-    alert("Sukces! Płatność zapisana w bazie.");
+    
+    yield put(
+      showNotification({
+        message: "Płatność została dodana pomyślnie!",
+        type: "success",
+      }),
+    );
   } catch (error) {
     console.error("Błąd dodawania płatności:", error);
-    alert("Błąd: " + error.message);
+    
+    yield put(
+      showNotification({
+        message: "Nie udało się dodać płatności. Spróbuj ponownie.",
+        type: "error",
+      }),
+    );
   }
 }
 

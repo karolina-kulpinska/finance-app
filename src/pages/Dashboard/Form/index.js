@@ -17,9 +17,9 @@ const AddPaymentForm = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    alert("Przycisk działa! Formularz wysyła dane.");
     console.log("Dane wysyłane do Sagi:", data);
     dispatch(addPaymentRequest(data));
+    dispatch(toggleModal());
   };
 
   const onError = (errors) => {

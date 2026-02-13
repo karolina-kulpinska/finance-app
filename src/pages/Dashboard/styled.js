@@ -1,76 +1,46 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const gradient = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
 
 export const Wrapper = styled.main`
-  padding: 10px;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  box-sizing: border-box;
+  min-height: 100vh;
+  background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc);
+  background-size: 400% 400%;
+  animation: ${gradient} 15s ease infinite;
+  padding: 40px 30px;
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 40px;
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 25px 20px;
   }
-`;
-
-export const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
+    padding: 20px 15px;
   }
 `;
 
-export const Title = styled.h1`
-  font-size: 32px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.text};
-  margin: 0;
-`;
+export const Container = styled.div`
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 
-export const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2px;
-
-  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+  @media (min-width: 1600px) {
+    max-width: 1500px;
   }
-`;
 
-export const Tile = styled.div`
-  background: ${({ theme }) => theme.colors.white};
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: ${({ theme }) => theme.shadows.hover};
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    gap: 24px;
   }
-`;
-
-export const TileTitle = styled.h3`
-  margin: 0 0 15px 0;
-  color: ${({ theme }) => theme.colors.secondary};
-  font-size: 16px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-`;
-
-export const Amount = styled.p`
-  font-size: 28px;
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.primary};
-  margin: 0;
 `;

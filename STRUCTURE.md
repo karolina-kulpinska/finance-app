@@ -47,13 +47,22 @@ Registration/
 
 ```
 Dashboard/
-├── index.js                  (główny komponent)
-├── styled.js                (style dla Dashboardu)
+├── index.js                  (główny komponent - koordynuje wszystkie podkomponenty)
+├── styled.js                (podstawowe style - Wrapper, Container)
+├── Header/
+│   ├── index.js             (nagłówek z tytułem i akcjami)
+│   └── styled.js            (style dla nagłówka)
+├── Stats/
+│   ├── index.js             (statystyki finansowe)
+│   └── styled.js            (style dla statystyk)
+├── Filters/
+│   ├── index.js             (filtry statusu i kategorii)
+│   └── styled.js            (style dla filtrów)
 ├── Form/
 │   ├── index.js             (formularz dodawania płatności)
 │   └── styled.js            (style dla formularza)
 └── List/
-    ├── index.js             (lista płatności)
+    ├── index.js             (lista płatności z kartami)
     └── styled.js            (style dla listy)
 ```
 
@@ -84,17 +93,53 @@ components/
 ```
 features/
 ├── auth/
-│   ├── authSlice.js         (slice dla autentykacji)
-│   ├── authSaga.js          (saga dla logowania)
+│   ├── authSlice.js         (slice dla autentykacji - user, loading, error)
+│   ├── authSaga.js          (saga dla logowania - email/password + Google Popup)
 │   ├── registrationSlice.js (slice dla rejestracji)
 │   └── registrationSaga.js  (saga dla rejestracji)
 ├── payments/
-│   ├── paymentSlice.js
-│   └── paymentSaga.js
+│   ├── paymentSlice.js      (slice dla płatności - items, filter, categoryFilter)
+│   └── paymentSaga.js       (saga - CRUD + Firebase Storage dla załączników)
 └── notification/
     ├── notificationSlice.js (slice dla powiadomień)
-    └── confirmSlice.js      (slice dla potwierdzeń)
+    └── confirmSlice.js      (slice dla potwierdzeń usuwania)
 ```
+
+## Funkcje Dashboard
+
+### Zarządzanie płatnościami:
+- Dodawanie płatności z pełnymi danymi (nazwa, kwota, termin, kategoria, priorytet, notatki)
+- Możliwość dodania załączników (PDF, zdjęcia) - **automatyczna kompresja zdjęć (-70% rozmiaru)**
+- Przechowywanie załączników w Firebase Storage
+- Oznaczanie płatności jako zapłacone/niezapłacone
+- Usuwanie płatności z potwierdzeniem
+- Pobieranie załączników
+- **Responsywny layout** - 2 kolumny na laptopach, 1 kolumna na mobile
+
+### Kategorie:
+- 🧾 Rachunki (bills)
+- 🛒 Zakupy (shopping)
+- 📌 Inne (other)
+
+### Priorytety:
+- 🔴 Wysoki (high)
+- 🟡 Normalny (normal)
+- 🟢 Niski (low)
+
+### Filtry:
+- Status: Wszystkie / Do zapłaty / Zapłacone
+- Kategoria: Wszystkie / Rachunki / Zakupy / Inne
+
+### Statystyki:
+- Łączne wydatki
+- Do zapłaty (z liczbą niezapłaconych)
+- Zapłacone (z liczbą opłaconych)
+
+### Optymalizacja kosztów:
+- Załączniki przechowywane w Firebase Storage (nie w Firestore)
+- Tylko URL i nazwa pliku w bazie danych
+- Efektywne zapytania z filtrowaniem po userId
+- Real-time updates przez onSnapshot
 
 ## Kluczowe zasady
 
@@ -135,8 +180,39 @@ import LoginForm from "./LoginForm";
 />
 ```
 
-Ta struktura zapewnia:
+## Struktura danych płatności (Firestore)
+
+```javascript
+{
+  id: "auto-generated-id",
+  name: "Nazwa płatności",
+  amount: 123.45,
+  date: "2024-01-15",
+  category: "bills" | "shopping" | "other",
+  priority: "high" | "normal" | "low",
+  notes: "Dodatkowe informacje",
+  paid: false,
+  userId: "user-uid",
+  createdAt: serverTimestamp(),
+  attachmentUrl: "https://firebase-storage-url" | null,
+  attachmentName: "filename.pdf" | null
+}
+```
+
+## Firebase Storage - optymalizacja kosztów
+
+- Załączniki przechowywane w `payments/{userId}/{timestamp}_{filename}`
+- URL generowany po uploadu i zapisywany w Firestore
+- Przy usuwaniu płatności, załącznik również usuwany z Storage
+- Akceptowane formaty: PDF, JPG, JPEG, PNG
+- Firestore przechowuje tylko metadane (URL + nazwa), nie sam plik
+
+## Zalety tej struktury
+
 - Łatwą modyfikację stylów dla każdego komponentu
 - Niezależność komponentów
 - Czytelną hierarchię
 - Łatwe zarządzanie i utrzymanie kodu
+- Minimalne koszty bazy danych
+- Efektywne zapytania i filtrowanie
+- Real-time synchronizację danych

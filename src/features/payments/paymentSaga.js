@@ -11,7 +11,8 @@ import {
   deleteDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../api/firebase";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { db, storage } from "../../api/firebase";
 import {
   addPaymentRequest,
   addPaymentSuccess,
@@ -19,6 +20,9 @@ import {
   setPayments,
   deletePaymentRequest,
   updatePaymentStatusRequest,
+  updatePaymentRequest,
+  updatePaymentSuccess,
+  selectPayments,
 } from "./paymentSlice";
 import { selectUser } from "../auth/authSlice";
 import { showNotification } from "../notification/notificationSlice";
@@ -64,13 +68,31 @@ function* addPaymentHandler({ payload }) {
       return;
     }
 
+    let attachmentUrl = null;
+    let attachmentName = null;
+
+    if (payload.attachment && payload.attachment[0]) {
+      const file = payload.attachment[0];
+      const fileName = `${user.uid}/${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, `payments/${fileName}`);
+      
+      yield call(uploadBytes, storageRef, file);
+      attachmentUrl = yield call(getDownloadURL, storageRef);
+      attachmentName = file.name;
+    }
+
     const paymentData = {
       name: payload.name,
       amount: parseFloat(payload.amount),
       date: payload.date,
+      category: payload.category || "other",
+      priority: payload.priority || "normal",
+      notes: payload.notes || "",
       userId: user.uid,
       createdAt: serverTimestamp(),
       paid: false,
+      attachmentUrl,
+      attachmentName,
     };
 
     const docRef = yield call(addDoc, collection(db, "payments"), paymentData);
@@ -96,9 +118,36 @@ function* addPaymentHandler({ payload }) {
 
 function* deletePaymentHandler({ payload }) {
   try {
-    yield call(deleteDoc, doc(db, "payments", payload));
+    const paymentDoc = doc(db, "payments", payload);
+    const paymentData = yield select(selectPayments);
+    const payment = paymentData.find(p => p.id === payload);
+
+    if (payment && payment.attachmentUrl) {
+      try {
+        const attachmentRef = ref(storage, payment.attachmentUrl);
+        yield call(deleteObject, attachmentRef);
+      } catch (storageError) {
+        console.error("Błąd usuwania załącznika:", storageError);
+      }
+    }
+
+    yield call(deleteDoc, paymentDoc);
+    
+    yield put(
+      showNotification({
+        message: "Płatność została usunięta.",
+        type: "success",
+      }),
+    );
   } catch (error) {
     console.error("Błąd usuwania płatności:", error);
+    
+    yield put(
+      showNotification({
+        message: "Nie udało się usunąć płatności.",
+        type: "error",
+      }),
+    );
   }
 }
 
@@ -113,9 +162,70 @@ function* updateStatusHandler({ payload }) {
   }
 }
 
+function* updatePaymentHandler({ payload }) {
+  try {
+    const { id, ...updateData } = payload;
+
+    let attachmentUrl = updateData.attachmentUrl;
+    let attachmentName = updateData.attachmentName;
+
+    if (updateData.attachment && updateData.attachment[0]) {
+      const user = yield select(selectUser);
+      const file = updateData.attachment[0];
+      const fileName = `${user.uid}/${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, `payments/${fileName}`);
+
+      if (updateData.oldAttachmentUrl) {
+        try {
+          const oldAttachmentRef = ref(storage, updateData.oldAttachmentUrl);
+          yield call(deleteObject, oldAttachmentRef);
+        } catch (error) {
+          console.error("Błąd usuwania starego załącznika:", error);
+        }
+      }
+
+      yield call(uploadBytes, storageRef, file);
+      attachmentUrl = yield call(getDownloadURL, storageRef);
+      attachmentName = file.name;
+    }
+
+    const paymentData = {
+      name: updateData.name,
+      amount: parseFloat(updateData.amount),
+      date: updateData.date,
+      category: updateData.category,
+      priority: updateData.priority,
+      notes: updateData.notes || "",
+      attachmentUrl,
+      attachmentName,
+    };
+
+    const paymentRef = doc(db, "payments", id);
+    yield call(updateDoc, paymentRef, paymentData);
+    yield put(updatePaymentSuccess());
+
+    yield put(
+      showNotification({
+        message: "Płatność została zaktualizowana!",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    console.error("Błąd aktualizacji płatności:", error);
+
+    yield put(
+      showNotification({
+        message: "Nie udało się zaktualizować płatności.",
+        type: "error",
+      })
+    );
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(addPaymentRequest.type, addPaymentHandler);
   yield takeLatest(fetchPaymentsRequest.type, fetchPaymentsHandler);
   yield takeLatest(deletePaymentRequest.type, deletePaymentHandler);
   yield takeLatest(updatePaymentStatusRequest.type, updateStatusHandler);
+  yield takeLatest(updatePaymentRequest.type, updatePaymentHandler);
 }

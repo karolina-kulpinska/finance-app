@@ -6,7 +6,10 @@ import {
   selectPayments,
   fetchPaymentsRequest,
 } from "../../features/payments/paymentSlice";
-import Button from "../../components/Button";
+import Header from "./Header";
+import Stats from "./Stats";
+import Charts from "./Charts";
+import Filters from "./Filters";
 import AddPaymentForm from "./Form";
 import PaymentsList from "./List";
 import * as S from "./styled";
@@ -20,40 +23,20 @@ const Dashboard = () => {
     dispatch(fetchPaymentsRequest());
   }, [dispatch]);
 
-  const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
-  const toPay = payments
-    .filter((p) => !p.paid)
-    .reduce((sum, p) => sum + p.amount, 0);
-  const paid = payments
-    .filter((p) => p.paid)
-    .reduce((sum, p) => sum + p.amount, 0);
-
-  const summaryData = [
-    { id: 1, title: "Suma płatności", amount: `${totalAmount.toFixed(2)} zł` },
-    { id: 2, title: "Do zapłaty", amount: `${toPay.toFixed(2)} zł` },
-    { id: 3, title: "Opłacone", amount: `${paid.toFixed(2)} zł` },
-  ];
+  const handleAddPayment = () => {
+    dispatch(toggleModal());
+  };
 
   return (
     <S.Wrapper>
-      <S.Header>
-        <S.Title>Twoje Zestawienie</S.Title>
-        <Button onClick={() => dispatch(toggleModal())}>
-          + Dodaj nową płatność
-        </Button>
-      </S.Header>
-
-      {isModalOpen && <AddPaymentForm />}
-
-      <S.Grid>
-        {summaryData.map((item) => (
-          <S.Tile key={item.id}>
-            <S.TileTitle>{item.title}</S.TileTitle>
-            <S.Amount>{item.amount}</S.Amount>
-          </S.Tile>
-        ))}
-      </S.Grid>
-      <PaymentsList />
+      <S.Container>
+        <Header onAddPayment={handleAddPayment} />
+        <Stats payments={payments} />
+        <Charts payments={payments} />
+        <Filters />
+        <PaymentsList />
+        {isModalOpen && <AddPaymentForm />}
+      </S.Container>
     </S.Wrapper>
   );
 };

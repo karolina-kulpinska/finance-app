@@ -21,6 +21,7 @@ function* registerHandler({ payload }) {
 
     yield put(registerSuccess());
     yield put(loginSuccess({ uid: user.uid, email: user.email }));
+
     alert("Konto zostało utworzone pomyślnie!");
   } catch (error) {
     yield put(registerError(error.message));

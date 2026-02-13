@@ -14,8 +14,7 @@ const paymentSlice = createSlice({
     addPaymentRequest: (state) => {
       state.loading = true;
     },
-    addPaymentSuccess: (state, { payload }) => {
-      state.items.push(payload);
+    addPaymentSuccess: (state) => {
       state.loading = false;
       state.isModalOpen = false;
     },
@@ -24,6 +23,9 @@ const paymentSlice = createSlice({
       state.loading = false;
     },
     fetchPaymentsRequest: (state) => {
+      state.loading = true;
+    },
+    deletePaymentRequest: (state) => {
       state.loading = true;
     },
     updatePaymentStatusRequest: (state) => {

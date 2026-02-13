@@ -38,6 +38,7 @@ function createPaymentsChannel(userId) {
 function* fetchPaymentsHandler() {
   const user = yield select(selectUser);
   if (!user) return;
+
   const channel = yield call(createPaymentsChannel, user.uid);
   try {
     while (true) {
@@ -70,8 +71,8 @@ function* addPaymentHandler({ payload }) {
     yield put(addPaymentSuccess({ id: docRef.id, ...paymentData }));
     alert("Sukces! Płatność zapisana w bazie.");
   } catch (error) {
-    console.error("Szczegóły błędu Firebase:", error);
-    alert("Błąd Firebase: " + error.message);
+    console.error("Błąd dodawania płatności:", error);
+    alert("Błąd: " + error.message);
   }
 }
 
@@ -79,7 +80,7 @@ function* deletePaymentHandler({ payload }) {
   try {
     yield call(deleteDoc, doc(db, "payments", payload));
   } catch (error) {
-    console.error("Błąd usuwania:", error);
+    console.error("Błąd usuwania płatności:", error);
   }
 }
 

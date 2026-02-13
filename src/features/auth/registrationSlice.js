@@ -31,5 +31,6 @@ export const { registerRequest, registerSuccess, registerError } =
 
 export const selectRegistrationLoading = (state) => state.registration.loading;
 export const selectRegistrationError = (state) => state.registration.error;
+export const selectRegistrationSuccess = (state) => state.registration.success;
 
 export default registrationSlice.reducer;

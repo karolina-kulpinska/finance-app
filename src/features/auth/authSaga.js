@@ -15,6 +15,7 @@ import {
 function* checkRedirectResult() {
   try {
     const result = yield call(getRedirectResult, auth);
+
     if (result && result.user) {
       yield put(
         loginSuccess({
@@ -25,7 +26,9 @@ function* checkRedirectResult() {
       );
     }
   } catch (error) {
-    yield put(loginError(error.message));
+    if (error.code !== "auth/popup-closed-by-user") {
+      yield put(loginError(error.message));
+    }
   }
 }
 
@@ -39,7 +42,14 @@ function* loginHandler({ payload }) {
       password,
     );
     const user = userCredential.user;
-    yield put(loginSuccess({ uid: user.uid, email: user.email }));
+
+    yield put(
+      loginSuccess({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+      }),
+    );
   } catch (error) {
     yield put(loginError(error.message));
   }

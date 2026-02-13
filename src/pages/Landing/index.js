@@ -1,12 +1,13 @@
 import React from "react";
 import { useDispatch } from "react-redux";
+import { loginWithGoogleRequest } from "../../features/auth/authSlice";
 import * as S from "./styled";
 
 const LandingPage = () => {
   const dispatch = useDispatch();
 
   const handleGoogleLogin = () => {
-    dispatch({ type: "auth/loginWithGoogleRequest" });
+    dispatch(loginWithGoogleRequest());
   };
 
   return (

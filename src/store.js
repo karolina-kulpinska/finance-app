@@ -8,10 +8,18 @@ import { registrationSaga } from "./features/auth/registrationSaga";
 import paymentReducer from "./features/payments/paymentSlice";
 import { paymentSaga } from "./features/payments/paymentSaga";
 
-const sagaMiddleware = createSagaMiddleware();
+const sagaMiddleware = createSagaMiddleware({
+  onError: (error) => {
+    console.error("Saga Error:", error);
+  },
+});
 
 function* rootSaga() {
-  yield all([authSaga(), registrationSaga(), paymentSaga()]);
+  try {
+    yield all([authSaga(), registrationSaga(), paymentSaga()]);
+  } catch (error) {
+    console.error("❌ Root Saga Error:", error);
+  }
 }
 
 export const store = configureStore({

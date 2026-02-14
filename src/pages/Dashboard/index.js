@@ -30,6 +30,10 @@ const Dashboard = () => {
   const [showTypeSelector, setShowTypeSelector] = useState(false);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);
   const [collapseAllPayments, setCollapseAllPayments] = useState(false);
+  const [minDate, setMinDate] = useState("");
+  const [maxDate, setMaxDate] = useState("");
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
 
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
@@ -68,19 +72,32 @@ const Dashboard = () => {
         return (
           <>
             <Stats payments={payments} />
-            <MiniPayments payments={payments} onPaymentClick={handlePaymentClick} />
+            <MiniPayments
+              payments={payments}
+              onPaymentClick={handlePaymentClick}
+            />
           </>
         );
       case "payments":
         return (
           <>
             <S.PaymentsHeader>
-              <S.PaymentsTitle>Wszystkie płatności ({payments.length})</S.PaymentsTitle>
-              <S.CollapseButton onClick={() => setCollapseAllPayments(!collapseAllPayments)}>
+              <S.PaymentsTitle>
+                Wszystkie płatności ({payments.length})
+              </S.PaymentsTitle>
+              <S.CollapseButton
+                onClick={() => setCollapseAllPayments(!collapseAllPayments)}
+              >
                 {collapseAllPayments ? "Rozwiń" : "Zwiń"}
               </S.CollapseButton>
             </S.PaymentsHeader>
-            <PaymentsList collapseAll={collapseAllPayments} />
+            <PaymentsList
+              collapseAll={collapseAllPayments}
+              minDate={minDate}
+              maxDate={maxDate}
+              minAmount={minAmount}
+              maxAmount={maxAmount}
+            />
             <Charts payments={payments} />
           </>
         );
@@ -100,27 +117,50 @@ const Dashboard = () => {
   return (
     <S.Wrapper>
       <S.Container>
-        <Header 
+        <Header
           onAddPayment={handleAddPayment}
           onToggleFilters={() => setShowFilters(!showFilters)}
           showFilters={showFilters}
-                hideFilters={activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"}
+          hideFilters={
+            activeTab === "shopping" ||
+            activeTab === "family" ||
+            activeTab === "files" ||
+            activeTab === "profile"
+          }
         />
-              {showFilters && activeTab !== "shopping" && activeTab !== "family" && activeTab !== "files" && activeTab !== "profile" && (
-          <S.FiltersBox>
-            <Filters />
-          </S.FiltersBox>
-        )}
+        {showFilters &&
+          activeTab !== "shopping" &&
+          activeTab !== "family" &&
+          activeTab !== "files" &&
+          activeTab !== "profile" && (
+            <S.FiltersBox>
+              <Filters
+                minDate={minDate}
+                maxDate={maxDate}
+                minAmount={minAmount}
+                maxAmount={maxAmount}
+                setMinDate={setMinDate}
+                setMaxDate={setMaxDate}
+                setMinAmount={setMinAmount}
+                setMaxAmount={setMaxAmount}
+              />
+            </S.FiltersBox>
+          )}
         {renderContent()}
       </S.Container>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       {showTypeSelector && (
-        <PaymentTypeSelector 
+        <PaymentTypeSelector
           onSelectType={handleSelectType}
           onClose={() => setShowTypeSelector(false)}
         />
       )}
-      {isModalOpen && <AddPaymentForm paymentType={selectedPaymentType} onClose={handleCloseForm} />}
+      {isModalOpen && (
+        <AddPaymentForm
+          paymentType={selectedPaymentType}
+          onClose={handleCloseForm}
+        />
+      )}
     </S.Wrapper>
   );
 };

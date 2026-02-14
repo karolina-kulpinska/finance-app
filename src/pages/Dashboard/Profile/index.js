@@ -1,14 +1,50 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
-import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from "firebase/auth";
+import { selectPayments } from "../../../features/payments/paymentSlice";
+import {
+  updateProfile,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  deleteUser,
+} from "firebase/auth";
 import { auth } from "../../../api/firebase";
 import { showNotification } from "../../../features/notification/notificationSlice";
+import { generatePaymentsPDF } from "./generatePaymentsPDF";
 import * as S from "./styled";
 
 const Profile = () => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
+  const payments = useSelector(selectPayments);
+  const handleExportPaymentsPDF = () => {
+    if (!payments || payments.length === 0) {
+      dispatch(
+        showNotification({
+          message: "Brak płatności do eksportu",
+          type: "error",
+        }),
+      );
+      return;
+    }
+    try {
+      generatePaymentsPDF(payments);
+      dispatch(
+        showNotification({
+          message: "✅ Historia płatności została wyeksportowana do PDF!",
+          type: "success",
+        }),
+      );
+    } catch (error) {
+      dispatch(
+        showNotification({
+          message: "❌ Błąd eksportu PDF",
+          type: "error",
+        }),
+      );
+    }
+  };
 
   const [activeSection, setActiveSection] = useState(null);
   const [editName, setEditName] = useState(user?.displayName || "");
@@ -27,10 +63,12 @@ const Profile = () => {
 
   const handleUpdateName = async () => {
     if (!editName.trim()) {
-      dispatch(showNotification({
-        message: "Imię nie może być puste",
-        type: "error",
-      }));
+      dispatch(
+        showNotification({
+          message: "Imię nie może być puste",
+          type: "error",
+        }),
+      );
       return;
     }
 
@@ -38,52 +76,60 @@ const Profile = () => {
       await updateProfile(auth.currentUser, {
         displayName: editName,
       });
-      dispatch(showNotification({
-        message: "✅ Imię zostało zaktualizowane!",
-        type: "success",
-      }));
+      dispatch(
+        showNotification({
+          message: "✅ Imię zostało zaktualizowane!",
+          type: "success",
+        }),
+      );
       setActiveSection(null);
     } catch (error) {
-      dispatch(showNotification({
-        message: "❌ Błąd aktualizacji: " + error.message,
-        type: "error",
-      }));
+      dispatch(
+        showNotification({
+          message: "❌ Błąd aktualizacji: " + error.message,
+          type: "error",
+        }),
+      );
     }
   };
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      dispatch(showNotification({
-        message: "❌ Nowe hasła nie są identyczne",
-        type: "error",
-      }));
+      dispatch(
+        showNotification({
+          message: "❌ Nowe hasła nie są identyczne",
+          type: "error",
+        }),
+      );
       return;
     }
 
     if (newPassword.length < 6) {
-      dispatch(showNotification({
-        message: "❌ Hasło musi mieć minimum 6 znaków",
-        type: "error",
-      }));
+      dispatch(
+        showNotification({
+          message: "❌ Hasło musi mieć minimum 6 znaków",
+          type: "error",
+        }),
+      );
       return;
     }
 
     try {
-      // Ponowne uwierzytelnienie użytkownika
       const credential = EmailAuthProvider.credential(
         auth.currentUser.email,
-        oldPassword
+        oldPassword,
       );
       await reauthenticateWithCredential(auth.currentUser, credential);
-      
-      // Zmiana hasła
+
       await updatePassword(auth.currentUser, newPassword);
-      
-      dispatch(showNotification({
-        message: "✅ Hasło zostało zmienione!",
-        type: "success",
-      }));
-      
+
+      dispatch(
+        showNotification({
+          message: "✅ Hasło zostało zmienione!",
+          type: "success",
+        }),
+      );
+
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -93,10 +139,12 @@ const Profile = () => {
       if (error.code === "auth/wrong-password") {
         errorMessage = "❌ Nieprawidłowe stare hasło";
       }
-      dispatch(showNotification({
-        message: errorMessage,
-        type: "error",
-      }));
+      dispatch(
+        showNotification({
+          message: errorMessage,
+          type: "error",
+        }),
+      );
     }
   };
 
@@ -111,8 +159,9 @@ const Profile = () => {
         // Tu można dodać więcej danych
       };
 
-      // Utwórz plik JSON do pobrania
-      const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
+        type: "application/json",
+      });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -120,45 +169,53 @@ const Profile = () => {
       link.click();
       URL.revokeObjectURL(url);
 
-      dispatch(showNotification({
-        message: "✅ Dane zostały wyeksportowane!",
-        type: "success",
-      }));
+      dispatch(
+        showNotification({
+          message: "✅ Dane zostały wyeksportowane!",
+          type: "success",
+        }),
+      );
     } catch (error) {
-      dispatch(showNotification({
-        message: "❌ Błąd eksportu danych",
-        type: "error",
-      }));
+      dispatch(
+        showNotification({
+          message: "❌ Błąd eksportu danych",
+          type: "error",
+        }),
+      );
     }
   };
 
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
-      "⚠️ CZY NA PEWNO CHCESZ USUNĄĆ KONTO?\n\nTa operacja jest NIEODWRACALNA!\nStracisz wszystkie swoje dane, płatności i listy zakupów."
+      "⚠️ CZY NA PEWNO CHCESZ USUNĄĆ KONTO?\n\nTa operacja jest NIEODWRACALNA!\nStracisz wszystkie swoje dane, płatności i listy zakupów.",
     );
 
     if (!confirmed) return;
 
     const doubleConfirm = window.confirm(
-      "🚨 OSTATNIE OSTRZEŻENIE!\n\nCzy jesteś absolutnie pewien?\nWszystkie dane zostaną TRWALE USUNIĘTE."
+      "🚨 OSTATNIE OSTRZEŻENIE!\n\nCzy jesteś absolutnie pewien?\nWszystkie dane zostaną TRWALE USUNIĘTE.",
     );
 
     if (!doubleConfirm) return;
 
     try {
       await deleteUser(auth.currentUser);
-      // Użytkownik zostanie automatycznie wylogowany
     } catch (error) {
       if (error.code === "auth/requires-recent-login") {
-        dispatch(showNotification({
-          message: "❌ Musisz się wylogować i zalogować ponownie przed usunięciem konta",
-          type: "error",
-        }));
+        dispatch(
+          showNotification({
+            message:
+              "❌ Musisz się wylogować i zalogować ponownie przed usunięciem konta",
+            type: "error",
+          }),
+        );
       } else {
-        dispatch(showNotification({
-          message: "❌ Błąd usuwania konta: " + error.message,
-          type: "error",
-        }));
+        dispatch(
+          showNotification({
+            message: "❌ Błąd usuwania konta: " + error.message,
+            type: "error",
+          }),
+        );
       }
     }
   };
@@ -167,7 +224,9 @@ const Profile = () => {
     return (
       <S.Container>
         <S.EditHeader>
-          <S.BackButton onClick={() => setActiveSection(null)}>← Powrót</S.BackButton>
+          <S.BackButton onClick={() => setActiveSection(null)}>
+            ← Powrót
+          </S.BackButton>
           <S.EditTitle>Dane osobowe</S.EditTitle>
         </S.EditHeader>
 
@@ -205,7 +264,9 @@ const Profile = () => {
     return (
       <S.Container>
         <S.EditHeader>
-          <S.BackButton onClick={() => setActiveSection(null)}>← Powrót</S.BackButton>
+          <S.BackButton onClick={() => setActiveSection(null)}>
+            ← Powrót
+          </S.BackButton>
           <S.EditTitle>Zmiana hasła</S.EditTitle>
         </S.EditHeader>
 
@@ -252,7 +313,9 @@ const Profile = () => {
     return (
       <S.Container>
         <S.EditHeader>
-          <S.BackButton onClick={() => setActiveSection(null)}>← Powrót</S.BackButton>
+          <S.BackButton onClick={() => setActiveSection(null)}>
+            ← Powrót
+          </S.BackButton>
           <S.EditTitle>Eksport danych</S.EditTitle>
         </S.EditHeader>
 
@@ -260,11 +323,18 @@ const Profile = () => {
           <S.ExportIcon>💾</S.ExportIcon>
           <S.ExportTitle>Pobierz swoje dane</S.ExportTitle>
           <S.ExportDesc>
-            Pobierz wszystkie swoje dane w formacie JSON. 
-            Plik będzie zawierał płatności, listy zakupów i ustawienia.
+            Pobierz wszystkie swoje dane w formacie JSON lub historię płatności
+            w PDF. Plik JSON będzie zawierał płatności, listy zakupów i
+            ustawienia.
           </S.ExportDesc>
           <S.SaveButton onClick={handleExportData}>
-            📥 Eksportuj dane
+            📥 Eksportuj dane (JSON)
+          </S.SaveButton>
+          <S.SaveButton
+            onClick={handleExportPaymentsPDF}
+            style={{ marginTop: 8 }}
+          >
+            🧾 Eksportuj historię płatności (PDF)
           </S.SaveButton>
         </S.ExportCard>
       </S.Container>
@@ -275,7 +345,9 @@ const Profile = () => {
     return (
       <S.Container>
         <S.EditHeader>
-          <S.BackButton onClick={() => setActiveSection(null)}>← Powrót</S.BackButton>
+          <S.BackButton onClick={() => setActiveSection(null)}>
+            ← Powrót
+          </S.BackButton>
           <S.EditTitle>Usuń konto</S.EditTitle>
         </S.EditHeader>
 
@@ -283,8 +355,8 @@ const Profile = () => {
           <S.DangerIcon>⚠️</S.DangerIcon>
           <S.DangerTitle>Strefa niebezpieczna</S.DangerTitle>
           <S.DangerDesc>
-            Usunięcie konta jest operacją nieodwracalną. 
-            Stracisz wszystkie swoje dane, płatności, listy zakupów i dostęp do rodziny.
+            Usunięcie konta jest operacją nieodwracalną. Stracisz wszystkie
+            swoje dane, płatności, listy zakupów i dostęp do rodziny.
           </S.DangerDesc>
           <S.DangerButton onClick={handleDeleteAccount}>
             🗑️ Usuń konto na zawsze
@@ -346,7 +418,9 @@ const Profile = () => {
       <S.SettingsSection>
         <S.SectionTitle>ℹ️ Informacje</S.SectionTitle>
         <S.SettingsList>
-          <S.SettingItem onClick={() => window.open("mailto:pomoc@finanseapp.pl", "_blank")}>
+          <S.SettingItem
+            onClick={() => window.open("mailto:pomoc@finanseapp.pl", "_blank")}
+          >
             <S.SettingIcon>📧</S.SettingIcon>
             <S.SettingInfo>
               <S.SettingLabel>Kontakt</S.SettingLabel>
@@ -355,12 +429,16 @@ const Profile = () => {
             <S.SettingArrow>›</S.SettingArrow>
           </S.SettingItem>
 
-          <S.SettingItem onClick={() => {
-            dispatch(showNotification({
-              message: "📱 Wersja aplikacji: 1.0.0",
-              type: "success",
-            }));
-          }}>
+          <S.SettingItem
+            onClick={() => {
+              dispatch(
+                showNotification({
+                  message: "📱 Wersja aplikacji: 1.0.0",
+                  type: "success",
+                }),
+              );
+            }}
+          >
             <S.SettingIcon>ℹ️</S.SettingIcon>
             <S.SettingInfo>
               <S.SettingLabel>O aplikacji</S.SettingLabel>

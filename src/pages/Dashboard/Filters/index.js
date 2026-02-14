@@ -10,20 +10,23 @@ import {
 } from "../../../features/payments/paymentSlice";
 import * as S from "./styled";
 
-const Filters = () => {
+const Filters = ({
+  minDate,
+  maxDate,
+  minAmount,
+  maxAmount,
+  setMinDate,
+  setMaxDate,
+  setMinAmount,
+  setMaxAmount,
+}) => {
   const dispatch = useDispatch();
   const activeFilter = useSelector(selectFilter);
   const activeCategoryFilter = useSelector(selectCategoryFilter);
   const activeDateFilter = useSelector(selectDateFilter);
-
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [minAmount, setMinAmount] = useState("");
-  const [maxAmount, setMaxAmount] = useState("");
-
-  // Ustaw domyślnie "Ten miesiąc" przy pierwszym załadowaniu
   useEffect(() => {
     dispatch(setDateFilter("month"));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const statusFilters = [
@@ -45,16 +48,19 @@ const Filters = () => {
     dispatch(setDateFilter("month"));
     setMinAmount("");
     setMaxAmount("");
+    setMinDate("");
+    setMaxDate("");
     setShowAdvanced(false);
   };
 
-  const hasActiveFilters = 
-    activeFilter !== "all" || 
-    activeCategoryFilter !== "all" || 
+  const hasActiveFilters =
+    activeFilter !== "all" ||
+    activeCategoryFilter !== "all" ||
     (activeDateFilter !== "month" && activeDateFilter !== "all") ||
     minAmount !== "" ||
     maxAmount !== "";
 
+  // minDate !== "" || maxDate !== "";
   return (
     <S.FiltersContainer>
       <S.FilterRow>
@@ -69,7 +75,7 @@ const Filters = () => {
             </S.QuickChip>
           ))}
         </S.QuickFilters>
-        
+
         <S.AdvancedToggle onClick={() => setShowAdvanced(!showAdvanced)}>
           {showAdvanced ? "Mniej ▲" : "Więcej ▼"}
         </S.AdvancedToggle>
@@ -90,6 +96,27 @@ const Filters = () => {
                 </S.FilterChip>
               ))}
             </S.FilterButtons>
+          </S.FilterGroup>
+
+          <S.FilterGroup>
+            <S.FilterLabel>Data płatności</S.FilterLabel>
+            <S.AmountInputs>
+              <S.AmountInput
+                type="date"
+                placeholder="Od"
+                value={minDate || ""}
+                onChange={(e) => setMinDate(e.target.value)}
+                style={{ minWidth: 0 }}
+              />
+              <S.AmountSeparator>-</S.AmountSeparator>
+              <S.AmountInput
+                type="date"
+                placeholder="Do"
+                value={maxDate || ""}
+                onChange={(e) => setMaxDate(e.target.value)}
+                style={{ minWidth: 0 }}
+              />
+            </S.AmountInputs>
           </S.FilterGroup>
 
           <S.FilterGroup>

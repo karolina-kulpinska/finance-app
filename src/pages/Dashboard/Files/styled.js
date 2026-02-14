@@ -1,5 +1,73 @@
 import styled from "styled-components";
 
+export const DateInputs = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+`;
+
+export const DateInput = styled.input`
+  padding: 6px 10px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background: #f8f8fa;
+  color: ${({ theme }) => theme.colors.text};
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+  }
+`;
+
+export const DateSeparator = styled.span`
+  color: ${({ theme }) => theme.colors.secondary};
+  font-weight: 700;
+  font-size: 14px;
+`;
+export const FilesActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+`;
+
+export const SelectAllCheckbox = styled.input`
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+`;
+
+export const SelectAllLabel = styled.span`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.secondary};
+  margin-right: 16px;
+`;
+
+export const DownloadSelectedButton = styled.button`
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "auto")};
+`;
+
+export const FileCheckbox = styled.input`
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+`;
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;

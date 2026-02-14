@@ -1,8 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as S from "./styled";
 
 const ShoppingLists = () => {
-  const [lists, setLists] = useState([]);
+  const [lists, setLists] = useState(() => {
+    try {
+      const saved = localStorage.getItem("shoppingLists");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("shoppingLists", JSON.stringify(lists));
+    } catch {}
+  }, [lists]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newListName, setNewListName] = useState("");
   const [selectedList, setSelectedList] = useState(null);
@@ -37,65 +49,82 @@ const ShoppingLists = () => {
         price: price,
         purchased: false,
       };
-      
-      setLists(lists.map(list => {
-        if (list.id === listId) {
-          const updatedItems = [...list.items, newItem];
-          const totalPrice = updatedItems.reduce((sum, item) => sum + item.price, 0);
-          return { ...list, items: updatedItems, totalPrice };
-        }
-        return list;
-      }));
-      
+
+      setLists(
+        lists.map((list) => {
+          if (list.id === listId) {
+            const updatedItems = [...list.items, newItem];
+            const totalPrice = updatedItems.reduce(
+              (sum, item) => sum + item.price,
+              0,
+            );
+            return { ...list, items: updatedItems, totalPrice };
+          }
+          return list;
+        }),
+      );
+
       setNewItemName("");
       setNewItemPrice("");
     }
   };
 
   const handleTogglePurchased = (listId, itemId) => {
-    setLists(lists.map(list => {
-      if (list.id === listId) {
-        const updatedItems = list.items.map(item => 
-          item.id === itemId ? { ...item, purchased: !item.purchased } : item
-        );
-        return { ...list, items: updatedItems };
-      }
-      return list;
-    }));
+    setLists(
+      lists.map((list) => {
+        if (list.id === listId) {
+          const updatedItems = list.items.map((item) =>
+            item.id === itemId ? { ...item, purchased: !item.purchased } : item,
+          );
+          return { ...list, items: updatedItems };
+        }
+        return list;
+      }),
+    );
   };
 
   const handleDeleteItem = (listId, itemId) => {
-    setLists(lists.map(list => {
-      if (list.id === listId) {
-        const updatedItems = list.items.filter(item => item.id !== itemId);
-        const totalPrice = updatedItems.reduce((sum, item) => sum + item.price, 0);
-        return { ...list, items: updatedItems, totalPrice };
-      }
-      return list;
-    }));
+    setLists(
+      lists.map((list) => {
+        if (list.id === listId) {
+          const updatedItems = list.items.filter((item) => item.id !== itemId);
+          const totalPrice = updatedItems.reduce(
+            (sum, item) => sum + item.price,
+            0,
+          );
+          return { ...list, items: updatedItems, totalPrice };
+        }
+        return list;
+      }),
+    );
   };
 
   const handleReceiptUpload = (listId, file) => {
-    if (file && (file.type === "application/pdf" || file.type.startsWith("image/"))) {
-      setLists(lists.map(list => {
-        if (list.id === listId) {
-          return { ...list, receipt: { name: file.name, file: file } };
-        }
-        return list;
-      }));
+    if (
+      file &&
+      (file.type === "application/pdf" || file.type.startsWith("image/"))
+    ) {
+      setLists(
+        lists.map((list) => {
+          if (list.id === listId) {
+            return { ...list, receipt: { name: file.name, file: file } };
+          }
+          return list;
+        }),
+      );
     }
   };
 
   const handleDeleteList = (listId) => {
-    setLists(lists.filter(list => list.id !== listId));
+    setLists(lists.filter((list) => list.id !== listId));
     if (selectedList?.id === listId) {
       setSelectedList(null);
     }
   };
 
   if (selectedList) {
-    const list = lists.find(l => l.id === selectedList.id);
-    
+    const list = lists.find((l) => l.id === selectedList.id);
+
     return (
       <S.Container>
         <S.Header>
@@ -125,7 +154,7 @@ const ShoppingLists = () => {
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             onKeyPress={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 e.preventDefault();
                 handleAddItem(list.id);
               }
@@ -138,63 +167,79 @@ const ShoppingLists = () => {
             value={newItemPrice}
             onChange={(e) => setNewItemPrice(e.target.value)}
             onKeyPress={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 e.preventDefault();
                 handleAddItem(list.id);
               }
             }}
           />
-          <S.SaveButton type="submit">
-            + Dodaj
-          </S.SaveButton>
+          <S.SaveButton type="submit">+ Dodaj</S.SaveButton>
         </S.AddItemForm>
 
         {list.items.length > 0 && (
           <>
-            {list.items.some(item => !item.purchased) && (
+            {list.items.some((item) => !item.purchased) && (
               <S.SectionBlock>
                 <S.SectionHeader>🛒 Do kupienia</S.SectionHeader>
                 <S.ItemsList>
-                  {list.items.filter(item => !item.purchased).map((item) => (
-                    <S.ItemCard key={item.id} $purchased={false}>
-                      <S.Checkbox
-                        type="checkbox"
-                        checked={false}
-                        onChange={() => handleTogglePurchased(list.id, item.id)}
-                      />
-                      <S.ItemInfo>
-                        <S.ItemName $purchased={false}>{item.name}</S.ItemName>
-                        <S.ItemPrice $purchased={false}>{item.price.toFixed(2)} zł</S.ItemPrice>
-                      </S.ItemInfo>
-                      <S.DeleteItemButton onClick={() => handleDeleteItem(list.id, item.id)}>
-                        🗑️
-                      </S.DeleteItemButton>
-                    </S.ItemCard>
-                  ))}
+                  {list.items
+                    .filter((item) => !item.purchased)
+                    .map((item) => (
+                      <S.ItemCard key={item.id} $purchased={false}>
+                        <S.Checkbox
+                          type="checkbox"
+                          checked={false}
+                          onChange={() =>
+                            handleTogglePurchased(list.id, item.id)
+                          }
+                        />
+                        <S.ItemInfo>
+                          <S.ItemName $purchased={false}>
+                            {item.name}
+                          </S.ItemName>
+                          <S.ItemPrice $purchased={false}>
+                            {item.price.toFixed(2)} zł
+                          </S.ItemPrice>
+                        </S.ItemInfo>
+                        <S.DeleteItemButton
+                          onClick={() => handleDeleteItem(list.id, item.id)}
+                        >
+                          🗑️
+                        </S.DeleteItemButton>
+                      </S.ItemCard>
+                    ))}
                 </S.ItemsList>
               </S.SectionBlock>
             )}
 
-            {list.items.some(item => item.purchased) && (
+            {list.items.some((item) => item.purchased) && (
               <S.SectionBlock>
                 <S.SectionHeader>✓ Kupione</S.SectionHeader>
                 <S.ItemsList>
-                  {list.items.filter(item => item.purchased).map((item) => (
-                    <S.ItemCard key={item.id} $purchased={true}>
-                      <S.Checkbox
-                        type="checkbox"
-                        checked={true}
-                        onChange={() => handleTogglePurchased(list.id, item.id)}
-                      />
-                      <S.ItemInfo>
-                        <S.ItemName $purchased={true}>{item.name}</S.ItemName>
-                        <S.ItemPrice $purchased={true}>{item.price.toFixed(2)} zł</S.ItemPrice>
-                      </S.ItemInfo>
-                      <S.DeleteItemButton onClick={() => handleDeleteItem(list.id, item.id)}>
-                        🗑️
-                      </S.DeleteItemButton>
-                    </S.ItemCard>
-                  ))}
+                  {list.items
+                    .filter((item) => item.purchased)
+                    .map((item) => (
+                      <S.ItemCard key={item.id} $purchased={true}>
+                        <S.Checkbox
+                          type="checkbox"
+                          checked={true}
+                          onChange={() =>
+                            handleTogglePurchased(list.id, item.id)
+                          }
+                        />
+                        <S.ItemInfo>
+                          <S.ItemName $purchased={true}>{item.name}</S.ItemName>
+                          <S.ItemPrice $purchased={true}>
+                            {item.price.toFixed(2)} zł
+                          </S.ItemPrice>
+                        </S.ItemInfo>
+                        <S.DeleteItemButton
+                          onClick={() => handleDeleteItem(list.id, item.id)}
+                        >
+                          🗑️
+                        </S.DeleteItemButton>
+                      </S.ItemCard>
+                    ))}
                 </S.ItemsList>
               </S.SectionBlock>
             )}
@@ -206,9 +251,15 @@ const ShoppingLists = () => {
           {list.receipt ? (
             <S.ReceiptInfo>
               <S.ReceiptName>✓ {list.receipt.name}</S.ReceiptName>
-              <S.DeleteItemButton onClick={() => {
-                setLists(lists.map(l => l.id === list.id ? { ...l, receipt: null } : l));
-              }}>
+              <S.DeleteItemButton
+                onClick={() => {
+                  setLists(
+                    lists.map((l) =>
+                      l.id === list.id ? { ...l, receipt: null } : l,
+                    ),
+                  );
+                }}
+              >
                 ✕
               </S.DeleteItemButton>
             </S.ReceiptInfo>
@@ -217,7 +268,10 @@ const ShoppingLists = () => {
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => e.target.files[0] && handleReceiptUpload(list.id, e.target.files[0])}
+                onChange={(e) =>
+                  e.target.files[0] &&
+                  handleReceiptUpload(list.id, e.target.files[0])
+                }
                 id="receipt-upload"
               />
               <S.FileLabel htmlFor="receipt-upload">
@@ -230,7 +284,6 @@ const ShoppingLists = () => {
     );
   }
 
-
   return (
     <S.Container>
       <S.Header>
@@ -239,7 +292,6 @@ const ShoppingLists = () => {
           {showAddForm ? "✕ Anuluj" : "+ Nowa lista"}
         </S.AddButton>
       </S.Header>
-
 
       {showAddForm && (
         <S.AddForm>
@@ -260,9 +312,7 @@ const ShoppingLists = () => {
               👨‍👩‍👧‍👦 Udostępnij rodzinie
             </S.CheckboxLabel>
           </S.CheckboxWrapper>
-          <S.SaveButton onClick={handleAddList}>
-            Dodaj listę
-          </S.SaveButton>
+          <S.SaveButton onClick={handleAddList}>Dodaj listę</S.SaveButton>
         </S.AddForm>
       )}
 
@@ -284,7 +334,8 @@ const ShoppingLists = () => {
               )}
               <S.ListStats>
                 <S.ItemCount>
-                  {list.items.length} {list.items.length === 1 ? "produkt" : "produktów"}
+                  {list.items.length}{" "}
+                  {list.items.length === 1 ? "produkt" : "produktów"}
                 </S.ItemCount>
                 <S.TotalPrice>{list.totalPrice.toFixed(2)} zł</S.TotalPrice>
               </S.ListStats>

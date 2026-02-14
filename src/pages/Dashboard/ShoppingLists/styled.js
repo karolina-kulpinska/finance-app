@@ -51,7 +51,6 @@ export const AddButton = styled.button`
   }
 `;
 
-// Filtry
 export const FiltersSection = styled.div`
   background: white;
   border-radius: 12px;
@@ -80,8 +79,8 @@ export const QuickFilters = styled.div`
 export const FilterChip = styled.button`
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid ${({ $active, theme }) => 
-    $active ? "#667eea" : theme.colors.border};
+  border: 1px solid
+    ${({ $active, theme }) => ($active ? "#667eea" : theme.colors.border)};
   background: ${({ $active }) => ($active ? "#667eea" : "white")};
   color: ${({ $active, theme }) => ($active ? "white" : theme.colors.text)};
   font-size: 12px;
@@ -160,13 +159,15 @@ export const ClearFiltersButton = styled.button`
   }
 `;
 
-// Formularze
 export const AddForm = styled.div`
   background: white;
   border-radius: 12px;
   padding: 16px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
   border: 1px solid ${({ theme }) => theme.colors.border};
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    padding: 8px 4px;
+  }
 `;
 
 export const Input = styled.input`
@@ -227,11 +228,14 @@ export const CheckboxLabel = styled.span`
   color: ${({ theme }) => theme.colors.text};
 `;
 
-// Lista grid
 export const ListsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 `;
 
 export const ListCard = styled.div`
@@ -242,14 +246,16 @@ export const ListCard = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   cursor: pointer;
   transition: all 0.2s ease;
-
+  min-width: 0;
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
-
   &:active {
     transform: scale(0.98);
+  }
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    padding: 10px 6px;
   }
 `;
 
@@ -289,7 +295,6 @@ export const SharedBadge = styled.span`
   margin-top: 8px;
 `;
 
-// Widok szczegółowy
 export const BackButton = styled.button`
   padding: 6px 12px;
   background: white;
@@ -400,7 +405,8 @@ export const ItemName = styled.div`
   font-size: 14px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.text};
-  text-decoration: ${({ $purchased }) => ($purchased ? "line-through" : "none")};
+  text-decoration: ${({ $purchased }) =>
+    $purchased ? "line-through" : "none"};
   opacity: ${({ $purchased }) => ($purchased ? 0.6 : 1)};
 `;
 
@@ -408,7 +414,8 @@ export const ItemPrice = styled.div`
   font-size: 12px;
   font-weight: 700;
   color: #667eea;
-  text-decoration: ${({ $purchased }) => ($purchased ? "line-through" : "none")};
+  text-decoration: ${({ $purchased }) =>
+    $purchased ? "line-through" : "none"};
   opacity: ${({ $purchased }) => ($purchased ? 0.6 : 1)};
 `;
 
@@ -429,7 +436,6 @@ export const DeleteItemButton = styled.button`
   }
 `;
 
-// Paragon
 export const ReceiptSection = styled.div`
   margin-top: 20px;
   padding-top: 20px;

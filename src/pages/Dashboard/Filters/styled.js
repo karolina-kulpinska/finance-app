@@ -6,13 +6,21 @@ export const FiltersContainer = styled.div`
   padding: 12px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
   border: 1px solid ${({ theme }) => theme.colors.border};
+  margin-bottom: 16px;
 `;
 
 export const FilterRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
 `;
 
 export const QuickFilters = styled.div`
@@ -20,13 +28,19 @@ export const QuickFilters = styled.div`
   gap: 6px;
   flex-wrap: wrap;
   flex: 1;
+  min-width: 0;
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 `;
 
 export const QuickChip = styled.button`
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid ${({ $active, theme }) => 
-    $active ? "#667eea" : theme.colors.border};
+  border: 1px solid
+    ${({ $active, theme }) => ($active ? "#667eea" : theme.colors.border)};
   background: ${({ $active }) => ($active ? "#667eea" : "white")};
   color: ${({ $active, theme }) => ($active ? "white" : theme.colors.text)};
   font-size: 12px;
@@ -57,7 +71,11 @@ export const AdvancedToggle = styled.button`
   transition: all 0.2s ease;
   font-family: inherit;
   white-space: nowrap;
-
+  margin-left: 8px;
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    margin-left: 0;
+    width: 100%;
+  }
   &:hover {
     background: #f8f9fa;
   }
@@ -95,8 +113,8 @@ export const FilterButtons = styled.div`
 export const FilterChip = styled.button`
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid ${({ $active, theme }) => 
-    $active ? "#667eea" : theme.colors.border};
+  border: 1px solid
+    ${({ $active, theme }) => ($active ? "#667eea" : theme.colors.border)};
   background: ${({ $active }) => ($active ? "#667eea" : "white")};
   color: ${({ $active, theme }) => ($active ? "white" : theme.colors.text)};
   font-size: 12px;

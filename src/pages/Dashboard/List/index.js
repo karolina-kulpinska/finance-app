@@ -14,7 +14,13 @@ import { getBankConfig } from "../../../utils/bankIcons";
 import { FaUniversity } from "react-icons/fa";
 import * as S from "./styled";
 
-const PaymentsList = ({ collapseAll = false }) => {
+const PaymentsList = ({
+  collapseAll = false,
+  minDate,
+  maxDate,
+  minAmount,
+  maxAmount,
+}) => {
   const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
   const statusFilter = useSelector(selectFilter);
@@ -49,11 +55,34 @@ const PaymentsList = ({ collapseAll = false }) => {
       }
     }
 
+    // Nowe filtry: minDate, maxDate, minAmount, maxAmount
+    if (minDate) {
+      filtered = filtered.filter((p) => new Date(p.date) >= new Date(minDate));
+    }
+    if (maxDate) {
+      filtered = filtered.filter((p) => new Date(p.date) <= new Date(maxDate));
+    }
+    if (minAmount) {
+      filtered = filtered.filter((p) => Number(p.amount) >= Number(minAmount));
+    }
+    if (maxAmount) {
+      filtered = filtered.filter((p) => Number(p.amount) <= Number(maxAmount));
+    }
+
     return filtered.sort((a, b) => {
       if (a.paid !== b.paid) return a.paid ? 1 : -1;
       return new Date(a.date) - new Date(b.date);
     });
-  }, [payments, statusFilter, categoryFilter, dateFilter]);
+  }, [
+    payments,
+    statusFilter,
+    categoryFilter,
+    dateFilter,
+    minDate,
+    maxDate,
+    minAmount,
+    maxAmount,
+  ]);
 
   const getCategoryLabel = (category) => {
     switch (category) {
@@ -108,7 +137,7 @@ const PaymentsList = ({ collapseAll = false }) => {
       updatePaymentStatusRequest({
         id: payment.id,
         currentStatus: payment.paid,
-      })
+      }),
     );
   };
 
@@ -121,7 +150,7 @@ const PaymentsList = ({ collapseAll = false }) => {
       showConfirm({
         message: "Czy na pewno chcesz usunąć tę płatność?",
         paymentId,
-      })
+      }),
     );
   };
 
@@ -177,30 +206,43 @@ const PaymentsList = ({ collapseAll = false }) => {
             $expanded={!collapseAll && expandedPayment === payment.id}
             onClick={() => handleCardClick(payment.id)}
           >
-            <S.PaymentIcon>{getCategoryLabel(payment.category).split(' ')[0]}</S.PaymentIcon>
+            <S.PaymentIcon>
+              {getCategoryLabel(payment.category).split(" ")[0]}
+            </S.PaymentIcon>
             <S.CompactInfo>
               <S.CompactName $paid={payment.paid} $overdue={isOverdue(payment)}>
                 {isOverdue(payment) && "⚠️ "}
                 {payment.name}
                 {payment.isInstallment && (
                   <S.InstallmentBadge>
-                    {payment.installmentInfo.current}/{payment.installmentInfo.total}
+                    {payment.installmentInfo.current}/
+                    {payment.installmentInfo.total}
                   </S.InstallmentBadge>
                 )}
               </S.CompactName>
-              <S.CompactAmount $paid={payment.paid} $overdue={isOverdue(payment)}>
+              <S.CompactAmount
+                $paid={payment.paid}
+                $expanded={
+                  expandedPayment === "ALL" ||
+                  (!collapseAll && expandedPayment === payment.id)
+                }
+              >
                 {Number(payment.amount).toFixed(2)} zł
               </S.CompactAmount>
               <S.CompactDate>{payment.date}</S.CompactDate>
             </S.CompactInfo>
 
             {!collapseAll && expandedPayment === payment.id && (
-              <S.ExpandedDetails onClick={(e) => {
-                e.stopPropagation();
-              }}>
+              <S.ExpandedDetails
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
                 <S.DetailRow>
                   <S.DetailLabel>Kategoria:</S.DetailLabel>
-                  <S.DetailValue>{getCategoryLabel(payment.category)}</S.DetailValue>
+                  <S.DetailValue>
+                    {getCategoryLabel(payment.category)}
+                  </S.DetailValue>
                 </S.DetailRow>
                 <S.DetailRow>
                   <S.DetailLabel>Priorytet:</S.DetailLabel>
@@ -244,7 +286,7 @@ const PaymentsList = ({ collapseAll = false }) => {
                       onClick={() =>
                         handleDownload(
                           payment.attachmentUrl,
-                          payment.attachmentName
+                          payment.attachmentName,
                         )
                       }
                     >

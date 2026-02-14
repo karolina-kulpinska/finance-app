@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
-import { db } from "../../../api/firebase";
+import { db, getSendFamilyInviteEmail } from "../../../api/firebase";
 import {
   doc,
   getDoc,
@@ -18,6 +18,24 @@ import ShoppingLists from "../ShoppingLists";
 import Files from "../Files";
 import * as S from "./styled";
 
+const SECTION_KEYS = {
+  members: "members",
+  payments: "payments",
+  shopping: "shopping",
+  files: "files",
+  link: "link",
+  danger: "danger",
+};
+
+const getInitialSectionOpen = () => {
+  const keys = Object.values(SECTION_KEYS);
+  if (typeof window === "undefined") {
+    return keys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+  }
+  const isMobile = window.innerWidth < 768;
+  return keys.reduce((acc, key) => ({ ...acc, [key]: !isMobile }), {});
+};
+
 const Family = () => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
@@ -26,6 +44,26 @@ const Family = () => {
   const [activeView, setActiveView] = useState("main");
   const [familyName, setFamilyName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
+  const [sectionOpen, setSectionOpen] = useState(getInitialSectionOpen);
+
+  useEffect(() => {
+    const onResize = () => {
+      const isMobile = window.innerWidth < 768;
+      setSectionOpen((prev) =>
+        Object.keys(SECTION_KEYS).reduce(
+          (acc, key) => ({ ...acc, [key]: isMobile ? prev[key] : true }),
+          {},
+        ),
+      );
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const toggleSection = (key) => {
+    if (window.innerWidth >= 768) return;
+    setSectionOpen((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const loadFamily = useCallback(async () => {
     if (!user?.uid) return;
@@ -150,17 +188,35 @@ const Family = () => {
       });
       setInviteEmail("");
       setActiveView("main");
-      dispatch(
-        showNotification({
-          message: `Zaproszenie wysłane do ${inviteEmail}`,
-          type: "success",
-        }),
-      );
+
+      const inviteLink = getInviteLink();
+      try {
+        const sendEmail = getSendFamilyInviteEmail();
+        await sendEmail({
+          email: inviteEmail.trim(),
+          inviteLink,
+          familyName: family.name || "",
+        });
+        dispatch(
+          showNotification({
+            message: `Zaproszenie wysłane na adres ${inviteEmail}. Sprawdź skrzynkę (oraz spam).`,
+            type: "success",
+          }),
+        );
+      } catch (emailError) {
+        console.error("Błąd wysyłki e-mail:", emailError);
+        dispatch(
+          showNotification({
+            message: `${inviteEmail} dodany do listy, ale e-mail nie został wysłany (skonfiguruj Cloud Functions + Resend). Skopiuj link zaproszeniowy i wyślij ręcznie.`,
+            type: "warning",
+          }),
+        );
+      }
     } catch (error) {
       console.error("Błąd zapraszania członka:", error);
       dispatch(
         showNotification({
-          message: "Nie udało się wysłać zaproszenia",
+          message: "Nie udało się dodać zaproszenia",
           type: "error",
         }),
       );
@@ -292,6 +348,9 @@ const Family = () => {
         <S.InviteCard>
           <S.InviteIcon>📧</S.InviteIcon>
           <S.InviteTitle>Dodaj członka rodziny</S.InviteTitle>
+          <S.InviteHint>
+            Wpisz e-mail – zaproszenie zostanie wysłane na ten adres (z linkiem do dołączenia). Osoba pojawi się też na liście „Oczekujące zaproszenia”.
+          </S.InviteHint>
 
           <S.Input
             type="email"
@@ -304,7 +363,7 @@ const Family = () => {
             onClick={handleInviteMember}
             disabled={!inviteEmail.trim()}
           >
-            📨 Wyślij zaproszenie
+            📨 Wyślij zaproszenie e-mailem
           </S.InviteButton>
         </S.InviteCard>
       </S.Container>
@@ -353,85 +412,138 @@ const Family = () => {
         </S.AddMemberButton>
       )}
 
-      <S.Section>
-        <S.SectionTitle>Członkowie rodziny</S.SectionTitle>
-        <S.MembersList>
-          {activeMembers.map((member) => (
-            <S.MemberCard key={member.email}>
-              <S.MemberAvatar $isOwner={member.role === "owner"}>
-                {member.displayName?.charAt(0).toUpperCase() || "?"}
-              </S.MemberAvatar>
-              <S.MemberInfo>
-                <S.MemberName>{member.displayName}</S.MemberName>
-                <S.MemberEmail>{member.email}</S.MemberEmail>
-              </S.MemberInfo>
-              {member.role === "owner" && <S.OwnerBadge>👑</S.OwnerBadge>}
-              {isOwner && member.role !== "owner" && (
-                <S.RemoveButton
-                  onClick={() => handleRemoveMember(member.email)}
-                >
-                  ✕
-                </S.RemoveButton>
-              )}
-            </S.MemberCard>
-          ))}
-        </S.MembersList>
-
-        {pendingMembers.length > 0 && (
-          <>
-            <S.PendingDivider>Oczekujące zaproszenia</S.PendingDivider>
-            {pendingMembers.map((member) => (
-              <S.PendingCard key={member.email}>
-                <S.PendingIcon>📧</S.PendingIcon>
-                <S.PendingEmail>{member.email}</S.PendingEmail>
-                {isOwner && (
+      <S.CollapsibleSection>
+        <S.CollapsibleHeader
+          type="button"
+          $open={sectionOpen.members}
+          onClick={() => toggleSection(SECTION_KEYS.members)}
+        >
+          <S.CollapsibleTitle>👥 Członkowie rodziny</S.CollapsibleTitle>
+          <S.CollapsibleChevron $open={sectionOpen.members}>▼</S.CollapsibleChevron>
+        </S.CollapsibleHeader>
+        <S.CollapsibleContent $open={sectionOpen.members}>
+          <S.MembersList>
+            {activeMembers.map((member) => (
+              <S.MemberCard key={member.email}>
+                <S.MemberAvatar $isOwner={member.role === "owner"}>
+                  {member.displayName?.charAt(0).toUpperCase() || "?"}
+                </S.MemberAvatar>
+                <S.MemberInfo>
+                  <S.MemberName>{member.displayName}</S.MemberName>
+                  <S.MemberEmail>{member.email}</S.MemberEmail>
+                </S.MemberInfo>
+                {member.role === "owner" && <S.OwnerBadge>👑</S.OwnerBadge>}
+                {isOwner && member.role !== "owner" && (
                   <S.RemoveButton
                     onClick={() => handleRemoveMember(member.email)}
                   >
                     ✕
                   </S.RemoveButton>
                 )}
-              </S.PendingCard>
+              </S.MemberCard>
             ))}
-          </>
-        )}
-      </S.Section>
+          </S.MembersList>
+          {pendingMembers.length > 0 && (
+            <>
+              <S.PendingDivider>Oczekujące zaproszenia</S.PendingDivider>
+              {pendingMembers.map((member) => (
+                <S.PendingCard key={member.email}>
+                  <S.PendingIcon>📧</S.PendingIcon>
+                  <S.PendingEmail>{member.email}</S.PendingEmail>
+                  {isOwner && (
+                    <S.RemoveButton
+                      onClick={() => handleRemoveMember(member.email)}
+                    >
+                      ✕
+                    </S.RemoveButton>
+                  )}
+                </S.PendingCard>
+              ))}
+            </>
+          )}
+        </S.CollapsibleContent>
+      </S.CollapsibleSection>
 
-      <S.Section>
-        <S.SectionTitle>💳 Płatności udostępnione rodzinie</S.SectionTitle>
-        <PaymentsList sharedOnly />
-      </S.Section>
+      <S.CollapsibleSection>
+        <S.CollapsibleHeader
+          type="button"
+          $open={sectionOpen.payments}
+          onClick={() => toggleSection(SECTION_KEYS.payments)}
+        >
+          <S.CollapsibleTitle>💳 Płatności udostępnione rodzinie</S.CollapsibleTitle>
+          <S.CollapsibleChevron $open={sectionOpen.payments}>▼</S.CollapsibleChevron>
+        </S.CollapsibleHeader>
+        <S.CollapsibleContent $open={sectionOpen.payments}>
+          <PaymentsList sharedOnly />
+        </S.CollapsibleContent>
+      </S.CollapsibleSection>
 
-      <S.Section>
-        <S.SectionTitle>🛒 Listy zakupów udostępnione rodzinie</S.SectionTitle>
-        <ShoppingLists sharedOnly />
-      </S.Section>
+      <S.CollapsibleSection>
+        <S.CollapsibleHeader
+          type="button"
+          $open={sectionOpen.shopping}
+          onClick={() => toggleSection(SECTION_KEYS.shopping)}
+        >
+          <S.CollapsibleTitle>🛒 Listy zakupów udostępnione rodzinie</S.CollapsibleTitle>
+          <S.CollapsibleChevron $open={sectionOpen.shopping}>▼</S.CollapsibleChevron>
+        </S.CollapsibleHeader>
+        <S.CollapsibleContent $open={sectionOpen.shopping}>
+          <ShoppingLists sharedOnly />
+        </S.CollapsibleContent>
+      </S.CollapsibleSection>
 
-      <S.Section>
-        <S.SectionTitle>📁 Pliki udostępnione rodzinie</S.SectionTitle>
-        <Files sharedOnly />
-      </S.Section>
+      <S.CollapsibleSection>
+        <S.CollapsibleHeader
+          type="button"
+          $open={sectionOpen.files}
+          onClick={() => toggleSection(SECTION_KEYS.files)}
+        >
+          <S.CollapsibleTitle>📁 Pliki udostępnione rodzinie</S.CollapsibleTitle>
+          <S.CollapsibleChevron $open={sectionOpen.files}>▼</S.CollapsibleChevron>
+        </S.CollapsibleHeader>
+        <S.CollapsibleContent $open={sectionOpen.files}>
+          <Files sharedOnly />
+        </S.CollapsibleContent>
+      </S.CollapsibleSection>
 
       {isOwner && (
         <>
-          <S.LinkSection>
-            <S.LinkTitle>Link zaproszeniowy</S.LinkTitle>
-            <S.LinkBox onClick={handleCopyInviteLink}>
-              <S.LinkIcon>🔗</S.LinkIcon>
-              <S.LinkContent>
-                <S.LinkLabel>Kliknij aby skopiować link</S.LinkLabel>
-                <S.LinkUrl>{getInviteLink()}</S.LinkUrl>
-              </S.LinkContent>
-              <S.CopyIcon>📋</S.CopyIcon>
-            </S.LinkBox>
-          </S.LinkSection>
+          <S.CollapsibleSection>
+            <S.CollapsibleHeader
+              type="button"
+              $open={sectionOpen.link}
+              onClick={() => toggleSection(SECTION_KEYS.link)}
+            >
+              <S.CollapsibleTitle>🔗 Link zaproszeniowy</S.CollapsibleTitle>
+              <S.CollapsibleChevron $open={sectionOpen.link}>▼</S.CollapsibleChevron>
+            </S.CollapsibleHeader>
+            <S.CollapsibleContent $open={sectionOpen.link}>
+              <S.LinkBox onClick={handleCopyInviteLink}>
+                <S.LinkIcon>🔗</S.LinkIcon>
+                <S.LinkContent>
+                  <S.LinkLabel>Kliknij aby skopiować link</S.LinkLabel>
+                  <S.LinkUrl>{getInviteLink()}</S.LinkUrl>
+                </S.LinkContent>
+                <S.CopyIcon>📋</S.CopyIcon>
+              </S.LinkBox>
+            </S.CollapsibleContent>
+          </S.CollapsibleSection>
 
-          <S.DangerZone>
-            <S.DangerTitle>Zarządzanie rodziną</S.DangerTitle>
-            <S.DeleteFamilyButton onClick={handleDeleteFamily}>
-              Usuń rodzinę
-            </S.DeleteFamilyButton>
-          </S.DangerZone>
+          <S.CollapsibleSection>
+            <S.CollapsibleHeader
+              type="button"
+              $open={sectionOpen.danger}
+              onClick={() => toggleSection(SECTION_KEYS.danger)}
+            >
+              <S.CollapsibleTitle>⚠️ Zarządzanie rodziną</S.CollapsibleTitle>
+              <S.CollapsibleChevron $open={sectionOpen.danger}>▼</S.CollapsibleChevron>
+            </S.CollapsibleHeader>
+            <S.CollapsibleContent $open={sectionOpen.danger}>
+              <S.DeleteFamilyButton onClick={handleDeleteFamily}>
+                Usuń rodzinę
+              </S.DeleteFamilyButton>
+            </S.CollapsibleContent>
+          </S.CollapsibleSection>
         </>
       )}
     </S.Container>

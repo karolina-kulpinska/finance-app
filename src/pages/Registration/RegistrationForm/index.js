@@ -5,7 +5,7 @@ import { GoogleIcon } from "../../../components/Icons";
 import { toLogin } from "../../../routes";
 import * as S from "./styled";
 
-const RegistrationForm = ({ onSubmit, onGoogleLogin, isLoading }) => {
+const RegistrationForm = ({ onSubmit, onGoogleLogin, isLoading, pendingInvite }) => {
   const {
     register,
     handleSubmit,
@@ -19,6 +19,12 @@ const RegistrationForm = ({ onSubmit, onGoogleLogin, isLoading }) => {
       <S.Form onSubmit={handleSubmit(onSubmit)}>
         <S.Title>Stwórz konto</S.Title>
         <S.Subtitle>Zacznij zarządzać swoimi finansami</S.Subtitle>
+        
+        {pendingInvite && (
+          <S.InviteInfo>
+            👨‍👩‍👧‍👦 Dołączysz do rodziny: <strong>{pendingInvite.familyName}</strong>
+          </S.InviteInfo>
+        )}
 
         <S.InputWrapper>
           <S.Input

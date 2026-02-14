@@ -4,12 +4,12 @@ import {
   collection,
   addDoc,
   serverTimestamp,
-  query,
-  where,
   onSnapshot,
   doc,
   deleteDoc,
   updateDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "../../api/firebase";
@@ -29,14 +29,43 @@ import { showNotification } from "../notification/notificationSlice";
 
 function createPaymentsChannel(userId) {
   return eventChannel((emitter) => {
-    const q = query(collection(db, "payments"), where("userId", "==", userId));
-    return onSnapshot(q, (snapshot) => {
-      const payments = snapshot.docs.map((doc) => ({
+    // Nasłuchuj na OBIE struktury jednocześnie
+    let allPayments = [];
+    
+    // STARA STRUKTURA: /payments gdzie userId == userId
+    const oldQuery = query(collection(db, "payments"), where("userId", "==", userId));
+    const unsubscribeOld = onSnapshot(oldQuery, (snapshot) => {
+      const oldPayments = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
+        source: "old", // oznaczenie źródła
       }));
-      emitter(payments);
+      
+      // Połącz ze starej struktury i wyślij
+      allPayments = [...oldPayments];
+      emitter(allPayments);
     });
+    
+    // NOWA STRUKTURA: users/{userId}/payments
+    const newRef = collection(db, "users", userId, "payments");
+    const unsubscribeNew = onSnapshot(newRef, (snapshot) => {
+      const newPayments = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        source: "new", // oznaczenie źródła
+      }));
+      
+      // Połącz obie struktury
+      const oldPayments = allPayments.filter(p => p.source === "old");
+      allPayments = [...oldPayments, ...newPayments];
+      emitter(allPayments);
+    });
+    
+    // Zwróć funkcję czyszczącą dla obu subskrypcji
+    return () => {
+      unsubscribeOld();
+      unsubscribeNew();
+    };
   });
 }
 
@@ -88,14 +117,22 @@ function* addPaymentHandler({ payload }) {
       category: payload.category || "other",
       priority: payload.priority || "normal",
       notes: payload.notes || "",
-      userId: user.uid,
+      bank: payload.bank || null,
+      paymentType: payload.paymentType || null,
+      sharedWithFamily: payload.sharedWithFamily || false,
+      isInstallment: payload.isInstallment || false,
+      installmentInfo: payload.installmentInfo || null,
+      isRecurring: payload.isRecurring || false,
+      policyNumber: payload.policyNumber || null,
+      accountNumber: payload.accountNumber || null,
       createdAt: serverTimestamp(),
       paid: false,
       attachmentUrl,
       attachmentName,
     };
 
-    const docRef = yield call(addDoc, collection(db, "payments"), paymentData);
+    // NOWA STRUKTURA: users/{userId}/payments
+    const docRef = yield call(addDoc, collection(db, "users", user.uid, "payments"), paymentData);
     yield put(addPaymentSuccess({ id: docRef.id, ...paymentData }));
     
     yield put(
@@ -118,9 +155,14 @@ function* addPaymentHandler({ payload }) {
 
 function* deletePaymentHandler({ payload }) {
   try {
-    const paymentDoc = doc(db, "payments", payload);
+    const user = yield select(selectUser);
     const paymentData = yield select(selectPayments);
     const payment = paymentData.find(p => p.id === payload);
+    
+    // Sprawdź czy to stara czy nowa struktura
+    const paymentDoc = payment?._source === "old"
+      ? doc(db, "payments", payload)
+      : doc(db, "users", user.uid, "payments", payload);
 
     if (payment && payment.attachmentUrl) {
       try {
@@ -153,7 +195,15 @@ function* deletePaymentHandler({ payload }) {
 
 function* updateStatusHandler({ payload }) {
   try {
-    const paymentRef = doc(db, "payments", payload.id);
+    const user = yield select(selectUser);
+    const paymentData = yield select(selectPayments);
+    const payment = paymentData.find(p => p.id === payload.id);
+    
+    // Sprawdź czy to stara czy nowa struktura
+    const paymentRef = payment?._source === "old"
+      ? doc(db, "payments", payload.id)
+      : doc(db, "users", user.uid, "payments", payload.id);
+    
     yield call(updateDoc, paymentRef, {
       paid: !payload.currentStatus,
     });
@@ -165,12 +215,14 @@ function* updateStatusHandler({ payload }) {
 function* updatePaymentHandler({ payload }) {
   try {
     const { id, ...updateData } = payload;
+    const user = yield select(selectUser);
+    const paymentData = yield select(selectPayments);
+    const payment = paymentData.find(p => p.id === id);
 
     let attachmentUrl = updateData.attachmentUrl;
     let attachmentName = updateData.attachmentName;
 
     if (updateData.attachment && updateData.attachment[0]) {
-      const user = yield select(selectUser);
       const file = updateData.attachment[0];
       const fileName = `${user.uid}/${Date.now()}_${file.name}`;
       const storageRef = ref(storage, `payments/${fileName}`);
@@ -188,20 +240,26 @@ function* updatePaymentHandler({ payload }) {
       attachmentUrl = yield call(getDownloadURL, storageRef);
       attachmentName = file.name;
     }
-
-    const paymentData = {
+    
+    const paymentUpdateData = {
       name: updateData.name,
       amount: parseFloat(updateData.amount),
       date: updateData.date,
       category: updateData.category,
       priority: updateData.priority,
       notes: updateData.notes || "",
+      bank: updateData.bank || null,
+      sharedWithFamily: updateData.sharedWithFamily || false,
       attachmentUrl,
       attachmentName,
     };
 
-    const paymentRef = doc(db, "payments", id);
-    yield call(updateDoc, paymentRef, paymentData);
+    // Sprawdź czy to stara czy nowa struktura i zaktualizuj odpowiednio
+    const paymentRef = payment?._source === "old"
+      ? doc(db, "payments", id)
+      : doc(db, "users", user.uid, "payments", id);
+    
+    yield call(updateDoc, paymentRef, paymentUpdateData);
     yield put(updatePaymentSuccess());
 
     yield put(

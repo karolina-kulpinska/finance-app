@@ -450,6 +450,20 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
             </S.FormGroup>
 
             <S.FormGroup $fullWidth>
+              <S.CheckboxWrapper>
+                <S.Checkbox
+                  type="checkbox"
+                  id="sharedWithFamily"
+                  {...register("sharedWithFamily")}
+                />
+                <S.CheckboxLabel htmlFor="sharedWithFamily">
+                  👨‍👩‍👧‍👦 Udostępnij rodzinie
+                  <S.CheckboxHint>Członkowie rodziny będą widzieć tę płatność</S.CheckboxHint>
+                </S.CheckboxLabel>
+              </S.CheckboxWrapper>
+            </S.FormGroup>
+
+            <S.FormGroup $fullWidth>
               <S.Label>Załącznik (PDF, zdjęcie)</S.Label>
               <S.Input
                 type="file"

@@ -307,3 +307,43 @@ export const TotalValue = styled.div`
   font-weight: 900;
   color: white;
 `;
+
+export const CheckboxWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e8f5e9;
+    border-color: #66bb6a;
+  }
+`;
+
+export const Checkbox = styled.input`
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+`;
+
+export const CheckboxLabel = styled.label`
+  font-size: 13px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  cursor: pointer;
+  user-select: none;
+`;
+
+export const CheckboxHint = styled.div`
+  font-size: 11px;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.secondary};
+  margin-top: 2px;
+`;

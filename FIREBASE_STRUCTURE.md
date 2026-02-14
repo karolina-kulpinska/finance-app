@@ -42,6 +42,49 @@ payments/
 
 ## ✨ NOWE STRUKTURY DO DODANIA
 
+### 0. **🏠 Rodzina (Family Sharing)**
+
+Nowa kolekcja dla rodzinnego udostępniania:
+
+```
+families/
+  └── {familyId}
+      ├── ownerId: string (userId właściciela rodziny)
+      ├── name: string (nazwa rodziny, np. "Rodzina Kowalskich")
+      ├── createdAt: timestamp
+      ├── inviteToken: string (unikalny token do zaproszenia, np. "abc123xyz456")
+      └── members: array [
+          {
+            userId: string,
+            email: string,
+            displayName: string,
+            role: string (owner/member),
+            addedAt: timestamp,
+            status: string (active/pending)
+          }
+        ]
+
+users/
+  └── {userId}/
+      ├── familyId: string (ID rodziny do której należy)
+      └── sharedItems/
+          ├── payments: array [paymentId1, paymentId2, ...]
+          ├── shoppingLists: array [listId1, listId2, ...]
+          └── files: array [paymentId1, paymentId2, ...] (płatności z załącznikami)
+```
+
+**Zmiany w istniejących strukturach:**
+
+```
+users/{userId}/payments/{paymentId}
+  └── sharedWithFamily: boolean (czy udostępnione rodzinie)
+
+users/{userId}/shoppingLists/{listId}
+  └── sharedWithFamily: boolean (czy udostępnione rodzinie)
+```
+
+**Firebase Storage - bez zmian**, ale pliki będą dostępne dla członków rodziny jeśli rodzic udostępni.
+
 ### 1. **Listy zakupów** (Shopping Lists)
 
 Dodaj nową kolekcję w Firestore:

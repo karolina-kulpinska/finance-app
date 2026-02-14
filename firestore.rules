@@ -14,5 +14,49 @@ service cloud.firestore {
       allow delete: if request.auth != null 
                     && request.auth.uid == resource.data.userId;
     }
+
+    match /shopping/{shoppingId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      
+      allow create: if request.auth != null 
+                    && request.auth.uid == request.resource.data.userId;
+      
+      allow update: if request.auth != null 
+                    && request.auth.uid == resource.data.userId;
+      
+      allow delete: if request.auth != null 
+                    && request.auth.uid == resource.data.userId;
+    }
+    
+    // ========================================
+    // NOWE REGUŁY (dla nowej struktury + rodziny)
+    // ========================================
+    
+    // RODZINY
+    match /families/{familyId} {
+      allow read, create: if request.auth != null;
+      allow update, delete: if request.auth != null 
+                             && request.auth.uid == resource.data.ownerId;
+    }
+    
+    // UŻYTKOWNICY - nowa struktura
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Płatności w nowej strukturze
+      match /payments/{paymentId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Listy zakupów w nowej strukturze
+      match /shoppingLists/{listId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Ustawienia
+      match /settings/{settingId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
   }
 }

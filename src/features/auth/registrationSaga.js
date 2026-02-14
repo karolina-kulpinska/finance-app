@@ -1,6 +1,7 @@
 import { call, put, takeLatest } from "redux-saga/effects";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../api/firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth, db } from "../../api/firebase";
+import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import {
   registerRequest,
   registerSuccess,
@@ -11,7 +12,7 @@ import { showNotification } from "../notification/notificationSlice";
 
 function* registerHandler({ payload }) {
   try {
-    const { email, password } = payload;
+    const { email, password, displayName, pendingInvite } = payload;
     const userCredential = yield call(
       createUserWithEmailAndPassword,
       auth,
@@ -20,12 +21,66 @@ function* registerHandler({ payload }) {
     );
     const user = userCredential.user;
 
+    // Ustaw displayName jeśli podano
+    if (displayName) {
+      yield call(updateProfile, user, { displayName });
+    }
+
+    // Utwórz dokument użytkownika w Firestore
+    const userData = {
+      email: user.email,
+      displayName: displayName || "",
+      createdAt: new Date().toISOString(),
+    };
+
+    // Jeśli jest zaproszenie do rodziny, dodaj użytkownika
+    if (pendingInvite && pendingInvite.familyId) {
+      try {
+        const familyRef = doc(db, "families", pendingInvite.familyId);
+        const familyDoc = yield call(getDoc, familyRef);
+        
+        if (familyDoc.exists()) {
+          // Dodaj użytkownika do członków rodziny
+          yield call(updateDoc, familyRef, {
+            members: arrayUnion({
+              userId: user.uid,
+              email: user.email,
+              displayName: displayName || user.email.split("@")[0],
+              role: "member",
+              addedAt: new Date().toISOString(),
+              status: "active",
+            }),
+          });
+          
+          // Dodaj familyId do dokumentu użytkownika
+          userData.familyId = pendingInvite.familyId;
+          
+          // Wyczyść localStorage
+          localStorage.removeItem("pendingFamilyInvite");
+        }
+      } catch (familyError) {
+        console.error("Błąd dołączania do rodziny:", familyError);
+        // Kontynuuj rejestrację nawet jeśli dołączanie do rodziny się nie powiodło
+      }
+    }
+
+    // Zapisz dokument użytkownika
+    yield call(setDoc, doc(db, "users", user.uid), userData);
+
     yield put(registerSuccess());
-    yield put(loginSuccess({ uid: user.uid, email: user.email }));
+    yield put(loginSuccess({ 
+      uid: user.uid, 
+      email: user.email,
+      displayName: displayName || user.displayName 
+    }));
+
+    const successMessage = pendingInvite 
+      ? `Witaj w rodzinie "${pendingInvite.familyName}"! 👨‍👩‍👧‍👦`
+      : "Konto zostało utworzone pomyślnie! Witaj w aplikacji.";
 
     yield put(
       showNotification({
-        message: "Konto zostało utworzone pomyślnie! Witaj w aplikacji.",
+        message: successMessage,
         type: "success",
       }),
     );

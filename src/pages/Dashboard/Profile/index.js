@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
-import { updateProfile } from "firebase/auth";
+import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from "firebase/auth";
 import { auth } from "../../../api/firebase";
 import { showNotification } from "../../../features/notification/notificationSlice";
 import * as S from "./styled";
@@ -12,6 +12,9 @@ const Profile = () => {
 
   const [activeSection, setActiveSection] = useState(null);
   const [editName, setEditName] = useState(user?.displayName || "");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const userEmail = user?.email || "brak@email.com";
   const userName = user?.displayName || "Użytkownik";
@@ -23,20 +26,140 @@ const Profile = () => {
     .slice(0, 2);
 
   const handleUpdateName = async () => {
+    if (!editName.trim()) {
+      dispatch(showNotification({
+        message: "Imię nie może być puste",
+        type: "error",
+      }));
+      return;
+    }
+
     try {
       await updateProfile(auth.currentUser, {
         displayName: editName,
       });
       dispatch(showNotification({
-        message: "Imię zostało zaktualizowane!",
+        message: "✅ Imię zostało zaktualizowane!",
         type: "success",
       }));
       setActiveSection(null);
     } catch (error) {
       dispatch(showNotification({
-        message: "Błąd aktualizacji: " + error.message,
+        message: "❌ Błąd aktualizacji: " + error.message,
         type: "error",
       }));
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      dispatch(showNotification({
+        message: "❌ Nowe hasła nie są identyczne",
+        type: "error",
+      }));
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      dispatch(showNotification({
+        message: "❌ Hasło musi mieć minimum 6 znaków",
+        type: "error",
+      }));
+      return;
+    }
+
+    try {
+      // Ponowne uwierzytelnienie użytkownika
+      const credential = EmailAuthProvider.credential(
+        auth.currentUser.email,
+        oldPassword
+      );
+      await reauthenticateWithCredential(auth.currentUser, credential);
+      
+      // Zmiana hasła
+      await updatePassword(auth.currentUser, newPassword);
+      
+      dispatch(showNotification({
+        message: "✅ Hasło zostało zmienione!",
+        type: "success",
+      }));
+      
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setActiveSection(null);
+    } catch (error) {
+      let errorMessage = "❌ Błąd zmiany hasła";
+      if (error.code === "auth/wrong-password") {
+        errorMessage = "❌ Nieprawidłowe stare hasło";
+      }
+      dispatch(showNotification({
+        message: errorMessage,
+        type: "error",
+      }));
+    }
+  };
+
+  const handleExportData = async () => {
+    try {
+      const dataToExport = {
+        user: {
+          email: user.email,
+          displayName: user.displayName,
+        },
+        exportDate: new Date().toISOString(),
+        // Tu można dodać więcej danych
+      };
+
+      // Utwórz plik JSON do pobrania
+      const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `finanseexport_${new Date().getTime()}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      dispatch(showNotification({
+        message: "✅ Dane zostały wyeksportowane!",
+        type: "success",
+      }));
+    } catch (error) {
+      dispatch(showNotification({
+        message: "❌ Błąd eksportu danych",
+        type: "error",
+      }));
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      "⚠️ CZY NA PEWNO CHCESZ USUNĄĆ KONTO?\n\nTa operacja jest NIEODWRACALNA!\nStracisz wszystkie swoje dane, płatności i listy zakupów."
+    );
+
+    if (!confirmed) return;
+
+    const doubleConfirm = window.confirm(
+      "🚨 OSTATNIE OSTRZEŻENIE!\n\nCzy jesteś absolutnie pewien?\nWszystkie dane zostaną TRWALE USUNIĘTE."
+    );
+
+    if (!doubleConfirm) return;
+
+    try {
+      await deleteUser(auth.currentUser);
+      // Użytkownik zostanie automatycznie wylogowany
+    } catch (error) {
+      if (error.code === "auth/requires-recent-login") {
+        dispatch(showNotification({
+          message: "❌ Musisz się wylogować i zalogować ponownie przed usunięciem konta",
+          type: "error",
+        }));
+      } else {
+        dispatch(showNotification({
+          message: "❌ Błąd usuwania konta: " + error.message,
+          type: "error",
+        }));
+      }
     }
   };
 
@@ -71,9 +194,102 @@ const Profile = () => {
           </S.FormGroup>
 
           <S.SaveButton onClick={handleUpdateName}>
-            Zapisz zmiany
+            💾 Zapisz zmiany
           </S.SaveButton>
         </S.EditForm>
+      </S.Container>
+    );
+  }
+
+  if (activeSection === "security") {
+    return (
+      <S.Container>
+        <S.EditHeader>
+          <S.BackButton onClick={() => setActiveSection(null)}>← Powrót</S.BackButton>
+          <S.EditTitle>Zmiana hasła</S.EditTitle>
+        </S.EditHeader>
+
+        <S.EditForm>
+          <S.FormGroup>
+            <S.Label>Stare hasło</S.Label>
+            <S.Input
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              placeholder="Wprowadź stare hasło"
+            />
+          </S.FormGroup>
+
+          <S.FormGroup>
+            <S.Label>Nowe hasło</S.Label>
+            <S.Input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Minimum 6 znaków"
+            />
+          </S.FormGroup>
+
+          <S.FormGroup>
+            <S.Label>Potwierdź nowe hasło</S.Label>
+            <S.Input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Wpisz ponownie nowe hasło"
+            />
+          </S.FormGroup>
+
+          <S.SaveButton onClick={handleChangePassword}>
+            🔒 Zmień hasło
+          </S.SaveButton>
+        </S.EditForm>
+      </S.Container>
+    );
+  }
+
+  if (activeSection === "export") {
+    return (
+      <S.Container>
+        <S.EditHeader>
+          <S.BackButton onClick={() => setActiveSection(null)}>← Powrót</S.BackButton>
+          <S.EditTitle>Eksport danych</S.EditTitle>
+        </S.EditHeader>
+
+        <S.ExportCard>
+          <S.ExportIcon>💾</S.ExportIcon>
+          <S.ExportTitle>Pobierz swoje dane</S.ExportTitle>
+          <S.ExportDesc>
+            Pobierz wszystkie swoje dane w formacie JSON. 
+            Plik będzie zawierał płatności, listy zakupów i ustawienia.
+          </S.ExportDesc>
+          <S.SaveButton onClick={handleExportData}>
+            📥 Eksportuj dane
+          </S.SaveButton>
+        </S.ExportCard>
+      </S.Container>
+    );
+  }
+
+  if (activeSection === "delete") {
+    return (
+      <S.Container>
+        <S.EditHeader>
+          <S.BackButton onClick={() => setActiveSection(null)}>← Powrót</S.BackButton>
+          <S.EditTitle>Usuń konto</S.EditTitle>
+        </S.EditHeader>
+
+        <S.DangerCard>
+          <S.DangerIcon>⚠️</S.DangerIcon>
+          <S.DangerTitle>Strefa niebezpieczna</S.DangerTitle>
+          <S.DangerDesc>
+            Usunięcie konta jest operacją nieodwracalną. 
+            Stracisz wszystkie swoje dane, płatności, listy zakupów i dostęp do rodziny.
+          </S.DangerDesc>
+          <S.DangerButton onClick={handleDeleteAccount}>
+            🗑️ Usuń konto na zawsze
+          </S.DangerButton>
+        </S.DangerCard>
       </S.Container>
     );
   }
@@ -98,38 +314,29 @@ const Profile = () => {
             <S.SettingArrow>›</S.SettingArrow>
           </S.SettingItem>
 
-          <S.SettingItem>
+          <S.SettingItem onClick={() => setActiveSection("security")}>
             <S.SettingIcon>🔒</S.SettingIcon>
             <S.SettingInfo>
               <S.SettingLabel>Bezpieczeństwo</S.SettingLabel>
-              <S.SettingDesc>Zmień hasło (wkrótce)</S.SettingDesc>
+              <S.SettingDesc>Zmień hasło</S.SettingDesc>
             </S.SettingInfo>
             <S.SettingArrow>›</S.SettingArrow>
           </S.SettingItem>
 
-          <S.SettingItem>
-            <S.SettingIcon>🔔</S.SettingIcon>
-            <S.SettingInfo>
-              <S.SettingLabel>Powiadomienia</S.SettingLabel>
-              <S.SettingDesc>Zarządzaj powiadomieniami (wkrótce)</S.SettingDesc>
-            </S.SettingInfo>
-            <S.SettingArrow>›</S.SettingArrow>
-          </S.SettingItem>
-
-          <S.SettingItem>
-            <S.SettingIcon>🎨</S.SettingIcon>
-            <S.SettingInfo>
-              <S.SettingLabel>Wygląd</S.SettingLabel>
-              <S.SettingDesc>Personalizuj kolory (wkrótce)</S.SettingDesc>
-            </S.SettingInfo>
-            <S.SettingArrow>›</S.SettingArrow>
-          </S.SettingItem>
-
-          <S.SettingItem>
+          <S.SettingItem onClick={() => setActiveSection("export")}>
             <S.SettingIcon>💾</S.SettingIcon>
             <S.SettingInfo>
-              <S.SettingLabel>Backup danych</S.SettingLabel>
-              <S.SettingDesc>Eksportuj dane (wkrótce)</S.SettingDesc>
+              <S.SettingLabel>Eksport danych</S.SettingLabel>
+              <S.SettingDesc>Pobierz wszystkie swoje dane</S.SettingDesc>
+            </S.SettingInfo>
+            <S.SettingArrow>›</S.SettingArrow>
+          </S.SettingItem>
+
+          <S.SettingItem onClick={() => setActiveSection("delete")}>
+            <S.SettingIcon>🗑️</S.SettingIcon>
+            <S.SettingInfo>
+              <S.SettingLabel>Usuń konto</S.SettingLabel>
+              <S.SettingDesc>Usuń konto i wszystkie dane</S.SettingDesc>
             </S.SettingInfo>
             <S.SettingArrow>›</S.SettingArrow>
           </S.SettingItem>
@@ -139,29 +346,25 @@ const Profile = () => {
       <S.SettingsSection>
         <S.SectionTitle>ℹ️ Informacje</S.SectionTitle>
         <S.SettingsList>
-          <S.SettingItem>
-            <S.SettingIcon>📖</S.SettingIcon>
-            <S.SettingInfo>
-              <S.SettingLabel>Pomoc i FAQ</S.SettingLabel>
-              <S.SettingDesc>Najczęściej zadawane pytania</S.SettingDesc>
-            </S.SettingInfo>
-            <S.SettingArrow>›</S.SettingArrow>
-          </S.SettingItem>
-
-          <S.SettingItem>
+          <S.SettingItem onClick={() => window.open("mailto:pomoc@finanseapp.pl", "_blank")}>
             <S.SettingIcon>📧</S.SettingIcon>
             <S.SettingInfo>
               <S.SettingLabel>Kontakt</S.SettingLabel>
-              <S.SettingDesc>Skontaktuj się z pomocą techniczną</S.SettingDesc>
+              <S.SettingDesc>pomoc@finanseapp.pl</S.SettingDesc>
             </S.SettingInfo>
             <S.SettingArrow>›</S.SettingArrow>
           </S.SettingItem>
 
-          <S.SettingItem>
-            <S.SettingIcon>⭐</S.SettingIcon>
+          <S.SettingItem onClick={() => {
+            dispatch(showNotification({
+              message: "📱 Wersja aplikacji: 1.0.0",
+              type: "success",
+            }));
+          }}>
+            <S.SettingIcon>ℹ️</S.SettingIcon>
             <S.SettingInfo>
-              <S.SettingLabel>Oceń aplikację</S.SettingLabel>
-              <S.SettingDesc>Podziel się opinią w sklepie</S.SettingDesc>
+              <S.SettingLabel>O aplikacji</S.SettingLabel>
+              <S.SettingDesc>Wersja 1.0.0</S.SettingDesc>
             </S.SettingInfo>
             <S.SettingArrow>›</S.SettingArrow>
           </S.SettingItem>

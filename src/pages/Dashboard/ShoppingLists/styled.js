@@ -430,3 +430,26 @@ export const ListPrice = styled.div`
   color: #43e97b;
   margin-top: 4px;
 `;
+
+export const CheckboxWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 10px;
+`;
+
+export const CheckboxLabel = styled.label`
+  font-size: 13px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  cursor: pointer;
+  user-select: none;
+`;
+
+export const SharedBadge = styled.span`
+  margin-left: 8px;
+  font-size: 14px;
+`;

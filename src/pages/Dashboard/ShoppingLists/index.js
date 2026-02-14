@@ -8,6 +8,7 @@ const ShoppingLists = () => {
   const [selectedList, setSelectedList] = useState(null);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
+  const [shareWithFamily, setShareWithFamily] = useState(false);
 
   const handleAddList = () => {
     if (newListName.trim()) {
@@ -18,9 +19,11 @@ const ShoppingLists = () => {
         totalPrice: 0,
         receipt: null,
         createdAt: new Date().toISOString(),
+        sharedWithFamily: shareWithFamily,
       };
       setLists([...lists, newList]);
       setNewListName("");
+      setShareWithFamily(false);
       setShowAddForm(false);
     }
   };
@@ -196,6 +199,17 @@ const ShoppingLists = () => {
             value={newListName}
             onChange={(e) => setNewListName(e.target.value)}
           />
+          <S.CheckboxWrapper>
+            <S.Checkbox
+              type="checkbox"
+              id="shareNewListMain"
+              checked={shareWithFamily}
+              onChange={(e) => setShareWithFamily(e.target.checked)}
+            />
+            <S.CheckboxLabel htmlFor="shareNewListMain">
+              👨‍👩‍👧‍👦 Udostępnij rodzinie
+            </S.CheckboxLabel>
+          </S.CheckboxWrapper>
           <S.SaveButton onClick={handleAddList}>
             Dodaj listę
           </S.SaveButton>
@@ -215,7 +229,10 @@ const ShoppingLists = () => {
           {lists.map((list) => (
             <S.ListCard key={list.id} onClick={() => setSelectedList(list)}>
               <S.ListIcon>📋</S.ListIcon>
-              <S.ListName>{list.name}</S.ListName>
+              <S.ListName>
+                {list.name}
+                {list.sharedWithFamily && <S.SharedBadge>👨‍👩‍👧‍👦</S.SharedBadge>}
+              </S.ListName>
               <S.ListInfo>
                 {list.items.length} przedmiotów
               </S.ListInfo>

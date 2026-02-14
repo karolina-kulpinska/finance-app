@@ -17,6 +17,7 @@ import PaymentsList from "./List";
 import ShoppingLists from "./ShoppingLists";
 import Profile from "./Profile";
 import Files from "./Files";
+import Family from "./Family";
 import BottomNav from "../../components/BottomNav";
 import * as S from "./styled";
 
@@ -79,6 +80,8 @@ const Dashboard = () => {
         );
       case "shopping":
         return <ShoppingLists />;
+      case "family":
+        return <Family />;
       case "files":
         return <Files />;
       case "profile":
@@ -95,9 +98,9 @@ const Dashboard = () => {
           onAddPayment={handleAddPayment}
           onToggleFilters={() => setShowFilters(!showFilters)}
           showFilters={showFilters}
-          hideFilters={activeTab === "shopping" || activeTab === "files" || activeTab === "profile"}
+                hideFilters={activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"}
         />
-        {showFilters && activeTab !== "shopping" && activeTab !== "files" && activeTab !== "profile" && (
+              {showFilters && activeTab !== "shopping" && activeTab !== "family" && activeTab !== "files" && activeTab !== "profile" && (
           <S.FiltersBox>
             <Filters />
           </S.FiltersBox>

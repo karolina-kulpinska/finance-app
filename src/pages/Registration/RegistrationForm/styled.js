@@ -297,3 +297,20 @@ export const LinkContainer = styled.div`
     margin-top: 24px;
   }
 `;
+
+export const InviteInfo = styled.div`
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 2px solid #66bb6a;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #2e7d32;
+  font-weight: 600;
+  text-align: center;
+  
+  strong {
+    color: #1b5e20;
+    font-weight: 900;
+  }
+`;

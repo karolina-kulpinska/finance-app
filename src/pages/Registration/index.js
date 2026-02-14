@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,9 +15,21 @@ const RegistrationPage = () => {
   const navigate = useNavigate();
   const user = useSelector(selectUser);
   const isLoading = useSelector(selectAuthLoading);
+  const [pendingInvite, setPendingInvite] = useState(null);
+
+  useEffect(() => {
+    const invite = localStorage.getItem("pendingFamilyInvite");
+    if (invite) {
+      try {
+        setPendingInvite(JSON.parse(invite));
+      } catch (error) {
+        console.error("Błąd parsowania zaproszenia:", error);
+      }
+    }
+  }, []);
 
   const onSubmit = (data) => {
-    dispatch(registerRequest(data));
+    dispatch(registerRequest({ ...data, pendingInvite }));
   };
 
   const handleGoogleRegister = () => {
@@ -33,6 +45,7 @@ const RegistrationPage = () => {
       onSubmit={onSubmit}
       onGoogleLogin={handleGoogleRegister}
       isLoading={isLoading}
+      pendingInvite={pendingInvite}
     />
   );
 };

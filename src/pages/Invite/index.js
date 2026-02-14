@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../api/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -11,11 +11,7 @@ const Invite = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadFamilyByToken();
-  }, [token]);
-
-  const loadFamilyByToken = async () => {
+  const loadFamilyByToken = useCallback(async () => {
     if (!token) {
       setError("Nieprawidłowy link zaproszenia");
       setLoading(false);
@@ -49,7 +45,11 @@ const Invite = () => {
       setError("Wystąpił błąd podczas ładowania zaproszenia");
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    loadFamilyByToken();
+  }, [loadFamilyByToken]);
 
   const handleAccept = () => {
     navigate("/registration");

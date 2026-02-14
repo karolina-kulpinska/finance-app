@@ -7,13 +7,17 @@ import {
   getDoc, 
   setDoc, 
   updateDoc,
+  deleteDoc,
   arrayUnion,
   serverTimestamp 
 } from "firebase/firestore";
+import { useDispatch } from "react-redux";
+import { showNotification } from "../../../features/notification/notificationSlice";
 import * as S from "./styled";
 
 const Family = () => {
   const user = useSelector(selectUser);
+  const dispatch = useDispatch();
   const [family, setFamily] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState("main");
@@ -143,6 +147,54 @@ const Family = () => {
     } catch (error) {
       console.error("Błąd usuwania członka:", error);
       alert("Nie udało się usunąć członka");
+    }
+  };
+
+  const handleDeleteFamily = async () => {
+    const confirmed = window.confirm(
+      "⚠️ CZY NA PEWNO CHCESZ USUNĄĆ RODZINĘ?\n\n" +
+      "Ta operacja:\n" +
+      "• Usunie rodzinę na zawsze\n" +
+      "• Usunie wszystkich członków z rodziny\n" +
+      "• NIE usunie żadnych danych (płatności, zakupy, pliki pozostaną)\n\n" +
+      "Czy jesteś pewien?"
+    );
+
+    if (!confirmed) return;
+
+    const doubleConfirm = window.confirm(
+      "🔴 OSTATNIE OSTRZEŻENIE!\n\n" +
+      "Naprawdę chcesz usunąć rodzinę?\n" +
+      "Tej operacji NIE MOŻNA cofnąć!"
+    );
+
+    if (!doubleConfirm) return;
+
+    try {
+      if (!family?.id) return;
+
+      const updatePromises = family.members
+        .filter(m => m.userId)
+        .map(m => updateDoc(doc(db, "users", m.userId), { familyId: null }));
+
+      await Promise.all(updatePromises);
+
+      // Usuń rodzinę
+      await deleteDoc(doc(db, "families", family.id));
+
+      dispatch(showNotification({
+        message: "✅ Rodzina została usunięta",
+        type: "success",
+      }));
+
+      setFamily(null);
+      setActiveView("main");
+    } catch (error) {
+      console.error("Error deleting family:", error);
+      dispatch(showNotification({
+        message: `❌ Nie udało się usunąć rodziny: ${error.message}`,
+        type: "error",
+      }));
     }
   };
 
@@ -315,17 +367,26 @@ const Family = () => {
       </S.Section>
 
       {isOwner && (
-        <S.LinkSection>
-          <S.LinkTitle>Link zaproszeniowy</S.LinkTitle>
-          <S.LinkBox onClick={handleCopyInviteLink}>
-            <S.LinkIcon>🔗</S.LinkIcon>
-            <S.LinkContent>
-              <S.LinkLabel>Kliknij aby skopiować link</S.LinkLabel>
-              <S.LinkUrl>{getInviteLink()}</S.LinkUrl>
-            </S.LinkContent>
-            <S.CopyIcon>📋</S.CopyIcon>
-          </S.LinkBox>
-        </S.LinkSection>
+        <>
+          <S.LinkSection>
+            <S.LinkTitle>Link zaproszeniowy</S.LinkTitle>
+            <S.LinkBox onClick={handleCopyInviteLink}>
+              <S.LinkIcon>🔗</S.LinkIcon>
+              <S.LinkContent>
+                <S.LinkLabel>Kliknij aby skopiować link</S.LinkLabel>
+                <S.LinkUrl>{getInviteLink()}</S.LinkUrl>
+              </S.LinkContent>
+              <S.CopyIcon>📋</S.CopyIcon>
+            </S.LinkBox>
+          </S.LinkSection>
+
+          <S.DangerZone>
+            <S.DangerTitle>Strefa niebezpieczna</S.DangerTitle>
+            <S.DeleteFamilyButton onClick={handleDeleteFamily}>
+              🗑️ Usuń rodzinę na zawsze
+            </S.DeleteFamilyButton>
+          </S.DangerZone>
+        </>
       )}
     </S.Container>
   );

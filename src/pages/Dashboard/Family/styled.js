@@ -41,7 +41,6 @@ export const FamilySubtitle = styled.p`
   margin: 0;
 `;
 
-// Add Member Button
 export const AddMemberButton = styled.button`
   width: 100%;
   padding: 14px;
@@ -180,7 +179,6 @@ export const RemoveButton = styled.button`
   }
 `;
 
-// Pending members
 export const PendingDivider = styled.div`
   font-size: 11px;
   font-weight: 700;
@@ -214,7 +212,6 @@ export const PendingEmail = styled.div`
   white-space: nowrap;
 `;
 
-// Shared items grid
 export const SharedGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -384,7 +381,6 @@ export const CreateFamilyButton = styled.button`
   }
 `;
 
-// Create/Invite views
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -505,4 +501,46 @@ export const PendingBadge = styled.span`
   font-weight: 700;
   color: white;
   margin-top: 4px;
+`;
+
+export const DangerZone = styled.div`
+  margin-top: 32px;
+  padding: 20px;
+  background: #fff5f5;
+  border: 2px dashed #f44336;
+  border-radius: 12px;
+`;
+
+export const DangerTitle = styled.div`
+  font-size: 12px;
+  font-weight: 900;
+  color: #f44336;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  text-align: center;
+`;
+
+export const DeleteFamilyButton = styled.button`
+  width: 100%;
+  background: #f44336;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+
+  &:hover {
+    background: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 `;

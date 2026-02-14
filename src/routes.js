@@ -3,3 +3,4 @@ export const toDashboard = () => "/panel-glowny";
 export const toAddPayment = () => "/dodaj-platnosc";
 export const toLanding = () => "/";
 export const toRegistration = () => "/rejestracja";
+export const toInvite = (token) => token ? `/zaproszenie/${token}` : "/zaproszenie/:token";

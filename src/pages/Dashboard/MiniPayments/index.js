@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styled";
 
-const MiniPayments = ({ payments }) => {
+const MiniPayments = ({ payments, onPaymentClick }) => {
   const upcomingPayments = payments
     .filter((p) => !p.paid)
     .sort((a, b) => new Date(a.date) - new Date(b.date))
@@ -30,7 +30,7 @@ const MiniPayments = ({ payments }) => {
         {upcomingPayments.length > 0 ? (
           <S.PaymentsList>
             {upcomingPayments.map((payment) => (
-              <S.MiniPaymentCard key={payment.id}>
+              <S.MiniPaymentCard key={payment.id} onClick={() => onPaymentClick(payment.id)}>
                 <S.PaymentIcon>{getCategoryIcon(payment.category)}</S.PaymentIcon>
                 <S.PaymentInfo>
                   <S.PaymentName>{payment.name}</S.PaymentName>
@@ -50,7 +50,7 @@ const MiniPayments = ({ payments }) => {
         {recentPaidPayments.length > 0 ? (
           <S.PaymentsList>
             {recentPaidPayments.map((payment) => (
-              <S.MiniPaymentCard key={payment.id} $paid>
+              <S.MiniPaymentCard key={payment.id} $paid onClick={() => onPaymentClick(payment.id)}>
                 <S.PaymentIcon>{getCategoryIcon(payment.category)}</S.PaymentIcon>
                 <S.PaymentInfo>
                   <S.PaymentName>{payment.name}</S.PaymentName>

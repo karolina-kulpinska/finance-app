@@ -211,3 +211,190 @@ export const InfoItem = styled.li`
   color: #2e7d32;
   padding-left: 8px;
 `;
+
+export const BackButton = styled.button`
+  padding: 8px 16px;
+  background: #f0f0f5;
+  color: ${({ theme }) => theme.colors.text};
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+
+  &:hover {
+    background: #e5e5ea;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+export const DeleteButton = styled.button`
+  padding: 8px 12px;
+  background: #ffebee;
+  color: #c62828;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #ef5350;
+    color: white;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+export const TotalCard = styled.div`
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.3);
+`;
+
+export const TotalLabel = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+`;
+
+export const TotalAmount = styled.div`
+  font-size: 24px;
+  font-weight: 900;
+  color: white;
+`;
+
+export const AddItemForm = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  gap: 8px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    flex-direction: column;
+  }
+`;
+
+export const ItemsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const ItemCard = styled.div`
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const ItemName = styled.div`
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+export const ItemPrice = styled.div`
+  font-size: 14px;
+  font-weight: 900;
+  color: #43e97b;
+`;
+
+export const DeleteItemButton = styled.button`
+  background: transparent;
+  border: none;
+  color: #f5576c;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+`;
+
+export const ReceiptSection = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const ReceiptTitle = styled.h4`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0 0 12px 0;
+`;
+
+export const ReceiptInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background: #e8f5e9;
+  border-radius: 8px;
+`;
+
+export const ReceiptName = styled.div`
+  font-size: 13px;
+  color: #2e7d32;
+  font-weight: 600;
+`;
+
+export const FileInput = styled.div`
+  input[type="file"] {
+    display: none;
+  }
+`;
+
+export const FileLabel = styled.label`
+  display: block;
+  padding: 12px;
+  background: #f0f0f5;
+  border: 2px dashed ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.secondary};
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #e5e5ea;
+    border-color: #667eea;
+    color: #667eea;
+  }
+`;
+
+export const ListPrice = styled.div`
+  font-size: 14px;
+  font-weight: 900;
+  color: #43e97b;
+  margin-top: 4px;
+`;

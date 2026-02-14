@@ -1,27 +1,20 @@
 import styled from "styled-components";
 
 export const FiltersContainer = styled.div`
-  background: white;
-  border-radius: 16px;
-  padding: 20px 24px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 16px;
-  }
+  background: transparent;
+  padding: 0;
 `;
 
 export const FiltersHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 6px;
   }
 `;
 

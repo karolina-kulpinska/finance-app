@@ -34,26 +34,48 @@ const Dashboard = () => {
     dispatch(toggleModal());
   };
 
+  const handlePaymentClick = (paymentId) => {
+    setActiveTab("payments");
+    // Scroll do płatności po małym opóźnieniu
+    setTimeout(() => {
+      const element = document.getElementById(`payment-${paymentId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        element.style.animation = "highlight 1s ease";
+      }
+    }, 100);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
         return (
           <>
             <Stats payments={payments} />
-            {showFilters && <Filters />}
-            <MiniPayments payments={payments} />
+            {showFilters && (
+              <S.DashboardFiltersWrapper>
+                <Filters />
+              </S.DashboardFiltersWrapper>
+            )}
+            <MiniPayments payments={payments} onPaymentClick={handlePaymentClick} />
           </>
         );
       case "payments":
         return (
           <>
             <S.PaymentsHeader>
-              <S.PaymentsTitle>Wszystkie płatności ({payments.length})</S.PaymentsTitle>
-              <S.FilterToggleButton onClick={() => setShowPaymentFilters(!showPaymentFilters)}>
-                {showPaymentFilters ? "▲ Ukryj filtry" : "▼ Filtry"}
-              </S.FilterToggleButton>
+              <S.PaymentsHeaderTop>
+                <S.PaymentsTitle>Wszystkie płatności ({payments.length})</S.PaymentsTitle>
+                <S.FilterToggleButton onClick={() => setShowPaymentFilters(!showPaymentFilters)}>
+                  {showPaymentFilters ? "▲ Ukryj filtry" : "▼ Filtry"}
+                </S.FilterToggleButton>
+              </S.PaymentsHeaderTop>
+              {showPaymentFilters && (
+                <S.FiltersWrapper>
+                  <Filters />
+                </S.FiltersWrapper>
+              )}
             </S.PaymentsHeader>
-            {showPaymentFilters && <Filters />}
             <PaymentsList />
             <Charts payments={payments} />
           </>

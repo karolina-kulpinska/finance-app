@@ -125,3 +125,114 @@ export const AppVersion = styled.div`
   color: ${({ theme }) => theme.colors.secondary};
   padding: 16px;
 `;
+
+export const EditHeader = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+export const BackButton = styled.button`
+  background: #f0f0f5;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+
+  &:hover {
+    background: #e5e5ea;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+export const EditTitle = styled.h2`
+  font-size: 18px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0;
+  flex: 1;
+`;
+
+export const EditForm = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const Label = styled.label`
+  font-size: 13px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+export const Input = styled.input`
+  padding: 12px 16px;
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: ${({ theme }) => theme.colors.text};
+  background: ${({ disabled }) => (disabled ? "#f0f0f5" : "white")};
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+`;
+
+export const HelpText = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.secondary};
+  font-style: italic;
+`;
+
+export const SaveButton = styled.button`
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;

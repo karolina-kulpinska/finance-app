@@ -44,6 +44,12 @@ export const MiniPaymentCard = styled.div`
   border-radius: 8px;
   border-left: 3px solid ${({ $paid }) => ($paid ? "#4facfe" : "#f5576c")};
   transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
 
   &:active {
     transform: scale(0.98);

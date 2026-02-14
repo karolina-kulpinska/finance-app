@@ -45,8 +45,8 @@ export const PaymentCard = styled.div`
       if ($priority === "low") return "#43e97b";
       return theme.colors.border;
     }};
-  border-radius: 12px;
-  padding: 14px;
+  border-radius: 10px;
+  padding: 10px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -70,8 +70,17 @@ export const PaymentCard = styled.div`
     transform: scale(0.99);
   }
 
+  @keyframes highlight {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.3);
+    }
+  }
+
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 12px;
+    padding: 10px;
   }
 `;
 

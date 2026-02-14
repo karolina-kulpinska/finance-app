@@ -133,6 +133,7 @@ const PaymentsList = () => {
         {filteredPayments.map((payment) => (
           <S.PaymentCard
             key={payment.id}
+            id={`payment-${payment.id}`}
             $paid={payment.paid}
             $priority={payment.priority}
           >

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as S from "./styled";
 
-const ShoppingLists = () => {
+const ShoppingLists = ({ sharedOnly = false }) => {
   const [lists, setLists] = useState(() => {
     try {
       const saved = localStorage.getItem("shoppingLists");
@@ -20,7 +20,10 @@ const ShoppingLists = () => {
   const [selectedList, setSelectedList] = useState(null);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
-  const [shareWithFamily, setShareWithFamily] = useState(false);
+  const [shareWithFamily, setShareWithFamily] = useState(sharedOnly);
+  const displayLists = sharedOnly
+    ? lists.filter((l) => l.sharedWithFamily === true)
+    : lists;
 
   const handleAddList = () => {
     if (newListName.trim()) {
@@ -316,17 +319,21 @@ const ShoppingLists = () => {
         </S.AddForm>
       )}
 
-      {lists.length === 0 ? (
+      {(sharedOnly ? displayLists.length === 0 : lists.length === 0) ? (
         <S.EmptyState>
           <S.EmptyIcon>📝</S.EmptyIcon>
-          <S.EmptyTitle>Brak list zakupów</S.EmptyTitle>
+          <S.EmptyTitle>
+            {sharedOnly ? "Brak list udostępnionych rodzinie" : "Brak list zakupów"}
+          </S.EmptyTitle>
           <S.EmptyText>
-            Dodaj swoją pierwszą listę zakupów, aby zorganizować zakupy
+            {sharedOnly
+              ? "Zaznacz „Udostępnij rodzinie” przy tworzeniu listy"
+              : "Dodaj swoją pierwszą listę zakupów, aby zorganizować zakupy"}
           </S.EmptyText>
         </S.EmptyState>
       ) : (
         <S.ListsGrid>
-          {lists.map((list) => (
+          {displayLists.map((list) => (
             <S.ListCard key={list.id} onClick={() => setSelectedList(list)}>
               <S.ListName>{list.name}</S.ListName>
               {list.sharedWithFamily && (

@@ -15,7 +15,6 @@ const MiniPayments = ({ onPaymentClick }) => {
   const categoryFilter = useSelector(selectCategoryFilter);
   const dateFilter = useSelector(selectDateFilter);
 
-  // Filtrowanie płatności
   const filteredPayments = useMemo(() => {
     let filtered = [...payments];
 
@@ -70,7 +69,10 @@ const MiniPayments = ({ onPaymentClick }) => {
               <S.MiniPaymentCard key={payment.id} onClick={() => onPaymentClick(payment.id)}>
                 <S.PaymentIcon>{getCategoryIcon(payment.category)}</S.PaymentIcon>
                 <S.PaymentInfo>
-                  <S.PaymentName>{payment.name}</S.PaymentName>
+                  <S.PaymentName>
+                    {payment.name}
+                    {payment.sharedWithFamily && <S.FamilyBadge>👨‍👩‍👧‍👦</S.FamilyBadge>}
+                  </S.PaymentName>
                   <S.PaymentDate>{payment.date}</S.PaymentDate>
                 </S.PaymentInfo>
                 <S.PaymentAmount>{payment.amount.toFixed(2)} zł</S.PaymentAmount>
@@ -90,7 +92,10 @@ const MiniPayments = ({ onPaymentClick }) => {
               <S.MiniPaymentCard key={payment.id} onClick={() => onPaymentClick(payment.id)}>
                 <S.PaymentIcon>{getCategoryIcon(payment.category)}</S.PaymentIcon>
                 <S.PaymentInfo>
-                  <S.PaymentName>{payment.name}</S.PaymentName>
+                  <S.PaymentName>
+                    {payment.name}
+                    {payment.sharedWithFamily && <S.FamilyBadge>👨‍👩‍👧‍👦</S.FamilyBadge>}
+                  </S.PaymentName>
                   <S.PaymentDate>{payment.date}</S.PaymentDate>
                 </S.PaymentInfo>
                 <S.PaymentAmount>{payment.amount.toFixed(2)} zł</S.PaymentAmount>

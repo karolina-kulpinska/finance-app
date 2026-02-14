@@ -29,39 +29,33 @@ import { showNotification } from "../notification/notificationSlice";
 
 function createPaymentsChannel(userId) {
   return eventChannel((emitter) => {
-    // Nasłuchuj na OBIE struktury jednocześnie
-    let allPayments = [];
-    
-    // STARA STRUKTURA: /payments gdzie userId == userId
+    let oldList = [];
+    let newList = [];
+
+    const emitMerged = () => {
+      emitter([...oldList, ...newList]);
+    };
+
     const oldQuery = query(collection(db, "payments"), where("userId", "==", userId));
     const unsubscribeOld = onSnapshot(oldQuery, (snapshot) => {
-      const oldPayments = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        source: "old", // oznaczenie źródła
+      oldList = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        source: "old",
       }));
-      
-      // Połącz ze starej struktury i wyślij
-      allPayments = [...oldPayments];
-      emitter(allPayments);
+      emitMerged();
     });
-    
-    // NOWA STRUKTURA: users/{userId}/payments
+
     const newRef = collection(db, "users", userId, "payments");
     const unsubscribeNew = onSnapshot(newRef, (snapshot) => {
-      const newPayments = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        source: "new", // oznaczenie źródła
+      newList = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        source: "new",
       }));
-      
-      // Połącz obie struktury
-      const oldPayments = allPayments.filter(p => p.source === "old");
-      allPayments = [...oldPayments, ...newPayments];
-      emitter(allPayments);
+      emitMerged();
     });
-    
-    // Zwróć funkcję czyszczącą dla obu subskrypcji
+
     return () => {
       unsubscribeOld();
       unsubscribeNew();
@@ -131,7 +125,6 @@ function* addPaymentHandler({ payload }) {
       attachmentName,
     };
 
-    // NOWA STRUKTURA: users/{userId}/payments
     const docRef = yield call(addDoc, collection(db, "users", user.uid, "payments"), paymentData);
     yield put(addPaymentSuccess({ id: docRef.id, ...paymentData }));
     
@@ -159,7 +152,6 @@ function* deletePaymentHandler({ payload }) {
     const paymentData = yield select(selectPayments);
     const payment = paymentData.find(p => p.id === payload);
     
-    // Sprawdź czy to stara czy nowa struktura
     const paymentDoc = payment?._source === "old"
       ? doc(db, "payments", payload)
       : doc(db, "users", user.uid, "payments", payload);
@@ -199,7 +191,6 @@ function* updateStatusHandler({ payload }) {
     const paymentData = yield select(selectPayments);
     const payment = paymentData.find(p => p.id === payload.id);
     
-    // Sprawdź czy to stara czy nowa struktura - sprawdź _source i source
     const paymentRef = payment?._source === "old" || payment?.source === "old"
       ? doc(db, "payments", payload.id)
       : doc(db, "users", user.uid, "payments", payload.id);
@@ -254,7 +245,6 @@ function* updatePaymentHandler({ payload }) {
       attachmentName,
     };
 
-    // Sprawdź czy to stara czy nowa struktura i zaktualizuj odpowiednio - sprawdź _source i source
     const paymentRef = payment?._source === "old" || payment?.source === "old"
       ? doc(db, "payments", id)
       : doc(db, "users", user.uid, "payments", id);

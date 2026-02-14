@@ -155,6 +155,12 @@ export const InstallmentBadge = styled.span`
   white-space: nowrap;
 `;
 
+export const FamilyBadge = styled.span`
+  font-size: 10px;
+  margin-top: 2px;
+  display: inline-block;
+`;
+
 export const CompactAmount = styled.div`
   font-size: 14px;
   font-weight: 900;

@@ -4,7 +4,7 @@ import { selectPayments } from "../../../features/payments/paymentSlice";
 import * as S from "./styled";
 import { generateFilesPDF } from "./generatePDF";
 
-const Files = () => {
+const Files = ({ sharedOnly = false }) => {
   const payments = useSelector(selectPayments);
   const [activeFilter, setActiveFilter] = useState("all");
   const [minDate, setMinDate] = useState("");
@@ -18,7 +18,9 @@ const Files = () => {
     { id: "other", label: "Inne", icon: "📌" },
   ];
 
-  const filesWithAttachments = payments.filter((p) => p.attachmentUrl);
+  const filesWithAttachments = payments.filter(
+    (p) => p.attachmentUrl && (!sharedOnly || p.sharedWithFamily === true)
+  );
 
   let filteredFiles =
     activeFilter === "all"
@@ -108,7 +110,9 @@ const Files = () => {
           <S.EmptyIcon>📂</S.EmptyIcon>
           <S.EmptyTitle>Brak plików</S.EmptyTitle>
           <S.EmptyText>
-            Dodaj załączniki do płatności, aby zobaczyć je tutaj
+            {sharedOnly
+              ? "Brak plików udostępnionych rodzinie. Zaznacz „Udostępnij rodzinie” przy płatności z załącznikiem."
+              : "Dodaj załączniki do płatności, aby zobaczyć je tutaj"}
           </S.EmptyText>
         </S.EmptyState>
       ) : (

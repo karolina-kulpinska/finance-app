@@ -12,7 +12,6 @@ export const LoadingText = styled.div`
   color: ${({ theme }) => theme.colors.secondary};
 `;
 
-// Family Header - Hero section
 export const FamilyHeader = styled.div`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 16px;
@@ -67,7 +66,6 @@ export const AddMemberButton = styled.button`
   }
 `;
 
-// Section
 export const Section = styled.div`
   margin-bottom: 20px;
 `;
@@ -81,7 +79,6 @@ export const SectionTitle = styled.h3`
   letter-spacing: 0.5px;
 `;
 
-// Members List
 export const MembersList = styled.div`
   display: flex;
   flex-direction: column;
@@ -220,16 +217,100 @@ export const SharedGrid = styled.div`
 `;
 
 export const SharedCard = styled.div`
-  background: white;
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  background: ${({ $active }) => ($active ? "rgba(102, 126, 234, 0.12)" : "white")};
+  border: 1.5px solid
+    ${({ $active, theme }) => ($active ? "#667eea" : theme.colors.border)};
   border-radius: 12px;
   padding: 16px 12px;
   text-align: center;
   transition: all 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+`;
+
+export const SharedPanel = styled.div`
+  background: white;
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+`;
+
+export const SharedPanelHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+`;
+
+export const SharedPanelTitle = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+export const SharedPanelClose = styled.button`
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  color: ${({ theme }) => theme.colors.secondary};
+  line-height: 1;
+
+  &:hover {
+    color: #f44336;
+  }
+`;
+
+export const SharedPanelEmpty = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.secondary};
+  text-align: center;
+  padding: 20px;
+`;
+
+export const SharedItemList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+`;
+
+export const SharedItem = styled.div`
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const SharedItemName = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  margin-bottom: 4px;
+`;
+
+export const SharedItemMeta = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.secondary};
+  margin-bottom: 6px;
+`;
+
+export const SharedItemLink = styled.a`
+  font-size: 12px;
+  font-weight: 600;
+  color: #667eea;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
 
@@ -263,7 +344,6 @@ export const HintBox = styled.div`
   font-style: italic;
 `;
 
-// Link Section - na dole
 export const LinkSection = styled.div`
   margin-top: 24px;
   padding-top: 20px;
@@ -331,7 +411,6 @@ export const CopyIcon = styled.div`
   flex-shrink: 0;
 `;
 
-// Empty State
 export const EmptyState = styled.div`
   text-align: center;
   padding: 60px 20px;
@@ -486,7 +565,6 @@ export const CreateButton = styled.button`
   }
 `;
 
-// Invite views
 export const InviteCard = styled(CreateCard)``;
 export const InviteIcon = styled(CreateIcon)``;
 export const InviteTitle = styled(CreateTitle)``;

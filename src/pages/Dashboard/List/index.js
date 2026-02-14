@@ -20,6 +20,7 @@ const PaymentsList = ({
   maxDate,
   minAmount,
   maxAmount,
+  sharedOnly = false,
 }) => {
   const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
@@ -28,7 +29,6 @@ const PaymentsList = ({
   const dateFilter = useSelector(selectDateFilter);
   const [expandedPayment, setExpandedPayment] = React.useState(null);
 
-  // Jeśli collapseAll jest true, zamknij wszystkie
   React.useEffect(() => {
     if (collapseAll) {
       setExpandedPayment(null);
@@ -36,7 +36,9 @@ const PaymentsList = ({
   }, [collapseAll]);
 
   const filteredPayments = useMemo(() => {
-    let filtered = [...payments];
+    let filtered = sharedOnly
+      ? payments.filter((p) => p.sharedWithFamily === true)
+      : [...payments];
 
     if (statusFilter === "paid") {
       filtered = filtered.filter((p) => p.paid);
@@ -55,7 +57,6 @@ const PaymentsList = ({
       }
     }
 
-    // Nowe filtry: minDate, maxDate, minAmount, maxAmount
     if (minDate) {
       filtered = filtered.filter((p) => new Date(p.date) >= new Date(minDate));
     }
@@ -69,7 +70,6 @@ const PaymentsList = ({
       filtered = filtered.filter((p) => Number(p.amount) <= Number(maxAmount));
     }
 
-    // Najpierw niezapłacone i po terminie
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const overdue = filtered.filter((p) => !p.paid && new Date(p.date) < today);
@@ -89,6 +89,7 @@ const PaymentsList = ({
     maxDate,
     minAmount,
     maxAmount,
+    sharedOnly,
   ]);
 
   const getCategoryLabel = (category) => {
@@ -181,7 +182,9 @@ const PaymentsList = ({
     <S.ListContainer>
       <S.ListHeader>
         <S.ListTitle>
-          Wszystkie płatności ({filteredPayments.length})
+          {sharedOnly
+            ? `Płatności udostępnione rodzinie (${filteredPayments.length})`
+            : `Wszystkie płatności (${filteredPayments.length})`}
         </S.ListTitle>
         <S.CollapseButton
           onClick={() => {
@@ -235,6 +238,9 @@ const PaymentsList = ({
                       {payment.installmentInfo.current}/
                       {payment.installmentInfo.total}
                     </S.InstallmentBadge>
+                  )}
+                  {payment.sharedWithFamily && (
+                    <S.FamilyBadge>👨‍👩‍👧‍👦</S.FamilyBadge>
                   )}
                 </S.CompactName>
                 <S.CompactAmount

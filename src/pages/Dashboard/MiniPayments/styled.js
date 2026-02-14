@@ -72,6 +72,14 @@ export const PaymentName = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+export const FamilyBadge = styled.span`
+  font-size: 10px;
+  flex-shrink: 0;
 `;
 
 export const PaymentDate = styled.div`

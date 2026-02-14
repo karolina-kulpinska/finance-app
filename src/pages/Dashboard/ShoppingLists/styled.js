@@ -236,6 +236,11 @@ export const ListsGrid = styled.div`
     grid-template-columns: 1fr;
     gap: 10px;
   }
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 0 2px;
+  }
 `;
 
 export const ListCard = styled.div`

@@ -85,12 +85,13 @@ const Dashboard = () => {
               <S.PaymentsTitle>
                 Wszystkie płatności ({payments.length})
               </S.PaymentsTitle>
-              <S.CollapseButton
-                onClick={() => setCollapseAllPayments(!collapseAllPayments)}
-              >
-                {collapseAllPayments ? "Rozwiń" : "Zwiń"}
-              </S.CollapseButton>
             </S.PaymentsHeader>
+            <S.CollapseButton
+              style={{ margin: "8px 0 12px 0" }}
+              onClick={() => setCollapseAllPayments(!collapseAllPayments)}
+            >
+              {collapseAllPayments ? "Rozwiń" : "Zwiń"}
+            </S.CollapseButton>
             <PaymentsList
               collapseAll={collapseAllPayments}
               minDate={minDate}

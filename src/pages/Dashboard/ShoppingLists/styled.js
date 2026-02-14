@@ -340,6 +340,23 @@ export const DeleteButton = styled.button`
   }
 `;
 
+export const GroupToggle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  margin-bottom: 16px;
+  cursor: pointer;
+  label {
+    cursor: pointer;
+    margin: 0;
+  }
+`;
+
 export const TotalCard = styled.div`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 12px;

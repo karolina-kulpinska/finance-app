@@ -140,6 +140,25 @@ const ShoppingLists = ({ sharedOnly = false }) => {
           </S.DeleteButton>
         </S.Header>
 
+        <S.GroupToggle>
+          <S.Checkbox
+            type="checkbox"
+            id="shareListFamily"
+            checked={list.sharedWithFamily === true}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setLists(
+                lists.map((l) =>
+                  l.id === list.id ? { ...l, sharedWithFamily: checked } : l,
+                ),
+              );
+            }}
+          />
+          <S.CheckboxLabel htmlFor="shareListFamily">
+            👨‍👩‍👧‍👦 Udostępnij rodzinie
+          </S.CheckboxLabel>
+        </S.GroupToggle>
+
         <S.TotalCard>
           <S.TotalLabel>Suma:</S.TotalLabel>
           <S.TotalAmount>{list.totalPrice.toFixed(2)} zł</S.TotalAmount>

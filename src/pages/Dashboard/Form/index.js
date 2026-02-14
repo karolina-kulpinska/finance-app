@@ -11,6 +11,7 @@ import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
 import { bankOptions, getBankConfig } from "../../../utils/bankIcons";
 import ReceiptScanner from "../../../components/ReceiptScanner";
+import BankSelector from "../../../components/BankSelector";
 import * as S from "./styled";
 
 const AddPaymentForm = ({ paymentType, onClose }) => {
@@ -31,15 +32,17 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
   const watchDuration = watch("duration");
   const watchAmount = watch("amount");
 
-  // Oblicz całkowitą kwotę dla rat
-  const totalInstallmentAmount = watchInstallments && watchInstallmentAmount 
-    ? (parseFloat(watchInstallmentAmount) * parseInt(watchInstallments)).toFixed(2)
-    : null;
+  const totalInstallmentAmount =
+    watchInstallments && watchInstallmentAmount
+      ? (
+          parseFloat(watchInstallmentAmount) * parseInt(watchInstallments)
+        ).toFixed(2)
+      : null;
 
-  // Oblicz całkowitą kwotę dla ubezpieczenia
-  const totalInsuranceAmount = watchDuration && watchAmount
-    ? (parseFloat(watchAmount) * parseInt(watchDuration)).toFixed(2)
-    : null;
+  const totalInsuranceAmount =
+    watchDuration && watchAmount
+      ? (parseFloat(watchAmount) * parseInt(watchDuration)).toFixed(2)
+      : null;
 
   useEffect(() => {
     if (editingPayment) {
@@ -49,7 +52,8 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
       setValue("category", editingPayment.category);
       setValue("priority", editingPayment.priority);
       setValue("notes", editingPayment.notes || "");
-      
+      setValue("bank", editingPayment.bank || "other");
+
       if (editingPayment.attachmentName) {
         setFileInfo({
           name: editingPayment.attachmentName,
@@ -59,6 +63,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
     } else {
       const today = new Date().toISOString().split("T")[0];
       setValue("date", today);
+      setValue("bank", "other");
     }
   }, [editingPayment, setValue]);
 
@@ -75,7 +80,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         showNotification({
           message: validation.error,
           type: "error",
-        })
+        }),
       );
       e.target.value = "";
       setFileInfo(null);
@@ -95,7 +100,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         const compressed = await compressImage(file);
         const compressedSize = (compressed.size / 1024).toFixed(0);
         const savings = ((1 - compressed.size / file.size) * 100).toFixed(0);
-        
+
         setFileInfo({
           name: file.name,
           originalSize: `${originalSize} KB`,
@@ -138,7 +143,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
           attachmentUrl: editingPayment.attachmentUrl,
           attachmentName: editingPayment.attachmentName,
           oldAttachmentUrl: editingPayment.attachmentUrl,
-        })
+        }),
       );
     } else {
       // Sprawdź typ płatności
@@ -147,40 +152,39 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         const installments = parseInt(data.installments) || 0;
         const installmentAmount = parseFloat(data.installmentAmount) || 0;
         const startDate = new Date(data.date);
-        
+
         for (let i = 0; i < installments; i++) {
           const installmentDate = new Date(startDate);
           installmentDate.setMonth(startDate.getMonth() + i);
-          
-            const installmentData = {
-              ...data,
-              name: `${data.name} (Rata ${i + 1}/${installments})`,
-              amount: installmentAmount,
-              date: installmentDate.toISOString().split("T")[0],
-              paymentType: "installments",
-              isInstallment: true,
-              installmentInfo: {
-                current: i + 1,
-                total: installments,
-                originalName: data.name,
-              },
-            };
-            delete installmentData.category;
-            delete installmentData.installments;
-            delete installmentData.installmentAmount;
-          
+
+          const installmentData = {
+            ...data,
+            name: `${data.name} (Rata ${i + 1}/${installments})`,
+            amount: installmentAmount,
+            date: installmentDate.toISOString().split("T")[0],
+            paymentType: "installments",
+            isInstallment: true,
+            installmentInfo: {
+              current: i + 1,
+              total: installments,
+              originalName: data.name,
+            },
+          };
+          delete installmentData.category;
+          delete installmentData.installments;
+          delete installmentData.installmentAmount;
+
           if (i > 0) delete installmentData.attachment;
           dispatch(addPaymentRequest(installmentData));
         }
       } else if (paymentType === "insurance") {
-        // Ubezpieczenie - płatności cykliczne
         const duration = parseInt(data.duration) || 12;
         const startDate = new Date(data.date);
-        
+
         for (let i = 0; i < duration; i++) {
           const paymentDate = new Date(startDate);
           paymentDate.setMonth(startDate.getMonth() + i);
-          
+
           const insuranceData = {
             ...data,
             name: `${data.name} (${i + 1}/${duration})`,
@@ -190,30 +194,28 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
           };
           delete insuranceData.category;
           delete insuranceData.duration;
-          
+
           if (i > 0) delete insuranceData.attachment;
           dispatch(addPaymentRequest(insuranceData));
         }
       } else {
-        // Zwykła płatność (bills, shopping, other)
         const paymentData = {
           ...data,
           paymentType: paymentType || "other",
         };
-        // Usuń kategorię dla nowych typów płatności
         if (paymentType && paymentType !== "other") {
           delete paymentData.category;
         }
         dispatch(addPaymentRequest(paymentData));
       }
     }
-    
+
     dispatch(toggleModal());
   };
 
   const getFormTitle = () => {
     if (editingPayment) return "Edytuj płatność";
-    
+
     switch (paymentType) {
       case "installments":
         return "📅 Nowa płatność ratalna";
@@ -245,7 +247,9 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
                 placeholder="np. 250.00"
               />
               {errors.installmentAmount && (
-                <S.ErrorMessage>{errors.installmentAmount.message}</S.ErrorMessage>
+                <S.ErrorMessage>
+                  {errors.installmentAmount.message}
+                </S.ErrorMessage>
               )}
             </S.FormGroup>
             <S.FormGroup>
@@ -253,9 +257,9 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               <S.Input
                 type="number"
                 min="2"
-                {...register("installments", { 
+                {...register("installments", {
                   required: "Podaj liczbę rat",
-                  min: { value: 2, message: "Minimum 2 raty" }
+                  min: { value: 2, message: "Minimum 2 raty" },
                 })}
                 placeholder="np. 12"
               />
@@ -278,7 +282,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
             </S.FormGroup>
           </>
         );
-      
+
       case "insurance":
         return (
           <>
@@ -302,9 +306,9 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               <S.Input
                 type="number"
                 min="1"
-                {...register("duration", { 
+                {...register("duration", {
                   required: "Podaj okres trwania",
-                  min: { value: 1, message: "Minimum 1 miesiąc" }
+                  min: { value: 1, message: "Minimum 1 miesiąc" },
                 })}
                 placeholder="np. 12"
               />
@@ -334,7 +338,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
             </S.FormGroup>
           </>
         );
-      
+
       case "bills":
         return (
           <S.FormGroup>
@@ -355,28 +359,36 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
     <S.Overlay onClick={onClose}>
       <S.Modal onClick={(e) => e.stopPropagation()}>
         <S.FormTitle>{getFormTitle()}</S.FormTitle>
-        
-        {!editingPayment && (paymentType === "other" || paymentType === "bills" || paymentType === "shopping") && (
-          <ReceiptScanner onScanComplete={handleScanComplete} />
-        )}
+
+        {!editingPayment &&
+          (paymentType === "other" ||
+            paymentType === "bills" ||
+            paymentType === "shopping") && (
+            <ReceiptScanner onScanComplete={handleScanComplete} />
+          )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <S.FormGrid>
             <S.FormGroup $fullWidth>
               <S.Label>
                 Nazwa płatności *
-                {paymentType === "installments" && " (np. lodówka, pralka, TV, telefon)"}
+                {paymentType === "installments" &&
+                  " (np. lodówka, pralka, TV, telefon)"}
                 {paymentType === "shopping" && " (np. zakupy spożywcze)"}
                 {paymentType === "insurance" && " (np. ubezpieczenie na życie)"}
               </S.Label>
               <S.Input
                 {...register("name", { required: "Podaj nazwę płatności" })}
                 placeholder={
-                  paymentType === "installments" ? "np. Lodówka Samsung" :
-                  paymentType === "shopping" ? "np. Zakupy spożywcze" :
-                  paymentType === "insurance" ? "np. Ubezpieczenie na życie" :
-                  paymentType === "bills" ? "np. Rachunek za prąd" :
-                  "np. Prąd, Czynsz, Zakupy spożywcze"
+                  paymentType === "installments"
+                    ? "np. Lodówka Samsung"
+                    : paymentType === "shopping"
+                      ? "np. Zakupy spożywcze"
+                      : paymentType === "insurance"
+                        ? "np. Ubezpieczenie na życie"
+                        : paymentType === "bills"
+                          ? "np. Rachunek za prąd"
+                          : "np. Prąd, Czynsz, Zakupy spożywcze"
                 }
               />
               {errors.name && (
@@ -384,7 +396,6 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               )}
             </S.FormGroup>
 
-            {/* Kwota - tylko dla typów które nie mają kwoty w polach specyficznych */}
             {paymentType !== "installments" && paymentType !== "insurance" && (
               <S.FormGroup>
                 <S.Label>Kwota (zł) *</S.Label>
@@ -393,7 +404,10 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
                   step="0.01"
                   {...register("amount", {
                     required: "Podaj kwotę",
-                    min: { value: 0.01, message: "Kwota musi być większa niż 0" },
+                    min: {
+                      value: 0.01,
+                      message: "Kwota musi być większa niż 0",
+                    },
                   })}
                   placeholder="0.00"
                 />
@@ -414,7 +428,6 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               )}
             </S.FormGroup>
 
-            {/* Kategoria - tylko dla starych płatności (bez paymentType) */}
             {!paymentType && (
               <S.FormGroup>
                 <S.Label>Kategoria</S.Label>
@@ -435,20 +448,13 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               </S.Select>
             </S.FormGroup>
 
-            {/* Bank/Metoda - tylko dla typów które tego potrzebują (nie dla raty i ubezpieczenia) */}
             {paymentType !== "installments" && paymentType !== "insurance" && (
-              <S.FormGroup>
+              <S.FormGroup $fullWidth>
                 <S.Label>Bank/Metoda płatności</S.Label>
-                <S.Select {...register("bank")} defaultValue="other">
-                  {bankOptions.map((bank) => {
-                    const config = getBankConfig(bank.value);
-                    return (
-                      <option key={bank.value} value={bank.value}>
-                        {config.label}
-                      </option>
-                    );
-                  })}
-                </S.Select>
+                <BankSelector
+                  value={watch("bank") || "other"}
+                  onChange={(bankValue) => setValue("bank", bankValue)}
+                />
               </S.FormGroup>
             )}
 
@@ -471,7 +477,9 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
                 />
                 <S.CheckboxLabel htmlFor="sharedWithFamily">
                   👨‍👩‍👧‍👦 Udostępnij rodzinie
-                  <S.CheckboxHint>Członkowie rodziny będą widzieć tę płatność</S.CheckboxHint>
+                  <S.CheckboxHint>
+                    Członkowie rodziny będą widzieć tę płatność
+                  </S.CheckboxHint>
                 </S.CheckboxLabel>
               </S.CheckboxWrapper>
             </S.FormGroup>
@@ -491,7 +499,8 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
                   {fileInfo.compressing && "🔄 Kompresowanie..."}
                   {fileInfo.compressedSize && (
                     <S.CompressionInfo>
-                      ✅ Skompresowano: {fileInfo.originalSize} → {fileInfo.compressedSize} 
+                      ✅ Skompresowano: {fileInfo.originalSize} →{" "}
+                      {fileInfo.compressedSize}
                       (oszczędność: {fileInfo.savings})
                     </S.CompressionInfo>
                   )}

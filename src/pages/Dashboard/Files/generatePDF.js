@@ -1,5 +1,5 @@
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+import { jsPDF } from "jspdf";
+import { autoTable } from "jspdf-autotable";
 
 export function generateFilesPDF(files) {
   const doc = new jsPDF();
@@ -7,14 +7,14 @@ export function generateFilesPDF(files) {
   doc.text("Zestawienie plików", 14, 18);
 
   const tableData = files.map((f, i) => [
-    i + 1,
-    f.name,
-    f.attachmentName,
-    f.date,
-    f.category || "-",
+    String(i + 1),
+    String(f.name || ""),
+    String(f.attachmentName || ""),
+    String(f.date || ""),
+    String(f.category || "-"),
   ]);
 
-  doc.autoTable({
+  autoTable(doc, {
     head: [["#", "Nazwa płatności", "Plik", "Data", "Kategoria"]],
     body: tableData,
     startY: 28,
@@ -22,5 +22,17 @@ export function generateFilesPDF(files) {
     headStyles: { fillColor: [102, 126, 234] },
   });
 
-  doc.save("zestawienie-plikow.pdf");
+  const blob = doc.output("blob");
+  const url = URL.createObjectURL(blob);
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if (isMobile) {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "zestawienie-plikow.pdf";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
 }

@@ -39,9 +39,12 @@ const Files = ({ sharedOnly = false }) => {
   }
 
   const handleDownload = (url, name) => {
+    const fileName = name || "plik";
     const link = document.createElement("a");
     link.href = url;
-    link.download = name || "plik";
+    link.download = fileName;
+    link.rel = "noopener noreferrer";
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -64,9 +67,13 @@ const Files = ({ sharedOnly = false }) => {
   };
 
   const handleDownloadSelected = () => {
-    filteredFiles
-      .filter((f) => selected.includes(f.id))
-      .forEach((f) => handleDownload(f.attachmentUrl, f.attachmentName));
+    const toDownload = filteredFiles.filter((f) => selected.includes(f.id));
+    toDownload.forEach((f, i) => {
+      setTimeout(
+        () => handleDownload(f.attachmentUrl, f.attachmentName),
+        i * 300,
+      );
+    });
   };
 
   const handleDownloadPDF = () => {

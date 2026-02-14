@@ -12,7 +12,7 @@ export const CollapseButton = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
-  opacity: 1;
+  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.4);
   &:hover {
     background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
   }
@@ -33,11 +33,17 @@ export const ListContainer = styled.div`
 export const ListHeader = styled.div`
   margin-bottom: 16px;
   padding-bottom: 12px;
+  padding-top: 4px;
   border-bottom: 2px solid ${({ theme }) => theme.colors.border};
   display: flex;
   align-items: center;
   gap: 16px;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: white;
+  border-radius: 16px 16px 0 0;
 `;
 
 export const ListTitle = styled.h2`

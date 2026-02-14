@@ -18,3 +18,9 @@ root.render(
     </Provider>
   </React.StrictMode>,
 );
+
+if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register(`${process.env.PUBLIC_URL || ""}/sw.js`).catch(() => {});
+  });
+}

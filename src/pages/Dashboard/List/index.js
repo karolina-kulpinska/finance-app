@@ -18,6 +18,7 @@ const PaymentsList = () => {
   const statusFilter = useSelector(selectFilter);
   const categoryFilter = useSelector(selectCategoryFilter);
   const dateFilter = useSelector(selectDateFilter);
+  const [expandedPayment, setExpandedPayment] = React.useState(null);
 
   const filteredPayments = useMemo(() => {
     let filtered = [...payments];
@@ -64,6 +65,27 @@ const PaymentsList = () => {
         return "Niski";
       default:
         return "Normalny";
+    }
+  };
+
+  const getBankLabel = (bank) => {
+    switch (bank) {
+      case "revolut":
+        return "🟣 Revolut";
+      case "mbank":
+        return "🔴 mBank";
+      case "ing":
+        return "🟠 ING";
+      case "pko":
+        return "🔵 PKO BP";
+      case "millennium":
+        return "⚫ Millennium";
+      case "santander":
+        return "🔴 Santander";
+      case "cash":
+        return "💵 Gotówka";
+      default:
+        return "💳 Inne";
     }
   };
 
@@ -136,77 +158,82 @@ const PaymentsList = () => {
             id={`payment-${payment.id}`}
             $paid={payment.paid}
             $priority={payment.priority}
+            $expanded={expandedPayment === payment.id}
+            onClick={() => setExpandedPayment(expandedPayment === payment.id ? null : payment.id)}
           >
-            <S.PaymentHeader>
-              <S.PaymentInfo>
-                <S.PaymentName $paid={payment.paid}>
-                  {payment.name}
-                </S.PaymentName>
-                <S.PaymentCategory>
-                  {getCategoryLabel(payment.category)}
-                </S.PaymentCategory>
-              </S.PaymentInfo>
-              <S.PaymentAmount $paid={payment.paid}>
+            <S.PaymentIcon>{getCategoryLabel(payment.category).split(' ')[0]}</S.PaymentIcon>
+            <S.CompactInfo>
+              <S.CompactName $paid={payment.paid}>{payment.name}</S.CompactName>
+              <S.CompactAmount $paid={payment.paid}>
                 {Number(payment.amount).toFixed(2)} zł
-              </S.PaymentAmount>
-            </S.PaymentHeader>
+              </S.CompactAmount>
+              <S.CompactDate>{payment.date}</S.CompactDate>
+            </S.CompactInfo>
 
-            <S.PaymentDetails>
-              <S.DetailItem>
-                <S.DetailLabel>Termin</S.DetailLabel>
-                <S.DetailValue>{payment.date}</S.DetailValue>
-              </S.DetailItem>
-              <S.DetailItem>
-                <S.DetailLabel>Priorytet</S.DetailLabel>
-                <S.PriorityBadge $priority={payment.priority}>
-                  {getPriorityLabel(payment.priority)}
-                </S.PriorityBadge>
-              </S.DetailItem>
-              <S.DetailItem>
-                <S.DetailLabel>Status</S.DetailLabel>
-                <S.DetailValue>
-                  {payment.paid ? "✅ Zapłacone" : "⏳ Do zapłaty"}
-                </S.DetailValue>
-              </S.DetailItem>
-            </S.PaymentDetails>
+            {expandedPayment === payment.id && (
+              <S.ExpandedDetails onClick={(e) => e.stopPropagation()}>
+                <S.DetailRow>
+                  <S.DetailLabel>Kategoria:</S.DetailLabel>
+                  <S.DetailValue>{getCategoryLabel(payment.category)}</S.DetailValue>
+                </S.DetailRow>
+                <S.DetailRow>
+                  <S.DetailLabel>Priorytet:</S.DetailLabel>
+                  <S.PriorityBadge $priority={payment.priority}>
+                    {getPriorityLabel(payment.priority)}
+                  </S.PriorityBadge>
+                </S.DetailRow>
+                <S.DetailRow>
+                  <S.DetailLabel>Status:</S.DetailLabel>
+                  <S.DetailValue>
+                    {payment.paid ? "✅ Zapłacone" : "⏳ Do zapłaty"}
+                  </S.DetailValue>
+                </S.DetailRow>
+                {payment.bank && (
+                  <S.DetailRow>
+                    <S.DetailLabel>Płatność:</S.DetailLabel>
+                    <S.DetailValue>{getBankLabel(payment.bank)}</S.DetailValue>
+                  </S.DetailRow>
+                )}
 
-            {payment.notes && (
-              <S.PaymentNotes>"{payment.notes}"</S.PaymentNotes>
+                {payment.notes && (
+                  <S.PaymentNotes>"{payment.notes}"</S.PaymentNotes>
+                )}
+
+                <S.PaymentActions>
+                  <S.ActionButton
+                    $variant="status"
+                    onClick={() => handleStatusToggle(payment)}
+                  >
+                    {payment.paid ? "↩️" : "✓"}
+                  </S.ActionButton>
+                  <S.ActionButton
+                    $variant="edit"
+                    onClick={() => handleEdit(payment)}
+                  >
+                    ✏️
+                  </S.ActionButton>
+                  {payment.attachmentUrl && (
+                    <S.ActionButton
+                      $variant="download"
+                      onClick={() =>
+                        handleDownload(
+                          payment.attachmentUrl,
+                          payment.attachmentName
+                        )
+                      }
+                    >
+                      📎
+                    </S.ActionButton>
+                  )}
+                  <S.ActionButton
+                    $variant="delete"
+                    onClick={() => handleDelete(payment.id)}
+                  >
+                    🗑️
+                  </S.ActionButton>
+                </S.PaymentActions>
+              </S.ExpandedDetails>
             )}
-
-            <S.PaymentActions>
-              <S.ActionButton
-                $variant="status"
-                onClick={() => handleStatusToggle(payment)}
-              >
-                {payment.paid ? "↩️ Cofnij" : "✓ Oznacz jako zapłacone"}
-              </S.ActionButton>
-              <S.ActionButton
-                $variant="edit"
-                onClick={() => handleEdit(payment)}
-              >
-                ✏️ Edytuj
-              </S.ActionButton>
-              {payment.attachmentUrl && (
-                <S.ActionButton
-                  $variant="download"
-                  onClick={() =>
-                    handleDownload(
-                      payment.attachmentUrl,
-                      payment.attachmentName
-                    )
-                  }
-                >
-                  📎 {payment.attachmentName}
-                </S.ActionButton>
-              )}
-              <S.ActionButton
-                $variant="delete"
-                onClick={() => handleDelete(payment.id)}
-              >
-                🗑️ Usuń
-              </S.ActionButton>
-            </S.PaymentActions>
           </S.PaymentCard>
         ))}
       </S.PaymentGrid>

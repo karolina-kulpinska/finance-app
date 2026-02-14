@@ -71,71 +71,25 @@ export const ProfileText = styled.p`
   margin: 0;
 `;
 
-export const PaymentsHeader = styled.div`
-  background: white;
-  border-radius: 12px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  overflow: hidden;
-`;
-
-export const PaymentsHeaderTop = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-`;
 
 export const PaymentsTitle = styled.h2`
   font-size: 16px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
-  margin: 0;
-`;
-
-export const FilterToggleButton = styled.button`
-  padding: 6px 14px;
+  margin: 0 0 12px 0;
   background: white;
-  color: ${({ theme }) => theme.colors.text};
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
-
-  &:hover {
-    background: #f8f9fa;
-    border-color: #667eea;
-    color: #667eea;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    width: 100%;
-  }
-`;
-
-export const FiltersWrapper = styled.div`
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 12px 16px;
-  background: #f8f9fa;
-`;
-
-export const DashboardFiltersWrapper = styled.div`
-  background: white;
+  padding: 14px 16px;
   border-radius: 12px;
-  padding: 16px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
   border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+
+export const FiltersBox = styled.div`
+  background: white;
+  border-radius: 10px;
+  padding: 8px 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8e8ea;
+  margin-bottom: 10px;
 `;

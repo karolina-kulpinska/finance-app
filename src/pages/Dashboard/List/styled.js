@@ -31,8 +31,17 @@ export const ListTitle = styled.h2`
 
 export const PaymentGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const PaymentCard = styled.div`
@@ -45,29 +54,25 @@ export const PaymentCard = styled.div`
       if ($priority === "low") return "#43e97b";
       return theme.colors.border;
     }};
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: 16px;
+  padding: ${({ $expanded }) => ($expanded ? "12px" : "10px")};
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: ${({ $expanded }) => ($expanded ? "auto" : "120px")};
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    background: ${({ $priority, $paid }) => {
-      if ($paid) return "#66bb6a";
-      if ($priority === "high") return "#f5576c";
-      if ($priority === "low") return "#43e97b";
-      return "#667eea";
-    }};
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
-    transform: scale(0.99);
+    transform: ${({ $expanded }) => ($expanded ? "none" : "scale(0.98)")};
   }
 
   @keyframes highlight {
@@ -78,76 +83,61 @@ export const PaymentCard = styled.div`
       box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.3);
     }
   }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 10px;
-  }
 `;
 
-export const PaymentHeader = styled.div`
+export const PaymentIcon = styled.div`
+  font-size: 32px;
+  margin-bottom: 6px;
+`;
+
+export const CompactInfo = styled.div`
+  width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-  gap: 10px;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
 `;
 
-export const PaymentInfo = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-export const PaymentName = styled.h3`
-  font-size: 15px;
+export const CompactName = styled.div`
+  font-size: 12px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
-  margin: 0 0 4px 0;
   text-decoration: ${({ $paid }) => ($paid ? "line-through" : "none")};
   opacity: ${({ $paid }) => ($paid ? 0.7 : 1)};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    font-size: 14px;
-  }
+  width: 100%;
+  text-align: center;
 `;
 
-export const PaymentCategory = styled.span`
-  font-size: 11px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.secondary};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-`;
-
-export const PaymentAmount = styled.div`
-  font-size: 16px;
+export const CompactAmount = styled.div`
+  font-size: 14px;
   font-weight: 900;
   color: ${({ $paid }) => ($paid ? "#66bb6a" : "#667eea")};
-  white-space: nowrap;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    font-size: 15px;
-  }
 `;
 
-export const PaymentDetails = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 12px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
+export const CompactDate = styled.div`
+  font-size: 10px;
+  color: ${({ theme }) => theme.colors.secondary};
 `;
 
-export const DetailItem = styled.div`
+export const ExpandedDetails = styled.div`
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
+`;
+
+export const DetailRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 `;
 
 export const DetailLabel = styled.span`
@@ -159,73 +149,63 @@ export const DetailLabel = styled.span`
 `;
 
 export const DetailValue = styled.span`
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.text};
 `;
 
 export const PaymentNotes = styled.p`
-  font-size: 12px;
+  font-size: 11px;
   color: ${({ theme }) => theme.colors.secondary};
-  margin: 0 0 10px 0;
-  line-height: 1.5;
+  margin: 8px 0 0 0;
+  line-height: 1.4;
   font-style: italic;
+  text-align: left;
 `;
 
 export const PaymentActions = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  padding-top: 10px;
   margin-top: 10px;
-  border-top: 1.5px solid ${({ theme }) => theme.colors.border};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    gap: 6px;
-  }
+  justify-content: center;
 `;
 
 export const ActionButton = styled.button`
-  padding: 7px 12px;
+  width: 36px;
+  height: 36px;
   background: ${({ $variant }) => {
     switch ($variant) {
       case "status":
-        return "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)";
+        return "#4facfe";
       case "edit":
-        return "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        return "#667eea";
       case "delete":
-        return "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)";
+        return "#f5576c";
       case "download":
-        return "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)";
+        return "#43e97b";
       default:
         return "#e0e0e0";
     }
   }};
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
+  border-radius: 50%;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  flex-shrink: 0;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.1);
   }
 
   &:active {
-    transform: scale(0.98);
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    padding: 6px 10px;
-    font-size: 11px;
+    transform: scale(0.95);
   }
 `;
 

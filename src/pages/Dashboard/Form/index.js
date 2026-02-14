@@ -186,6 +186,20 @@ const AddPaymentForm = () => {
               </S.Select>
             </S.FormGroup>
 
+            <S.FormGroup>
+              <S.Label>Bank/Metoda płatności</S.Label>
+              <S.Select {...register("bank")} defaultValue="other">
+                <option value="revolut">🟣 Revolut</option>
+                <option value="mbank">🔴 mBank</option>
+                <option value="ing">🟠 ING</option>
+                <option value="pko">🔵 PKO BP</option>
+                <option value="millennium">⚫ Millennium</option>
+                <option value="santander">🔴 Santander</option>
+                <option value="cash">💵 Gotówka</option>
+                <option value="other">💳 Inne</option>
+              </S.Select>
+            </S.FormGroup>
+
             <S.FormGroup $fullWidth>
               <S.Label>Notatki</S.Label>
               <S.TextArea

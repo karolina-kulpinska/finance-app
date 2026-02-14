@@ -33,71 +33,72 @@ export const Overlay = styled.div`
   align-items: center;
   z-index: 1000;
   animation: ${fadeIn} 0.3s ease;
-  padding: 20px;
+  padding: 16px;
 `;
 
 export const Modal = styled.div`
   background: white;
-  border-radius: 24px;
-  padding: 40px;
+  border-radius: 16px;
+  padding: 20px;
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: ${slideUp} 0.4s ease;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 30px 25px;
+    padding: 18px;
     max-height: 85vh;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    padding: 25px 20px;
+    padding: 16px;
   }
 `;
 
 export const FormTitle = styled.h2`
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 900;
   color: ${({ theme }) => theme.colors.text};
-  margin: 0 0 24px 0;
+  margin: 0 0 16px 0;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-align: center;
 `;
 
 export const FormGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 12px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 10px;
   }
 `;
 
 export const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   grid-column: ${({ $fullWidth }) => ($fullWidth ? "1 / -1" : "auto")};
 `;
 
 export const Label = styled.label`
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
 `;
 
 export const Input = styled.input`
-  padding: 14px 16px;
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  font-size: 15px;
+  padding: 8px 12px;
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 13px;
   font-family: inherit;
   color: ${({ theme }) => theme.colors.text};
   background: white;
@@ -106,7 +107,7 @@ export const Input = styled.input`
   &:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 
   &::placeholder {
@@ -115,16 +116,17 @@ export const Input = styled.input`
   }
 
   &[type="file"] {
-    padding: 10px;
+    padding: 8px;
     cursor: pointer;
+    font-size: 12px;
   }
 `;
 
 export const Select = styled.select`
-  padding: 14px 16px;
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  font-size: 15px;
+  padding: 8px 12px;
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 13px;
   font-family: inherit;
   color: ${({ theme }) => theme.colors.text};
   background: white;
@@ -134,26 +136,26 @@ export const Select = styled.select`
   &:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 `;
 
 export const TextArea = styled.textarea`
-  padding: 14px 16px;
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  font-size: 15px;
+  padding: 8px 12px;
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 13px;
   font-family: inherit;
   color: ${({ theme }) => theme.colors.text};
   background: white;
   resize: vertical;
-  min-height: 80px;
+  min-height: 70px;
   transition: all 0.3s ease;
 
   &:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 
   &::placeholder {
@@ -164,53 +166,59 @@ export const TextArea = styled.textarea`
 
 export const ErrorMessage = styled.p`
   color: ${({ theme }) => theme.colors.error};
-  font-size: 13px;
+  font-size: 11px;
   margin: 0;
-  font-weight: 500;
+  font-weight: 600;
+  margin-top: -2px;
 `;
 
 export const ButtonGroup = styled.div`
   display: flex;
-  gap: 12px;
-  margin-top: 28px;
+  gap: 10px;
+  margin-top: 16px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    flex-direction: column-reverse;
+    gap: 8px;
   }
 `;
 
 export const SubmitButton = styled.button`
   flex: 1;
-  padding: 16px;
+  padding: 10px 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
 export const CancelButton = styled.button`
   flex: 1;
-  padding: 16px;
-  background: white;
-  color: ${({ theme }) => theme.colors.text};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  font-size: 16px;
+  padding: 10px 20px;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.secondary};
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -228,16 +236,19 @@ export const CancelButton = styled.button`
 
 export const FileInfo = styled.div`
   margin-top: 8px;
-  padding: 12px;
+  padding: 8px;
   background: rgba(102, 126, 234, 0.05);
   border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 6px;
+  font-size: 11px;
   color: ${({ theme }) => theme.colors.text};
-  line-height: 1.6;
+  line-height: 1.5;
 `;
 
 export const CompressionInfo = styled.span`
   color: #43e97b;
   font-weight: 600;
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
 `;

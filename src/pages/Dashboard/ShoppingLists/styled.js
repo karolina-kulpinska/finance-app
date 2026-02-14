@@ -296,44 +296,76 @@ export const ItemsList = styled.div`
 `;
 
 export const ItemCard = styled.div`
-  background: white;
+  background: ${({ $purchased }) => ($purchased ? "#f5f5f7" : "white")};
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px 12px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid ${({ theme, $purchased }) => 
+    $purchased ? "#e5e5ea" : theme.colors.border};
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateX(2px);
+  }
+`;
+
+export const Checkbox = styled.input`
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #43e97b;
+  flex-shrink: 0;
+`;
+
+export const ItemInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 `;
 
 export const ItemName = styled.div`
   flex: 1;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme, $purchased }) => 
+    $purchased ? theme.colors.secondary : theme.colors.text};
+  text-decoration: ${({ $purchased }) => ($purchased ? "line-through" : "none")};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export const ItemPrice = styled.div`
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
-  color: #43e97b;
+  color: ${({ $purchased }) => ($purchased ? "#a0a0a0" : "#43e97b")};
+  text-decoration: ${({ $purchased }) => ($purchased ? "line-through" : "none")};
+  white-space: nowrap;
 `;
 
 export const DeleteItemButton = styled.button`
   background: transparent;
   border: none;
-  color: #f5576c;
   font-size: 18px;
   cursor: pointer;
   padding: 4px;
   transition: all 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0.6;
 
   &:hover {
-    transform: scale(1.2);
+    opacity: 1;
+    transform: scale(1.15);
   }
 
   &:active {
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
 `;
 

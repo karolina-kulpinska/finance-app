@@ -15,6 +15,7 @@ import AddPaymentForm from "./Form";
 import PaymentsList from "./List";
 import ShoppingLists from "./ShoppingLists";
 import Profile from "./Profile";
+import Files from "./Files";
 import BottomNav from "../../components/BottomNav";
 import * as S from "./styled";
 
@@ -24,7 +25,6 @@ const Dashboard = () => {
   const payments = useSelector(selectPayments);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showFilters, setShowFilters] = useState(false);
-  const [showPaymentFilters, setShowPaymentFilters] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
@@ -52,36 +52,19 @@ const Dashboard = () => {
         return (
           <>
             <Stats payments={payments} />
-            {showFilters && (
-              <S.DashboardFiltersWrapper>
-                <Filters />
-              </S.DashboardFiltersWrapper>
-            )}
             <MiniPayments payments={payments} onPaymentClick={handlePaymentClick} />
           </>
         );
       case "payments":
         return (
           <>
-            <S.PaymentsHeader>
-              <S.PaymentsHeaderTop>
-                <S.PaymentsTitle>Wszystkie płatności ({payments.length})</S.PaymentsTitle>
-                <S.FilterToggleButton onClick={() => setShowPaymentFilters(!showPaymentFilters)}>
-                  {showPaymentFilters ? "▲ Ukryj filtry" : "▼ Filtry"}
-                </S.FilterToggleButton>
-              </S.PaymentsHeaderTop>
-              {showPaymentFilters && (
-                <S.FiltersWrapper>
-                  <Filters />
-                </S.FiltersWrapper>
-              )}
-            </S.PaymentsHeader>
+            <S.PaymentsTitle>Wszystkie płatności ({payments.length})</S.PaymentsTitle>
             <PaymentsList />
             <Charts payments={payments} />
           </>
         );
-      case "shopping":
-        return <ShoppingLists />;
+      case "files":
+        return <Files />;
       case "profile":
         return <Profile />;
       default:
@@ -96,7 +79,13 @@ const Dashboard = () => {
           onAddPayment={handleAddPayment}
           onToggleFilters={() => setShowFilters(!showFilters)}
           showFilters={showFilters}
+          hideFilters={activeTab === "files" || activeTab === "profile"}
         />
+        {showFilters && activeTab !== "files" && activeTab !== "profile" && (
+          <S.FiltersBox>
+            <Filters />
+          </S.FiltersBox>
+        )}
         {renderContent()}
       </S.Container>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />

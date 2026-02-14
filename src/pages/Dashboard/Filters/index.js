@@ -60,18 +60,11 @@ const Filters = () => {
 
   return (
     <S.FiltersContainer>
-      <S.FiltersHeader>
-        <S.FiltersTitle>
-          🔍 Filtry
-          {hasActiveFilters && <S.ActiveBadge>•</S.ActiveBadge>}
-        </S.FiltersTitle>
-        {hasActiveFilters && (
-          <S.ClearButton onClick={handleClearFilters}>
-            ✕ Wyczyść
-          </S.ClearButton>
-        )}
-      </S.FiltersHeader>
-
+      {hasActiveFilters && (
+        <S.ClearButton onClick={handleClearFilters}>
+          ✕
+        </S.ClearButton>
+      )}
       <S.FiltersGrid>
         <S.FilterGroup>
           <S.FilterLabel>Status</S.FilterLabel>

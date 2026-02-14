@@ -33,6 +33,7 @@ const ShoppingLists = () => {
         id: Date.now(),
         name: newItemName,
         price: price,
+        purchased: false,
       };
       
       setLists(lists.map(list => {
@@ -47,6 +48,18 @@ const ShoppingLists = () => {
       setNewItemName("");
       setNewItemPrice("");
     }
+  };
+
+  const handleTogglePurchased = (listId, itemId) => {
+    setLists(lists.map(list => {
+      if (list.id === listId) {
+        const updatedItems = list.items.map(item => 
+          item.id === itemId ? { ...item, purchased: !item.purchased } : item
+        );
+        return { ...list, items: updatedItems };
+      }
+      return list;
+    }));
   };
 
   const handleDeleteItem = (listId, itemId) => {
@@ -120,11 +133,18 @@ const ShoppingLists = () => {
         {list.items.length > 0 && (
           <S.ItemsList>
             {list.items.map((item) => (
-              <S.ItemCard key={item.id}>
-                <S.ItemName>{item.name}</S.ItemName>
-                <S.ItemPrice>{item.price.toFixed(2)} zł</S.ItemPrice>
+              <S.ItemCard key={item.id} $purchased={item.purchased}>
+                <S.Checkbox
+                  type="checkbox"
+                  checked={item.purchased}
+                  onChange={() => handleTogglePurchased(list.id, item.id)}
+                />
+                <S.ItemInfo>
+                  <S.ItemName $purchased={item.purchased}>{item.name}</S.ItemName>
+                  <S.ItemPrice $purchased={item.purchased}>{item.price.toFixed(2)} zł</S.ItemPrice>
+                </S.ItemInfo>
                 <S.DeleteItemButton onClick={() => handleDeleteItem(list.id, item.id)}>
-                  ✕
+                  🗑️
                 </S.DeleteItemButton>
               </S.ItemCard>
             ))}

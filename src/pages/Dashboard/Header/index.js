@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import * as S from "./styled";
 
-const Header = ({ onAddPayment, onToggleFilters, showFilters }) => {
+const Header = ({ onAddPayment, onToggleFilters, showFilters, hideFilters }) => {
   const user = useSelector(selectUser);
 
   return (
@@ -18,9 +18,11 @@ const Header = ({ onAddPayment, onToggleFilters, showFilters }) => {
         <S.AddButton onClick={onAddPayment}>
           + Dodaj płatność
         </S.AddButton>
-        <S.FilterToggleButton onClick={onToggleFilters}>
-          {showFilters ? "▲ Ukryj filtry" : "▼ Filtry"}
-        </S.FilterToggleButton>
+        {!hideFilters && (
+          <S.FilterToggleButton onClick={onToggleFilters}>
+            {showFilters ? "▲" : "▼"}
+          </S.FilterToggleButton>
+        )}
       </S.Actions>
     </S.Header>
   );

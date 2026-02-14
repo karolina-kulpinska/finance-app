@@ -1,159 +1,170 @@
 import styled from "styled-components";
 
 export const FiltersContainer = styled.div`
-  background: transparent;
-  padding: 0;
-  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
-export const FiltersHeader = styled.div`
+export const FilterRow = styled.div`
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    flex-direction: row;
-    gap: 8px;
-  }
+  gap: 12px;
 `;
 
-export const FiltersTitle = styled.h3`
-  font-size: 12px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.text};
-  margin: 0;
+export const QuickFilters = styled.div`
   display: flex;
-  align-items: center;
   gap: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  flex-wrap: wrap;
+  flex: 1;
 `;
 
-export const ActiveBadge = styled.span`
-  color: #667eea;
-  font-size: 16px;
-  line-height: 1;
-  animation: pulse 2s ease-in-out infinite;
-
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
-  }
-`;
-
-export const ClearButton = styled.button`
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 24px;
-  height: 24px;
-  background: #f5576c;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 14px;
-  font-weight: 700;
+export const QuickChip = styled.button`
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid ${({ $active, theme }) => 
+    $active ? "#667eea" : theme.colors.border};
+  background: ${({ $active }) => ($active ? "#667eea" : "white")};
+  color: ${({ $active, theme }) => ($active ? "white" : theme.colors.text)};
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
 
   &:hover {
-    background: #d84456;
-    transform: scale(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: translateY(0);
   }
 `;
 
-export const FiltersGrid = styled.div`
+export const AdvancedToggle = styled.button`
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: white;
+  color: ${({ theme }) => theme.colors.secondary};
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+`;
+
+export const AdvancedSection = styled.div`
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
 `;
 
 export const FilterGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  grid-column: ${({ $fullWidth }) => ($fullWidth ? "1 / -1" : "auto")};
+  gap: 6px;
 `;
 
 export const FilterLabel = styled.label`
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.secondary};
   text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.7;
+  letter-spacing: 0.5px;
 `;
 
 export const FilterButtons = styled.div`
   display: flex;
-  gap: 3px;
+  gap: 6px;
   flex-wrap: wrap;
 `;
 
 export const FilterChip = styled.button`
-  padding: 3px 8px;
-  background: ${({ $active }) =>
-    $active ? "#667eea" : "#f8f8fa"};
-  color: ${({ $active }) =>
-    $active ? "white" : "#8b8b8b"};
-  border: none;
-  border-radius: 12px;
-  font-size: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid ${({ $active, theme }) => 
+    $active ? "#667eea" : theme.colors.border};
+  background: ${({ $active }) => ($active ? "#667eea" : "white")};
+  color: ${({ $active, theme }) => ($active ? "white" : theme.colors.text)};
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
-  white-space: nowrap;
-  line-height: 1;
 
   &:hover {
-    background: ${({ $active }) =>
-      $active ? "#5568d3" : "#ebebed"};
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
-    transform: scale(0.96);
+    transform: translateY(0);
   }
 `;
 
-export const DateInputs = styled.div`
+export const AmountInputs = styled.div`
   display: flex;
+  align-items: center;
   gap: 8px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    flex-direction: column;
-    gap: 8px;
-  }
 `;
 
-export const DateInput = styled.input`
+export const AmountInput = styled.input`
   flex: 1;
-  padding: 5px 8px;
+  padding: 8px 10px;
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 6px;
-  font-size: 11px;
+  border-radius: 8px;
+  font-size: 13px;
   font-family: inherit;
-  color: ${({ theme }) => theme.colors.text};
-  background: white;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 
   &:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.secondary};
+  }
+`;
+
+export const AmountSeparator = styled.span`
+  color: ${({ theme }) => theme.colors.secondary};
+  font-weight: 700;
+`;
+
+export const ClearButton = styled.button`
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #9e9e9e;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+
+  &:hover {
+    border-color: #f44336;
+    color: #f44336;
+    background: #fff5f5;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 `;

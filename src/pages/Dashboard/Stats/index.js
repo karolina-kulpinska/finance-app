@@ -1,16 +1,53 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
+import {
+  selectPayments,
+  selectFilter,
+  selectCategoryFilter,
+  selectDateFilter,
+} from "../../../features/payments/paymentSlice";
+import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
-const Stats = ({ payments }) => {
-  const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
-  const unpaidAmount = payments
+const Stats = () => {
+  const payments = useSelector(selectPayments);
+  const statusFilter = useSelector(selectFilter);
+  const categoryFilter = useSelector(selectCategoryFilter);
+  const dateFilter = useSelector(selectDateFilter);
+
+  // Filtrowanie płatności
+  const filteredPayments = useMemo(() => {
+    let filtered = [...payments];
+
+    if (statusFilter === "paid") {
+      filtered = filtered.filter((p) => p.paid);
+    } else if (statusFilter === "unpaid") {
+      filtered = filtered.filter((p) => !p.paid);
+    }
+
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter((p) => p.category === categoryFilter);
+    }
+
+    if (dateFilter !== "all") {
+      const dateRange = getDateRange(dateFilter);
+      if (dateRange) {
+        filtered = filtered.filter((p) => isDateInRange(p.date, dateRange));
+      }
+    }
+
+    return filtered;
+  }, [payments, statusFilter, categoryFilter, dateFilter]);
+
+  const totalAmount = filteredPayments.reduce((sum, p) => sum + p.amount, 0);
+  const unpaidAmount = filteredPayments
     .filter((p) => !p.paid)
     .reduce((sum, p) => sum + p.amount, 0);
-  const paidAmount = payments
+  const paidAmount = filteredPayments
     .filter((p) => p.paid)
     .reduce((sum, p) => sum + p.amount, 0);
-  const paymentsCount = payments.length;
-  const unpaidCount = payments.filter((p) => !p.paid).length;
+  const paymentsCount = filteredPayments.length;
+  const unpaidCount = filteredPayments.filter((p) => !p.paid).length;
 
   const stats = [
     {
@@ -49,7 +86,7 @@ const Stats = ({ payments }) => {
           <S.StatIcon>{stat.icon}</S.StatIcon>
           <S.StatLabel $variant={stat.variant}>{stat.label}</S.StatLabel>
           <S.StatValue $variant={stat.variant}>{stat.value}</S.StatValue>
-          <S.StatSubtext $variant={stat.variant}>{stat.subtext}</S.StatSubtext>
+          <S.StatSubtext>{stat.subtext}</S.StatSubtext>
         </S.StatCard>
       ))}
     </S.StatsGrid>

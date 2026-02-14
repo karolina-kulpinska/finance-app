@@ -29,6 +29,7 @@ const Dashboard = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showTypeSelector, setShowTypeSelector] = useState(false);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);
+  const [collapseAllPayments, setCollapseAllPayments] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
@@ -73,8 +74,13 @@ const Dashboard = () => {
       case "payments":
         return (
           <>
-            <S.PaymentsTitle>Wszystkie płatności ({payments.length})</S.PaymentsTitle>
-            <PaymentsList />
+            <S.PaymentsHeader>
+              <S.PaymentsTitle>Wszystkie płatności ({payments.length})</S.PaymentsTitle>
+              <S.CollapseButton onClick={() => setCollapseAllPayments(!collapseAllPayments)}>
+                {collapseAllPayments ? "Rozwiń" : "Zwiń"}
+              </S.CollapseButton>
+            </S.PaymentsHeader>
+            <PaymentsList collapseAll={collapseAllPayments} />
             <Charts payments={payments} />
           </>
         );

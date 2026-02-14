@@ -504,43 +504,39 @@ export const PendingBadge = styled.span`
 `;
 
 export const DangerZone = styled.div`
-  margin-top: 32px;
-  padding: 20px;
-  background: #fff5f5;
-  border: 2px dashed #f44336;
-  border-radius: 12px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 export const DangerTitle = styled.div`
-  font-size: 12px;
-  font-weight: 900;
-  color: #f44336;
+  font-size: 10px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.secondary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 12px;
-  text-align: center;
+  margin-bottom: 8px;
 `;
 
 export const DeleteFamilyButton = styled.button`
-  width: 100%;
-  background: #f44336;
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  color: white;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9e9e9e;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
 
   &:hover {
-    background: #d32f2f;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+    border-color: #f44336;
+    color: #f44336;
+    background: #fff5f5;
   }
 
   &:active {
-    transform: translateY(0);
+    transform: scale(0.98);
   }
 `;

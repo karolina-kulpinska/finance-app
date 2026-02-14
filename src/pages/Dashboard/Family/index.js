@@ -381,9 +381,9 @@ const Family = () => {
           </S.LinkSection>
 
           <S.DangerZone>
-            <S.DangerTitle>Strefa niebezpieczna</S.DangerTitle>
+            <S.DangerTitle>Zarządzanie rodziną</S.DangerTitle>
             <S.DeleteFamilyButton onClick={handleDeleteFamily}>
-              🗑️ Usuń rodzinę na zawsze
+              Usuń rodzinę
             </S.DeleteFamilyButton>
           </S.DangerZone>
         </>

@@ -199,8 +199,8 @@ function* updateStatusHandler({ payload }) {
     const paymentData = yield select(selectPayments);
     const payment = paymentData.find(p => p.id === payload.id);
     
-    // Sprawdź czy to stara czy nowa struktura
-    const paymentRef = payment?._source === "old"
+    // Sprawdź czy to stara czy nowa struktura - sprawdź _source i source
+    const paymentRef = payment?._source === "old" || payment?.source === "old"
       ? doc(db, "payments", payload.id)
       : doc(db, "users", user.uid, "payments", payload.id);
     
@@ -254,8 +254,8 @@ function* updatePaymentHandler({ payload }) {
       attachmentName,
     };
 
-    // Sprawdź czy to stara czy nowa struktura i zaktualizuj odpowiednio
-    const paymentRef = payment?._source === "old"
+    // Sprawdź czy to stara czy nowa struktura i zaktualizuj odpowiednio - sprawdź _source i source
+    const paymentRef = payment?._source === "old" || payment?.source === "old"
       ? doc(db, "payments", id)
       : doc(db, "users", user.uid, "payments", id);
     

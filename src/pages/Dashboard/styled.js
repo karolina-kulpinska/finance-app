@@ -72,18 +72,48 @@ export const ProfileText = styled.p`
 `;
 
 
+export const PaymentsHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  margin-bottom: 12px;
+  gap: 12px;
+`;
+
 export const PaymentsTitle = styled.h2`
   font-size: 16px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
-  margin: 0 0 12px 0;
-  background: white;
-  padding: 14px 16px;
-  border-radius: 12px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  margin: 0;
 `;
 
+export const CollapseButton = styled.button`
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+
+  &:hover {
+    background: #f8f9fa;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
 
 export const FiltersBox = styled.div`
   background: white;

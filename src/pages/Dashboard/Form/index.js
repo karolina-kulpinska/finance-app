@@ -10,6 +10,7 @@ import {
 import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
 import { bankOptions, getBankConfig } from "../../../utils/bankIcons";
+import ReceiptScanner from "../../../components/ReceiptScanner";
 import * as S from "./styled";
 
 const AddPaymentForm = ({ paymentType, onClose }) => {
@@ -107,6 +108,13 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         setIsCompressing(false);
       }
     }
+  };
+
+  const handleScanComplete = (scannedData) => {
+    if (scannedData.name) setValue("name", scannedData.name);
+    if (scannedData.amount) setValue("amount", scannedData.amount);
+    if (scannedData.date) setValue("date", scannedData.date);
+    if (scannedData.category) setValue("category", scannedData.category);
   };
 
   const onSubmit = async (data) => {
@@ -347,6 +355,11 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
     <S.Overlay onClick={onClose}>
       <S.Modal onClick={(e) => e.stopPropagation()}>
         <S.FormTitle>{getFormTitle()}</S.FormTitle>
+        
+        {!editingPayment && (paymentType === "other" || paymentType === "bills" || paymentType === "shopping") && (
+          <ReceiptScanner onScanComplete={handleScanComplete} />
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <S.FormGrid>
             <S.FormGroup $fullWidth>

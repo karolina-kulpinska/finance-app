@@ -45,11 +45,15 @@ export const PaymentGrid = styled.div`
 `;
 
 export const PaymentCard = styled.div`
-  background: ${({ $paid }) =>
-    $paid ? "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)" : "white"};
+  background: ${({ $paid, $overdue }) => {
+    if ($paid) return "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)";
+    if ($overdue) return "#fff5f5";
+    return "white";
+  }};
   border: 2px solid
-    ${({ $priority, $paid, theme }) => {
+    ${({ $priority, $paid, $overdue, theme }) => {
       if ($paid) return "#66bb6a";
+      if ($overdue) return "#ffcdd2";
       if ($priority === "high") return "#f5576c";
       if ($priority === "low") return "#43e97b";
       return theme.colors.border;
@@ -68,7 +72,11 @@ export const PaymentCard = styled.div`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: ${({ $overdue }) => 
+      $overdue 
+        ? "0 4px 12px rgba(244, 67, 54, 0.2)" 
+        : "0 4px 12px rgba(0, 0, 0, 0.1)"
+    };
   }
 
   &:active {

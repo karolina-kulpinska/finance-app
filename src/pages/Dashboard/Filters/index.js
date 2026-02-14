@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setFilter,
@@ -16,9 +16,15 @@ const Filters = () => {
   const activeCategoryFilter = useSelector(selectCategoryFilter);
   const activeDateFilter = useSelector(selectDateFilter);
 
-  const [showCustomDate, setShowCustomDate] = useState(false);
-  const [customStart, setCustomStart] = useState("");
-  const [customEnd, setCustomEnd] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
+
+  // Ustaw domyślnie "Ten miesiąc" przy pierwszym załadowaniu
+  useEffect(() => {
+    dispatch(setDateFilter("month"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const statusFilters = [
     { id: "all", label: "Wszystkie" },
@@ -26,110 +32,92 @@ const Filters = () => {
     { id: "paid", label: "Zapłacone" },
   ];
 
-  const categoryFilters = [
-    { id: "all", label: "Wszystkie" },
-    { id: "bills", label: "🧾 Rachunki" },
-    { id: "shopping", label: "🛒 Zakupy" },
-    { id: "other", label: "📌 Inne" },
-  ];
-
   const dateFilters = [
-    { id: "all", label: "Wszystkie" },
-    { id: "today", label: "📅 Dziś" },
-    { id: "week", label: "📆 Ten tydzień" },
-    { id: "month", label: "📊 Ten miesiąc" },
-    { id: "year", label: "📈 Ten rok" },
-    { id: "custom", label: "🔧 Własny zakres" },
+    { id: "today", label: "Dziś" },
+    { id: "week", label: "Tydzień" },
+    { id: "month", label: "Miesiąc" },
+    { id: "all", label: "Wszystko" },
   ];
 
   const handleClearFilters = () => {
     dispatch(setFilter("all"));
     dispatch(setCategoryFilter("all"));
-    dispatch(setDateFilter("all"));
-    setShowCustomDate(false);
-    setCustomStart("");
-    setCustomEnd("");
+    dispatch(setDateFilter("month"));
+    setMinAmount("");
+    setMaxAmount("");
+    setShowAdvanced(false);
   };
 
-  const handleDateFilterChange = (filterId) => {
-    dispatch(setDateFilter(filterId));
-    setShowCustomDate(filterId === "custom");
-  };
-
-  const hasActiveFilters = activeFilter !== "all" || activeCategoryFilter !== "all" || activeDateFilter !== "all";
+  const hasActiveFilters = 
+    activeFilter !== "all" || 
+    activeCategoryFilter !== "all" || 
+    (activeDateFilter !== "month" && activeDateFilter !== "all") ||
+    minAmount !== "" ||
+    maxAmount !== "";
 
   return (
     <S.FiltersContainer>
-      {hasActiveFilters && (
-        <S.ClearButton onClick={handleClearFilters}>
-          ✕
-        </S.ClearButton>
-      )}
-      <S.FiltersGrid>
-        <S.FilterGroup>
-          <S.FilterLabel>Status</S.FilterLabel>
-          <S.FilterButtons>
-            {statusFilters.map((filter) => (
-              <S.FilterChip
-                key={filter.id}
-                $active={activeFilter === filter.id}
-                onClick={() => dispatch(setFilter(filter.id))}
-              >
-                {filter.label}
-              </S.FilterChip>
-            ))}
-          </S.FilterButtons>
-        </S.FilterGroup>
+      <S.FilterRow>
+        <S.QuickFilters>
+          {dateFilters.map((filter) => (
+            <S.QuickChip
+              key={filter.id}
+              $active={activeDateFilter === filter.id}
+              onClick={() => dispatch(setDateFilter(filter.id))}
+            >
+              {filter.label}
+            </S.QuickChip>
+          ))}
+        </S.QuickFilters>
+        
+        <S.AdvancedToggle onClick={() => setShowAdvanced(!showAdvanced)}>
+          {showAdvanced ? "Mniej ▲" : "Więcej ▼"}
+        </S.AdvancedToggle>
+      </S.FilterRow>
 
-        <S.FilterGroup>
-          <S.FilterLabel>Kategoria</S.FilterLabel>
-          <S.FilterButtons>
-            {categoryFilters.map((filter) => (
-              <S.FilterChip
-                key={filter.id}
-                $active={activeCategoryFilter === filter.id}
-                onClick={() => dispatch(setCategoryFilter(filter.id))}
-              >
-                {filter.label}
-              </S.FilterChip>
-            ))}
-          </S.FilterButtons>
-        </S.FilterGroup>
-
-        <S.FilterGroup $fullWidth>
-          <S.FilterLabel>Okres</S.FilterLabel>
-          <S.FilterButtons>
-            {dateFilters.map((filter) => (
-              <S.FilterChip
-                key={filter.id}
-                $active={activeDateFilter === filter.id}
-                onClick={() => handleDateFilterChange(filter.id)}
-              >
-                {filter.label}
-              </S.FilterChip>
-            ))}
-          </S.FilterButtons>
-        </S.FilterGroup>
-
-        {showCustomDate && (
-          <S.FilterGroup $fullWidth>
-            <S.DateInputs>
-              <S.DateInput
-                type="date"
-                value={customStart}
-                onChange={(e) => setCustomStart(e.target.value)}
-                placeholder="Od"
-              />
-              <S.DateInput
-                type="date"
-                value={customEnd}
-                onChange={(e) => setCustomEnd(e.target.value)}
-                placeholder="Do"
-              />
-            </S.DateInputs>
+      {showAdvanced && (
+        <S.AdvancedSection>
+          <S.FilterGroup>
+            <S.FilterLabel>Status</S.FilterLabel>
+            <S.FilterButtons>
+              {statusFilters.map((filter) => (
+                <S.FilterChip
+                  key={filter.id}
+                  $active={activeFilter === filter.id}
+                  onClick={() => dispatch(setFilter(filter.id))}
+                >
+                  {filter.label}
+                </S.FilterChip>
+              ))}
+            </S.FilterButtons>
           </S.FilterGroup>
-        )}
-      </S.FiltersGrid>
+
+          <S.FilterGroup>
+            <S.FilterLabel>Kwota (zł)</S.FilterLabel>
+            <S.AmountInputs>
+              <S.AmountInput
+                type="number"
+                placeholder="Od"
+                value={minAmount}
+                onChange={(e) => setMinAmount(e.target.value)}
+              />
+              <S.AmountSeparator>-</S.AmountSeparator>
+              <S.AmountInput
+                type="number"
+                placeholder="Do"
+                value={maxAmount}
+                onChange={(e) => setMaxAmount(e.target.value)}
+              />
+            </S.AmountInputs>
+          </S.FilterGroup>
+
+          {hasActiveFilters && (
+            <S.ClearButton onClick={handleClearFilters}>
+              ✕ Wyczyść filtry
+            </S.ClearButton>
+          )}
+        </S.AdvancedSection>
+      )}
     </S.FiltersContainer>
   );
 };

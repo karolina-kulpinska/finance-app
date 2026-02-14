@@ -49,13 +49,10 @@ export const AddButton = styled.button`
   &:active {
     transform: scale(0.98);
   }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    width: 100%;
-  }
 `;
 
-export const AddForm = styled.div`
+// Filtry
+export const FiltersSection = styled.div`
   background: white;
   border-radius: 12px;
   padding: 16px;
@@ -66,38 +63,96 @@ export const AddForm = styled.div`
   gap: 12px;
 `;
 
-export const Input = styled.input`
-  padding: 10px 14px;
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
+export const FilterLabel = styled.label`
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.secondary};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+export const QuickFilters = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+`;
+
+export const FilterChip = styled.button`
+  padding: 6px 12px;
   border-radius: 8px;
-  font-size: 14px;
+  border: 1px solid ${({ $active, theme }) => 
+    $active ? "#667eea" : theme.colors.border};
+  background: ${({ $active }) => ($active ? "#667eea" : "white")};
+  color: ${({ $active, theme }) => ($active ? "white" : theme.colors.text)};
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
   font-family: inherit;
-  color: ${({ theme }) => theme.colors.text};
-  background: white;
-  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+export const PriceFilter = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const PriceInputs = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const PriceInput = styled.input`
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s ease;
 
   &:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.secondary};
   }
 `;
 
-export const SaveButton = styled.button`
-  padding: 10px 16px;
-  background: #43e97b;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
+export const PriceSeparator = styled.span`
+  color: ${({ theme }) => theme.colors.secondary};
   font-weight: 700;
+`;
+
+export const ClearFiltersButton = styled.button`
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #9e9e9e;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
 
   &:hover {
-    background: #38d96a;
-    transform: translateY(-2px);
+    border-color: #f44336;
+    color: #f44336;
+    background: #fff5f5;
   }
 
   &:active {
@@ -105,14 +160,78 @@ export const SaveButton = styled.button`
   }
 `;
 
+// Formularze
+export const AddForm = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const Input = styled.input`
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+`;
+
+export const SaveButton = styled.button`
+  padding: 10px 16px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+
+  &:hover {
+    background: #5568d3;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+export const CheckboxWrapper = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  cursor: pointer;
+`;
+
+export const Checkbox = styled.input`
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+`;
+
+export const CheckboxLabel = styled.span`
+  font-size: 13px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+// Lista grid
 export const ListsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 `;
 
 export const ListCard = styled.div`
@@ -120,49 +239,255 @@ export const ListCard = styled.div`
   border-radius: 12px;
   padding: 16px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  transition: all 0.3s ease;
+  border: 1px solid ${({ theme }) => theme.colors.border};
   cursor: pointer;
+  transition: all 0.2s ease;
 
   &:hover {
-    border-color: #667eea;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
-    transform: scale(0.99);
+    transform: scale(0.98);
   }
 `;
 
-export const ListIcon = styled.div`
-  font-size: 32px;
-  margin-bottom: 10px;
-`;
-
 export const ListName = styled.h3`
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
-  margin: 0 0 6px 0;
+  margin: 0 0 8px 0;
 `;
 
-export const ListInfo = styled.div`
-  font-size: 12px;
+export const ListStats = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+`;
+
+export const ItemCount = styled.div`
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.secondary};
-  margin-bottom: 4px;
 `;
 
-export const ListDate = styled.div`
-  font-size: 11px;
-  color: ${({ theme }) => theme.colors.secondary};
+export const TotalPrice = styled.div`
+  font-size: 16px;
+  font-weight: 900;
+  color: #667eea;
 `;
 
-export const EmptyState = styled.div`
+export const SharedBadge = styled.span`
+  display: inline-block;
+  padding: 4px 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 8px;
+`;
+
+// Widok szczegółowy
+export const BackButton = styled.button`
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+`;
+
+export const DeleteButton = styled.button`
+  padding: 6px 12px;
+  background: #fff5f5;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f44336;
+    border-color: #f44336;
+  }
+`;
+
+export const TotalCard = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+`;
+
+export const TotalLabel = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+`;
+
+export const TotalAmount = styled.div`
+  font-size: 24px;
+  font-weight: 900;
+  color: white;
+`;
+
+export const AddItemForm = styled.form`
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+`;
+
+export const SectionBlock = styled.div`
   background: white;
   border-radius: 12px;
-  padding: 60px 20px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const SectionHeader = styled.div`
+  font-size: 14px;
+  font-weight: 900;
+  color: ${({ theme }) => theme.colors.text};
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+`;
+
+export const ItemsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const ItemCard = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: ${({ $purchased }) => ($purchased ? "#f5f5f5" : "white")};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+`;
+
+export const ItemInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+export const ItemName = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+  text-decoration: ${({ $purchased }) => ($purchased ? "line-through" : "none")};
+  opacity: ${({ $purchased }) => ($purchased ? 0.6 : 1)};
+`;
+
+export const ItemPrice = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  color: #667eea;
+  text-decoration: ${({ $purchased }) => ($purchased ? "line-through" : "none")};
+  opacity: ${({ $purchased }) => ($purchased ? 0.6 : 1)};
+`;
+
+export const DeleteItemButton = styled.button`
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+`;
+
+// Paragon
+export const ReceiptSection = styled.div`
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const ReceiptTitle = styled.h4`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0 0 12px 0;
+`;
+
+export const ReceiptInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+`;
+
+export const ReceiptName = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+export const FileInput = styled.div`
+  input[type="file"] {
+    display: none;
+  }
+`;
+
+export const FileLabel = styled.label`
+  display: inline-block;
+  padding: 10px 16px;
+  background: #667eea;
+  color: white;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #5568d3;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+// Empty state
+export const EmptyState = styled.div`
   text-align: center;
+  padding: 60px 20px;
 `;
 
 export const EmptyIcon = styled.div`
@@ -181,275 +506,4 @@ export const EmptyText = styled.p`
   font-size: 14px;
   color: ${({ theme }) => theme.colors.secondary};
   margin: 0;
-`;
-
-export const InfoBox = styled.div`
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  border-radius: 12px;
-  padding: 16px;
-  border: 2px solid #66bb6a;
-`;
-
-export const InfoTitle = styled.h4`
-  font-size: 14px;
-  font-weight: 700;
-  color: #2e7d32;
-  margin: 0 0 10px 0;
-`;
-
-export const InfoList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`;
-
-export const InfoItem = styled.li`
-  font-size: 12px;
-  color: #2e7d32;
-  padding-left: 8px;
-`;
-
-export const BackButton = styled.button`
-  padding: 8px 16px;
-  background: #f0f0f5;
-  color: ${({ theme }) => theme.colors.text};
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
-
-  &:hover {
-    background: #e5e5ea;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-`;
-
-export const DeleteButton = styled.button`
-  padding: 8px 12px;
-  background: #ffebee;
-  color: #c62828;
-  border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: #ef5350;
-    color: white;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-`;
-
-export const TotalCard = styled.div`
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.3);
-`;
-
-export const TotalLabel = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: white;
-`;
-
-export const TotalAmount = styled.div`
-  font-size: 24px;
-  font-weight: 900;
-  color: white;
-`;
-
-export const AddItemForm = styled.div`
-  background: white;
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  display: flex;
-  gap: 8px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    flex-direction: column;
-  }
-`;
-
-export const ItemsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-export const ItemCard = styled.div`
-  background: ${({ $purchased }) => ($purchased ? "#f5f5f7" : "white")};
-  border-radius: 8px;
-  padding: 10px 12px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 1px solid ${({ theme, $purchased }) => 
-    $purchased ? "#e5e5ea" : theme.colors.border};
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateX(2px);
-  }
-`;
-
-export const Checkbox = styled.input`
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: #43e97b;
-  flex-shrink: 0;
-`;
-
-export const ItemInfo = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-`;
-
-export const ItemName = styled.div`
-  flex: 1;
-  font-size: 13px;
-  font-weight: 600;
-  color: ${({ theme, $purchased }) => 
-    $purchased ? theme.colors.secondary : theme.colors.text};
-  text-decoration: ${({ $purchased }) => ($purchased ? "line-through" : "none")};
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-export const ItemPrice = styled.div`
-  font-size: 13px;
-  font-weight: 900;
-  color: ${({ $purchased }) => ($purchased ? "#a0a0a0" : "#43e97b")};
-  text-decoration: ${({ $purchased }) => ($purchased ? "line-through" : "none")};
-  white-space: nowrap;
-`;
-
-export const DeleteItemButton = styled.button`
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 4px;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  opacity: 0.6;
-
-  &:hover {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-`;
-
-export const ReceiptSection = styled.div`
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-export const ReceiptTitle = styled.h4`
-  font-size: 14px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.text};
-  margin: 0 0 12px 0;
-`;
-
-export const ReceiptInfo = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  background: #e8f5e9;
-  border-radius: 8px;
-`;
-
-export const ReceiptName = styled.div`
-  font-size: 13px;
-  color: #2e7d32;
-  font-weight: 600;
-`;
-
-export const FileInput = styled.div`
-  input[type="file"] {
-    display: none;
-  }
-`;
-
-export const FileLabel = styled.label`
-  display: block;
-  padding: 12px;
-  background: #f0f0f5;
-  border: 2px dashed ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  text-align: center;
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.secondary};
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: #e5e5ea;
-    border-color: #667eea;
-    color: #667eea;
-  }
-`;
-
-export const ListPrice = styled.div`
-  font-size: 14px;
-  font-weight: 900;
-  color: #43e97b;
-  margin-top: 4px;
-`;
-
-export const CheckboxWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  margin-bottom: 10px;
-`;
-
-export const CheckboxLabel = styled.label`
-  font-size: 13px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.text};
-  cursor: pointer;
-  user-select: none;
-`;
-
-export const SharedBadge = styled.span`
-  margin-left: 8px;
-  font-size: 14px;
 `;

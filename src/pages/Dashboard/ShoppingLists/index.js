@@ -113,12 +113,23 @@ const ShoppingLists = () => {
           <S.TotalAmount>{list.totalPrice.toFixed(2)} zł</S.TotalAmount>
         </S.TotalCard>
 
-        <S.AddItemForm>
+        <S.AddItemForm
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleAddItem(list.id);
+          }}
+        >
           <S.Input
             type="text"
             placeholder="Nazwa produktu..."
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddItem(list.id);
+              }
+            }}
           />
           <S.Input
             type="number"
@@ -126,31 +137,68 @@ const ShoppingLists = () => {
             placeholder="Cena..."
             value={newItemPrice}
             onChange={(e) => setNewItemPrice(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddItem(list.id);
+              }
+            }}
           />
-          <S.SaveButton onClick={() => handleAddItem(list.id)}>
+          <S.SaveButton type="submit">
             + Dodaj
           </S.SaveButton>
         </S.AddItemForm>
 
         {list.items.length > 0 && (
-          <S.ItemsList>
-            {list.items.map((item) => (
-              <S.ItemCard key={item.id} $purchased={item.purchased}>
-                <S.Checkbox
-                  type="checkbox"
-                  checked={item.purchased}
-                  onChange={() => handleTogglePurchased(list.id, item.id)}
-                />
-                <S.ItemInfo>
-                  <S.ItemName $purchased={item.purchased}>{item.name}</S.ItemName>
-                  <S.ItemPrice $purchased={item.purchased}>{item.price.toFixed(2)} zł</S.ItemPrice>
-                </S.ItemInfo>
-                <S.DeleteItemButton onClick={() => handleDeleteItem(list.id, item.id)}>
-                  🗑️
-                </S.DeleteItemButton>
-              </S.ItemCard>
-            ))}
-          </S.ItemsList>
+          <>
+            {list.items.some(item => !item.purchased) && (
+              <S.SectionBlock>
+                <S.SectionHeader>🛒 Do kupienia</S.SectionHeader>
+                <S.ItemsList>
+                  {list.items.filter(item => !item.purchased).map((item) => (
+                    <S.ItemCard key={item.id} $purchased={false}>
+                      <S.Checkbox
+                        type="checkbox"
+                        checked={false}
+                        onChange={() => handleTogglePurchased(list.id, item.id)}
+                      />
+                      <S.ItemInfo>
+                        <S.ItemName $purchased={false}>{item.name}</S.ItemName>
+                        <S.ItemPrice $purchased={false}>{item.price.toFixed(2)} zł</S.ItemPrice>
+                      </S.ItemInfo>
+                      <S.DeleteItemButton onClick={() => handleDeleteItem(list.id, item.id)}>
+                        🗑️
+                      </S.DeleteItemButton>
+                    </S.ItemCard>
+                  ))}
+                </S.ItemsList>
+              </S.SectionBlock>
+            )}
+
+            {list.items.some(item => item.purchased) && (
+              <S.SectionBlock>
+                <S.SectionHeader>✓ Kupione</S.SectionHeader>
+                <S.ItemsList>
+                  {list.items.filter(item => item.purchased).map((item) => (
+                    <S.ItemCard key={item.id} $purchased={true}>
+                      <S.Checkbox
+                        type="checkbox"
+                        checked={true}
+                        onChange={() => handleTogglePurchased(list.id, item.id)}
+                      />
+                      <S.ItemInfo>
+                        <S.ItemName $purchased={true}>{item.name}</S.ItemName>
+                        <S.ItemPrice $purchased={true}>{item.price.toFixed(2)} zł</S.ItemPrice>
+                      </S.ItemInfo>
+                      <S.DeleteItemButton onClick={() => handleDeleteItem(list.id, item.id)}>
+                        🗑️
+                      </S.DeleteItemButton>
+                    </S.ItemCard>
+                  ))}
+                </S.ItemsList>
+              </S.SectionBlock>
+            )}
+          </>
         )}
 
         <S.ReceiptSection>
@@ -182,6 +230,7 @@ const ShoppingLists = () => {
     );
   }
 
+
   return (
     <S.Container>
       <S.Header>
@@ -190,6 +239,7 @@ const ShoppingLists = () => {
           {showAddForm ? "✕ Anuluj" : "+ Nowa lista"}
         </S.AddButton>
       </S.Header>
+
 
       {showAddForm && (
         <S.AddForm>
@@ -228,18 +278,16 @@ const ShoppingLists = () => {
         <S.ListsGrid>
           {lists.map((list) => (
             <S.ListCard key={list.id} onClick={() => setSelectedList(list)}>
-              <S.ListIcon>📋</S.ListIcon>
-              <S.ListName>
-                {list.name}
-                {list.sharedWithFamily && <S.SharedBadge>👨‍👩‍👧‍👦</S.SharedBadge>}
-              </S.ListName>
-              <S.ListInfo>
-                {list.items.length} przedmiotów
-              </S.ListInfo>
-              <S.ListPrice>{list.totalPrice.toFixed(2)} zł</S.ListPrice>
-              <S.ListDate>
-                {new Date(list.createdAt).toLocaleDateString("pl-PL")}
-              </S.ListDate>
+              <S.ListName>{list.name}</S.ListName>
+              {list.sharedWithFamily && (
+                <S.SharedBadge>👨‍👩‍👧‍👦 Rodzina</S.SharedBadge>
+              )}
+              <S.ListStats>
+                <S.ItemCount>
+                  {list.items.length} {list.items.length === 1 ? "produkt" : "produktów"}
+                </S.ItemCount>
+                <S.TotalPrice>{list.totalPrice.toFixed(2)} zł</S.TotalPrice>
+              </S.ListStats>
             </S.ListCard>
           ))}
         </S.ListsGrid>

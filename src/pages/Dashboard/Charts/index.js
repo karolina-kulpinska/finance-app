@@ -1,7 +1,44 @@
 import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
+import {
+  selectPayments,
+  selectFilter,
+  selectCategoryFilter,
+  selectDateFilter,
+} from "../../../features/payments/paymentSlice";
+import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
-const Charts = ({ payments }) => {
+const Charts = () => {
+  const payments = useSelector(selectPayments);
+  const statusFilter = useSelector(selectFilter);
+  const categoryFilter = useSelector(selectCategoryFilter);
+  const dateFilter = useSelector(selectDateFilter);
+
+  // Filtrowanie płatności
+  const filteredPayments = useMemo(() => {
+    let filtered = [...payments];
+
+    if (statusFilter === "paid") {
+      filtered = filtered.filter((p) => p.paid);
+    } else if (statusFilter === "unpaid") {
+      filtered = filtered.filter((p) => !p.paid);
+    }
+
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter((p) => p.category === categoryFilter);
+    }
+
+    if (dateFilter !== "all") {
+      const dateRange = getDateRange(dateFilter);
+      if (dateRange) {
+        filtered = filtered.filter((p) => isDateInRange(p.date, dateRange));
+      }
+    }
+
+    return filtered;
+  }, [payments, statusFilter, categoryFilter, dateFilter]);
+
   const categoryStats = useMemo(() => {
     const stats = {
       bills: { amount: 0, count: 0, icon: "🧾", name: "Rachunki", color: "#667eea" },
@@ -9,7 +46,7 @@ const Charts = ({ payments }) => {
       other: { amount: 0, count: 0, icon: "📌", name: "Inne", color: "#f093fb" },
     };
 
-    payments.forEach((payment) => {
+    filteredPayments.forEach((payment) => {
       const category = payment.category || "other";
       if (stats[category]) {
         stats[category].amount += payment.amount;
@@ -18,7 +55,7 @@ const Charts = ({ payments }) => {
     });
 
     return stats;
-  }, [payments]);
+  }, [filteredPayments]);
 
   const hasData = Object.values(categoryStats).some((stat) => stat.count > 0);
 
@@ -49,9 +86,7 @@ const Charts = ({ payments }) => {
             <S.CategoryAmount $color={stat.color}>
               {stat.amount.toFixed(2)} zł
             </S.CategoryAmount>
-            <S.CategoryCount>
-              {stat.count} {stat.count === 1 ? "płatność" : "płatności"}
-            </S.CategoryCount>
+            <S.CategoryCount>{stat.count} płatności</S.CategoryCount>
           </S.CategoryCard>
         ))}
       </S.ChartsGrid>

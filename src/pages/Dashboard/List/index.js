@@ -14,13 +14,20 @@ import { getBankConfig } from "../../../utils/bankIcons";
 import { FaUniversity } from "react-icons/fa";
 import * as S from "./styled";
 
-const PaymentsList = () => {
+const PaymentsList = ({ collapseAll = false }) => {
   const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
   const statusFilter = useSelector(selectFilter);
   const categoryFilter = useSelector(selectCategoryFilter);
   const dateFilter = useSelector(selectDateFilter);
   const [expandedPayment, setExpandedPayment] = React.useState(null);
+
+  // Jeśli collapseAll jest true, zamknij wszystkie
+  React.useEffect(() => {
+    if (collapseAll) {
+      setExpandedPayment(null);
+    }
+  }, [collapseAll]);
 
   const filteredPayments = useMemo(() => {
     let filtered = [...payments];
@@ -87,6 +94,15 @@ const PaymentsList = () => {
     }
   };
 
+  const isOverdue = (payment) => {
+    if (payment.paid) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const paymentDate = new Date(payment.date);
+    paymentDate.setHours(0, 0, 0, 0);
+    return paymentDate < today;
+  };
+
   const handleStatusToggle = (payment) => {
     dispatch(
       updatePaymentStatusRequest({
@@ -141,27 +157,30 @@ const PaymentsList = () => {
     );
   }
 
+  // Jeśli collapseAll jest true, nie pozwól rozwijać
+  const handleCardClick = (paymentId) => {
+    if (!collapseAll) {
+      setExpandedPayment(expandedPayment === paymentId ? null : paymentId);
+    }
+  };
+
   return (
     <S.ListContainer>
-      <S.ListHeader>
-        <S.ListTitle>
-          Płatności ({filteredPayments.length})
-        </S.ListTitle>
-      </S.ListHeader>
-
       <S.PaymentGrid>
         {filteredPayments.map((payment) => (
           <S.PaymentCard
             key={payment.id}
             id={`payment-${payment.id}`}
             $paid={payment.paid}
+            $overdue={isOverdue(payment)}
             $priority={payment.priority}
-            $expanded={expandedPayment === payment.id}
-            onClick={() => setExpandedPayment(expandedPayment === payment.id ? null : payment.id)}
+            $expanded={!collapseAll && expandedPayment === payment.id}
+            onClick={() => handleCardClick(payment.id)}
           >
             <S.PaymentIcon>{getCategoryLabel(payment.category).split(' ')[0]}</S.PaymentIcon>
             <S.CompactInfo>
-              <S.CompactName $paid={payment.paid}>
+              <S.CompactName $paid={payment.paid} $overdue={isOverdue(payment)}>
+                {isOverdue(payment) && "⚠️ "}
                 {payment.name}
                 {payment.isInstallment && (
                   <S.InstallmentBadge>
@@ -169,14 +188,16 @@ const PaymentsList = () => {
                   </S.InstallmentBadge>
                 )}
               </S.CompactName>
-              <S.CompactAmount $paid={payment.paid}>
+              <S.CompactAmount $paid={payment.paid} $overdue={isOverdue(payment)}>
                 {Number(payment.amount).toFixed(2)} zł
               </S.CompactAmount>
               <S.CompactDate>{payment.date}</S.CompactDate>
             </S.CompactInfo>
 
-            {expandedPayment === payment.id && (
-              <S.ExpandedDetails onClick={(e) => e.stopPropagation()}>
+            {!collapseAll && expandedPayment === payment.id && (
+              <S.ExpandedDetails onClick={(e) => {
+                e.stopPropagation();
+              }}>
                 <S.DetailRow>
                   <S.DetailLabel>Kategoria:</S.DetailLabel>
                   <S.DetailValue>{getCategoryLabel(payment.category)}</S.DetailValue>

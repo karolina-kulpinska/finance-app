@@ -1,5 +1,23 @@
 import styled from "styled-components";
 
+export const CollapseButton = styled.button`
+  margin: 0 0 12px 0;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  opacity: 1;
+  &:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+  }
+`;
+
 export const ListContainer = styled.div`
   background: white;
   border-radius: 16px;
@@ -16,6 +34,10 @@ export const ListHeader = styled.div`
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 2px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
 `;
 
 export const ListTitle = styled.h2`
@@ -23,7 +45,7 @@ export const ListTitle = styled.h2`
   font-weight: 900;
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
-  
+
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     font-size: 16px;
   }
@@ -72,11 +94,10 @@ export const PaymentCard = styled.div`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: ${({ $overdue }) => 
-      $overdue 
-        ? "0 4px 12px rgba(244, 67, 54, 0.2)" 
-        : "0 4px 12px rgba(0, 0, 0, 0.1)"
-    };
+    box-shadow: ${({ $overdue }) =>
+      $overdue
+        ? "0 4px 12px rgba(244, 67, 54, 0.2)"
+        : "0 4px 12px rgba(0, 0, 0, 0.1)"};
   }
 
   &:active {
@@ -84,7 +105,8 @@ export const PaymentCard = styled.div`
   }
 
   @keyframes highlight {
-    0%, 100% {
+    0%,
+    100% {
       box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
     }
     50% {
@@ -196,7 +218,7 @@ export const BankIconWrapper = styled.div`
   color: ${({ $color }) => $color};
   font-size: 11px;
   font-weight: 600;
-  
+
   svg {
     flex-shrink: 0;
   }

@@ -81,17 +81,6 @@ const Dashboard = () => {
       case "payments":
         return (
           <>
-            <S.PaymentsHeader>
-              <S.PaymentsTitle>
-                Wszystkie płatności ({payments.length})
-              </S.PaymentsTitle>
-            </S.PaymentsHeader>
-            <S.CollapseButton
-              style={{ margin: "8px 0 12px 0" }}
-              onClick={() => setCollapseAllPayments(!collapseAllPayments)}
-            >
-              {collapseAllPayments ? "Rozwiń" : "Zwiń"}
-            </S.CollapseButton>
             <PaymentsList
               collapseAll={collapseAllPayments}
               minDate={minDate}

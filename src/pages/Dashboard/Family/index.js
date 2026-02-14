@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
+import { selectPayments } from "../../../features/payments/paymentSlice";
 import { db } from "../../../api/firebase";
 import {
   doc,
@@ -17,12 +18,26 @@ import * as S from "./styled";
 
 const Family = () => {
   const user = useSelector(selectUser);
+  const payments = useSelector(selectPayments);
   const dispatch = useDispatch();
   const [family, setFamily] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState("main");
   const [familyName, setFamilyName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
+
+  const sharedCounts = useMemo(() => {
+    const sharedPayments = payments.filter((p) => p.sharedWithFamily === true).length;
+    let sharedLists = 0;
+    try {
+      const lists = JSON.parse(localStorage.getItem("shoppingLists") || "[]");
+      sharedLists = lists.filter((l) => l.sharedWithFamily === true).length;
+    } catch {}
+    const sharedFiles = payments.filter(
+      (p) => p.sharedWithFamily === true && p.attachmentUrl
+    ).length;
+    return { payments: sharedPayments, lists: sharedLists, files: sharedFiles };
+  }, [payments]);
 
   const loadFamily = useCallback(async () => {
     if (!user?.uid) return;
@@ -399,17 +414,17 @@ const Family = () => {
         <S.SharedGrid>
           <S.SharedCard>
             <S.SharedIcon>💳</S.SharedIcon>
-            <S.SharedCount>0</S.SharedCount>
+            <S.SharedCount>{sharedCounts.payments}</S.SharedCount>
             <S.SharedLabel>Płatności</S.SharedLabel>
           </S.SharedCard>
           <S.SharedCard>
             <S.SharedIcon>🛒</S.SharedIcon>
-            <S.SharedCount>0</S.SharedCount>
+            <S.SharedCount>{sharedCounts.lists}</S.SharedCount>
             <S.SharedLabel>Zakupy</S.SharedLabel>
           </S.SharedCard>
           <S.SharedCard>
             <S.SharedIcon>📁</S.SharedIcon>
-            <S.SharedCount>0</S.SharedCount>
+            <S.SharedCount>{sharedCounts.files}</S.SharedCount>
             <S.SharedLabel>Pliki</S.SharedLabel>
           </S.SharedCard>
         </S.SharedGrid>

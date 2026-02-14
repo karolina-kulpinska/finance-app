@@ -25,7 +25,9 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
     formState: { errors },
     setValue,
     watch,
-  } = useForm();
+  } = useForm({
+    defaultValues: { sharedWithFamily: false },
+  });
 
   const watchInstallments = watch("installments");
   const watchInstallmentAmount = watch("installmentAmount");
@@ -53,6 +55,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
       setValue("priority", editingPayment.priority);
       setValue("notes", editingPayment.notes || "");
       setValue("bank", editingPayment.bank || "other");
+      setValue("sharedWithFamily", Boolean(editingPayment.sharedWithFamily));
 
       if (editingPayment.attachmentName) {
         setFileInfo({
@@ -140,6 +143,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         updatePaymentRequest({
           id: editingPayment.id,
           ...data,
+          sharedWithFamily: Boolean(data.sharedWithFamily),
           attachmentUrl: editingPayment.attachmentUrl,
           attachmentName: editingPayment.attachmentName,
           oldAttachmentUrl: editingPayment.attachmentUrl,
@@ -164,6 +168,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
             date: installmentDate.toISOString().split("T")[0],
             paymentType: "installments",
             isInstallment: true,
+            sharedWithFamily: Boolean(data.sharedWithFamily),
             installmentInfo: {
               current: i + 1,
               total: installments,
@@ -191,6 +196,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
             date: paymentDate.toISOString().split("T")[0],
             paymentType: "insurance",
             isRecurring: true,
+            sharedWithFamily: Boolean(data.sharedWithFamily),
           };
           delete insuranceData.category;
           delete insuranceData.duration;
@@ -202,6 +208,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         const paymentData = {
           ...data,
           paymentType: paymentType || "other",
+          sharedWithFamily: Boolean(data.sharedWithFamily),
         };
         if (paymentType && paymentType !== "other") {
           delete paymentData.category;

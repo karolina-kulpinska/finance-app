@@ -119,7 +119,7 @@ function* addPaymentHandler({ payload }) {
       notes: payload.notes || "",
       bank: payload.bank || null,
       paymentType: payload.paymentType || null,
-      sharedWithFamily: payload.sharedWithFamily || false,
+      sharedWithFamily: Boolean(payload.sharedWithFamily),
       isInstallment: payload.isInstallment || false,
       installmentInfo: payload.installmentInfo || null,
       isRecurring: payload.isRecurring || false,
@@ -249,7 +249,7 @@ function* updatePaymentHandler({ payload }) {
       priority: updateData.priority,
       notes: updateData.notes || "",
       bank: updateData.bank || null,
-      sharedWithFamily: updateData.sharedWithFamily || false,
+      sharedWithFamily: Boolean(updateData.sharedWithFamily),
       attachmentUrl,
       attachmentName,
     };

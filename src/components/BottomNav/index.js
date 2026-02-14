@@ -14,6 +14,7 @@ const BottomNav = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: "dashboard", icon: "🏠", label: "Główna" },
     { id: "payments", icon: "💳", label: "Płatności" },
+    { id: "shopping", icon: "🛒", label: "Zakupy" },
     { id: "files", icon: "📁", label: "Pliki" },
     { id: "profile", icon: "👤", label: "Profil" },
     { id: "logout", icon: "🚪", label: "Wyloguj" },

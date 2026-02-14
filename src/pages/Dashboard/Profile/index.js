@@ -12,7 +12,6 @@ const Profile = () => {
 
   const [activeSection, setActiveSection] = useState(null);
   const [editName, setEditName] = useState(user?.displayName || "");
-  const [editEmail, setEditEmail] = useState(user?.email || "");
 
   const userEmail = user?.email || "brak@email.com";
   const userName = user?.displayName || "Użytkownik";
@@ -64,7 +63,7 @@ const Profile = () => {
             <S.Label>Email</S.Label>
             <S.Input
               type="email"
-              value={editEmail}
+              value={userEmail}
               disabled
               placeholder={userEmail}
             />

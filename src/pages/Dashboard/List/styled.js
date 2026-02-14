@@ -109,6 +109,20 @@ export const CompactName = styled.div`
   white-space: nowrap;
   width: 100%;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+`;
+
+export const InstallmentBadge = styled.span`
+  font-size: 8px;
+  font-weight: 700;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 2px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
 `;
 
 export const CompactAmount = styled.div`
@@ -213,7 +227,7 @@ export const PriorityBadge = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 3px 8px;
   background: ${({ $priority }) => {
     switch ($priority) {
       case "high":
@@ -234,11 +248,24 @@ export const PriorityBadge = styled.span`
         return "#e65100";
     }
   }};
-  border-radius: 8px;
-  font-size: 12px;
+  border-radius: 6px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+`;
+
+export const BankIconWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: ${({ $color }) => `${$color}10`};
+  color: ${({ $color }) => $color};
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid ${({ $color }) => `${$color}30`};
 `;
 
 export const NoData = styled.div`

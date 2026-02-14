@@ -10,6 +10,7 @@ import {
 } from "../../../features/payments/paymentSlice";
 import { showConfirm } from "../../../features/notification/confirmSlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
+import { getBankConfig } from "../../../utils/bankIcons";
 import * as S from "./styled";
 
 const PaymentsList = () => {
@@ -68,25 +69,16 @@ const PaymentsList = () => {
     }
   };
 
-  const getBankLabel = (bank) => {
-    switch (bank) {
-      case "revolut":
-        return "🟣 Revolut";
-      case "mbank":
-        return "🔴 mBank";
-      case "ing":
-        return "🟠 ING";
-      case "pko":
-        return "🔵 PKO BP";
-      case "millennium":
-        return "⚫ Millennium";
-      case "santander":
-        return "🔴 Santander";
-      case "cash":
-        return "💵 Gotówka";
-      default:
-        return "💳 Inne";
-    }
+  const renderBankIcon = (bank) => {
+    if (!bank) return null;
+    const config = getBankConfig(bank);
+    const IconComponent = config.icon;
+    return (
+      <S.BankIconWrapper $color={config.color}>
+        <IconComponent size={14} />
+        <span>{config.label}</span>
+      </S.BankIconWrapper>
+    );
   };
 
   const handleStatusToggle = (payment) => {
@@ -163,7 +155,14 @@ const PaymentsList = () => {
           >
             <S.PaymentIcon>{getCategoryLabel(payment.category).split(' ')[0]}</S.PaymentIcon>
             <S.CompactInfo>
-              <S.CompactName $paid={payment.paid}>{payment.name}</S.CompactName>
+              <S.CompactName $paid={payment.paid}>
+                {payment.name}
+                {payment.isInstallment && (
+                  <S.InstallmentBadge>
+                    {payment.installmentInfo.current}/{payment.installmentInfo.total}
+                  </S.InstallmentBadge>
+                )}
+              </S.CompactName>
               <S.CompactAmount $paid={payment.paid}>
                 {Number(payment.amount).toFixed(2)} zł
               </S.CompactAmount>
@@ -191,7 +190,7 @@ const PaymentsList = () => {
                 {payment.bank && (
                   <S.DetailRow>
                     <S.DetailLabel>Płatność:</S.DetailLabel>
-                    <S.DetailValue>{getBankLabel(payment.bank)}</S.DetailValue>
+                    {renderBankIcon(payment.bank)}
                   </S.DetailRow>
                 )}
 

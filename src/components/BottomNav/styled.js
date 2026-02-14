@@ -15,9 +15,14 @@ export const NavWrapper = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  max-width: 600px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 8px 0;
+  padding: 6px 0;
+  overflow-x: auto;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const NavItem = styled.button`
@@ -28,10 +33,11 @@ export const NavItem = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 8px 16px;
+  padding: 6px 10px;
   transition: all 0.3s ease;
   flex: 1;
-  gap: 4px;
+  gap: 3px;
+  min-width: fit-content;
 
   &:active {
     transform: scale(0.95);
@@ -39,17 +45,18 @@ export const NavItem = styled.button`
 `;
 
 export const NavIcon = styled.span`
-  font-size: 24px;
+  font-size: 20px;
   transition: all 0.3s ease;
-  transform: ${({ $active }) => ($active ? "scale(1.2)" : "scale(1)")};
+  transform: ${({ $active }) => ($active ? "scale(1.15)" : "scale(1)")};
   filter: ${({ $active }) =>
     $active ? "drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3))" : "none"};
 `;
 
 export const NavLabel = styled.span`
-  font-size: 11px;
+  font-size: 9px;
   font-weight: ${({ $active }) => ($active ? "700" : "500")};
   color: ${({ $active, $isLogout, theme }) =>
     $isLogout ? "#f5576c" : $active ? "#667eea" : theme.colors.secondary};
   transition: all 0.3s ease;
+  white-space: nowrap;
 `;

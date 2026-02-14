@@ -63,6 +63,8 @@ const Dashboard = () => {
             <Charts payments={payments} />
           </>
         );
+      case "shopping":
+        return <ShoppingLists />;
       case "files":
         return <Files />;
       case "profile":
@@ -79,9 +81,9 @@ const Dashboard = () => {
           onAddPayment={handleAddPayment}
           onToggleFilters={() => setShowFilters(!showFilters)}
           showFilters={showFilters}
-          hideFilters={activeTab === "files" || activeTab === "profile"}
+          hideFilters={activeTab === "shopping" || activeTab === "files" || activeTab === "profile"}
         />
-        {showFilters && activeTab !== "files" && activeTab !== "profile" && (
+        {showFilters && activeTab !== "shopping" && activeTab !== "files" && activeTab !== "profile" && (
           <S.FiltersBox>
             <Filters />
           </S.FiltersBox>

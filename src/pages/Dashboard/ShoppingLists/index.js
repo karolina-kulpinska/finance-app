@@ -8,7 +8,6 @@ const ShoppingLists = () => {
   const [selectedList, setSelectedList] = useState(null);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
-  const [receipt, setReceipt] = useState(null);
 
   const handleAddList = () => {
     if (newListName.trim()) {

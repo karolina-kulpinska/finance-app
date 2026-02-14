@@ -252,3 +252,21 @@ export const CompressionInfo = styled.span`
   margin-top: 4px;
   font-size: 10px;
 `;
+
+export const InstallmentRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+`;
+
+export const SmallInput = styled(Input)`
+  padding: 8px 10px;
+  font-size: 12px;
+`;
+
+export const HelpText = styled.div`
+  font-size: 10px;
+  color: ${({ theme }) => theme.colors.secondary};
+  font-style: italic;
+  margin-top: 2px;
+`;

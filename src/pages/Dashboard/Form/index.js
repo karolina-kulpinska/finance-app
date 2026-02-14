@@ -9,6 +9,7 @@ import {
 } from "../../../features/payments/paymentSlice";
 import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
+import { bankOptions, getBankConfig } from "../../../utils/bankIcons";
 import * as S from "./styled";
 
 const AddPaymentForm = () => {
@@ -116,7 +117,42 @@ const AddPaymentForm = () => {
         })
       );
     } else {
-      dispatch(addPaymentRequest(data));
+      // Sprawdź czy to płatność ratalna
+      const installments = parseInt(data.installments) || 0;
+      const installmentAmount = parseFloat(data.installmentAmount) || 0;
+      
+      if (installments > 0 && installmentAmount > 0) {
+        // Generuj płatności ratalne
+        const startDate = new Date(data.date);
+        
+        for (let i = 0; i < installments; i++) {
+          const installmentDate = new Date(startDate);
+          installmentDate.setMonth(startDate.getMonth() + i);
+          
+          const installmentData = {
+            ...data,
+            name: `${data.name} (Rata ${i + 1}/${installments})`,
+            amount: installmentAmount,
+            date: installmentDate.toISOString().split("T")[0],
+            isInstallment: true,
+            installmentInfo: {
+              current: i + 1,
+              total: installments,
+              originalName: data.name,
+            },
+          };
+          
+          // Tylko pierwsza rata dostaje załącznik
+          if (i > 0) {
+            delete installmentData.attachment;
+          }
+          
+          dispatch(addPaymentRequest(installmentData));
+        }
+      } else {
+        // Zwykła płatność
+        dispatch(addPaymentRequest(data));
+      }
     }
     
     dispatch(toggleModal());
@@ -189,15 +225,36 @@ const AddPaymentForm = () => {
             <S.FormGroup>
               <S.Label>Bank/Metoda płatności</S.Label>
               <S.Select {...register("bank")} defaultValue="other">
-                <option value="revolut">🟣 Revolut</option>
-                <option value="mbank">🔴 mBank</option>
-                <option value="ing">🟠 ING</option>
-                <option value="pko">🔵 PKO BP</option>
-                <option value="millennium">⚫ Millennium</option>
-                <option value="santander">🔴 Santander</option>
-                <option value="cash">💵 Gotówka</option>
-                <option value="other">💳 Inne</option>
+                {bankOptions.map((bank) => {
+                  const config = getBankConfig(bank.value);
+                  return (
+                    <option key={bank.value} value={bank.value}>
+                      {config.label}
+                    </option>
+                  );
+                })}
               </S.Select>
+            </S.FormGroup>
+
+            <S.FormGroup $fullWidth>
+              <S.Label>Raty (opcjonalnie)</S.Label>
+              <S.InstallmentRow>
+                <S.SmallInput
+                  type="number"
+                  min="1"
+                  {...register("installments")}
+                  placeholder="Liczba rat"
+                />
+                <S.SmallInput
+                  type="number"
+                  step="0.01"
+                  {...register("installmentAmount")}
+                  placeholder="Kwota raty"
+                />
+              </S.InstallmentRow>
+              <S.HelpText>
+                💡 Jeśli zaznaczysz raty, płatności będą powtarzać się co miesiąc
+              </S.HelpText>
             </S.FormGroup>
 
             <S.FormGroup $fullWidth>

@@ -15,6 +15,7 @@ const Filters = () => {
   const activeFilter = useSelector(selectFilter);
   const activeCategoryFilter = useSelector(selectCategoryFilter);
   const activeDateFilter = useSelector(selectDateFilter);
+
   const [showCustomDate, setShowCustomDate] = useState(false);
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
@@ -52,20 +53,23 @@ const Filters = () => {
 
   const handleDateFilterChange = (filterId) => {
     dispatch(setDateFilter(filterId));
-    if (filterId === "custom") {
-      setShowCustomDate(true);
-    } else {
-      setShowCustomDate(false);
-    }
+    setShowCustomDate(filterId === "custom");
   };
+
+  const hasActiveFilters = activeFilter !== "all" || activeCategoryFilter !== "all" || activeDateFilter !== "all";
 
   return (
     <S.FiltersContainer>
       <S.FiltersHeader>
-        <S.FiltersTitle>Filtry</S.FiltersTitle>
-        <S.ClearButton onClick={handleClearFilters}>
-          Wyczyść filtry
-        </S.ClearButton>
+        <S.FiltersTitle>
+          🔍 Filtry
+          {hasActiveFilters && <S.ActiveBadge>•</S.ActiveBadge>}
+        </S.FiltersTitle>
+        {hasActiveFilters && (
+          <S.ClearButton onClick={handleClearFilters}>
+            ✕ Wyczyść
+          </S.ClearButton>
+        )}
       </S.FiltersHeader>
 
       <S.FiltersGrid>
@@ -73,13 +77,13 @@ const Filters = () => {
           <S.FilterLabel>Status</S.FilterLabel>
           <S.FilterButtons>
             {statusFilters.map((filter) => (
-              <S.FilterButton
+              <S.FilterChip
                 key={filter.id}
                 $active={activeFilter === filter.id}
                 onClick={() => dispatch(setFilter(filter.id))}
               >
                 {filter.label}
-              </S.FilterButton>
+              </S.FilterChip>
             ))}
           </S.FilterButtons>
         </S.FilterGroup>
@@ -88,35 +92,34 @@ const Filters = () => {
           <S.FilterLabel>Kategoria</S.FilterLabel>
           <S.FilterButtons>
             {categoryFilters.map((filter) => (
-              <S.FilterButton
+              <S.FilterChip
                 key={filter.id}
                 $active={activeCategoryFilter === filter.id}
                 onClick={() => dispatch(setCategoryFilter(filter.id))}
               >
                 {filter.label}
-              </S.FilterButton>
+              </S.FilterChip>
             ))}
           </S.FilterButtons>
         </S.FilterGroup>
 
-        <S.FilterGroup>
+        <S.FilterGroup $fullWidth>
           <S.FilterLabel>Okres</S.FilterLabel>
           <S.FilterButtons>
             {dateFilters.map((filter) => (
-              <S.FilterButton
+              <S.FilterChip
                 key={filter.id}
                 $active={activeDateFilter === filter.id}
                 onClick={() => handleDateFilterChange(filter.id)}
               >
                 {filter.label}
-              </S.FilterButton>
+              </S.FilterChip>
             ))}
           </S.FilterButtons>
         </S.FilterGroup>
 
         {showCustomDate && (
           <S.FilterGroup $fullWidth>
-            <S.FilterLabel>Zakres dat</S.FilterLabel>
             <S.DateInputs>
               <S.DateInput
                 type="date"

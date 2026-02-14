@@ -5,11 +5,12 @@ export const Header = styled.header`
   justify-content: space-between;
   align-items: center;
   padding: 0;
+  margin-bottom: 8px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     flex-direction: column;
     align-items: stretch;
-    gap: 20px;
+    gap: 12px;
   }
 `;
 
@@ -20,7 +21,7 @@ export const TitleSection = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: 36px;
+  font-size: 24px;
   font-weight: 900;
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
@@ -30,12 +31,12 @@ export const Title = styled.h1`
   background-clip: text;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    font-size: 28px;
+    font-size: 22px;
   }
 `;
 
 export const Subtitle = styled.p`
-  font-size: 15px;
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.secondary};
   margin: 0;
 `;
@@ -51,22 +52,26 @@ export const Actions = styled.div`
   }
 `;
 
-export const LogoutButton = styled.button`
-  padding: 12px 24px;
-  background: transparent;
-  color: ${({ theme }) => theme.colors.error};
-  border: 2px solid ${({ theme }) => theme.colors.error};
-  border-radius: 12px;
-  font-size: 15px;
+export const FilterToggleButton = styled.button`
+  padding: 8px 16px;
+  background: white;
+  color: ${({ theme }) => theme.colors.text};
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: 10px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.error};
-    color: white;
-    transform: translateY(-2px);
+    background: #f8f9fa;
+    border-color: #667eea;
+    color: #667eea;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
@@ -75,25 +80,25 @@ export const LogoutButton = styled.button`
 `;
 
 export const AddButton = styled.button`
-  padding: 14px 28px;
+  padding: 10px 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
   }
 
   &:active {
-    transform: translateY(-1px);
+    transform: translateY(0);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   toggleModal,
@@ -10,14 +10,21 @@ import Header from "./Header";
 import Stats from "./Stats";
 import Charts from "./Charts";
 import Filters from "./Filters";
+import MiniPayments from "./MiniPayments";
 import AddPaymentForm from "./Form";
 import PaymentsList from "./List";
+import ShoppingLists from "./ShoppingLists";
+import Profile from "./Profile";
+import BottomNav from "../../components/BottomNav";
 import * as S from "./styled";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const isModalOpen = useSelector(selectIsModalOpen);
   const payments = useSelector(selectPayments);
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showPaymentFilters, setShowPaymentFilters] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
@@ -27,16 +34,51 @@ const Dashboard = () => {
     dispatch(toggleModal());
   };
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return (
+          <>
+            <Stats payments={payments} />
+            {showFilters && <Filters />}
+            <MiniPayments payments={payments} />
+          </>
+        );
+      case "payments":
+        return (
+          <>
+            <S.PaymentsHeader>
+              <S.PaymentsTitle>Wszystkie płatności ({payments.length})</S.PaymentsTitle>
+              <S.FilterToggleButton onClick={() => setShowPaymentFilters(!showPaymentFilters)}>
+                {showPaymentFilters ? "▲ Ukryj filtry" : "▼ Filtry"}
+              </S.FilterToggleButton>
+            </S.PaymentsHeader>
+            {showPaymentFilters && <Filters />}
+            <PaymentsList />
+            <Charts payments={payments} />
+          </>
+        );
+      case "shopping":
+        return <ShoppingLists />;
+      case "profile":
+        return <Profile />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <S.Wrapper>
       <S.Container>
-        <Header onAddPayment={handleAddPayment} />
-        <Stats payments={payments} />
-        <Charts payments={payments} />
-        <Filters />
-        <PaymentsList />
-        {isModalOpen && <AddPaymentForm />}
+        <Header 
+          onAddPayment={handleAddPayment}
+          onToggleFilters={() => setShowFilters(!showFilters)}
+          showFilters={showFilters}
+        />
+        {renderContent()}
       </S.Container>
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {isModalOpen && <AddPaymentForm />}
     </S.Wrapper>
   );
 };

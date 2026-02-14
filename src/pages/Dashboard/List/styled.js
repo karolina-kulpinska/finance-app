@@ -2,42 +2,37 @@ import styled from "styled-components";
 
 export const ListContainer = styled.div`
   background: white;
-  border-radius: 20px;
-  padding: 28px 32px;
+  border-radius: 16px;
+  padding: 20px 16px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
   border: 1px solid ${({ theme }) => theme.colors.border};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 20px;
+    padding: 16px 12px;
   }
 `;
 
 export const ListHeader = styled.div`
-  margin-bottom: 24px;
-  padding-bottom: 20px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 2px solid ${({ theme }) => theme.colors.border};
 `;
 
 export const ListTitle = styled.h2`
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 900;
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    font-size: 20px;
+    font-size: 16px;
   }
 `;
 
 export const PaymentGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
-
-  @media (min-width: 1200px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
+  gap: 12px;
 `;
 
 export const PaymentCard = styled.div`
@@ -50,10 +45,9 @@ export const PaymentCard = styled.div`
       if ($priority === "low") return "#43e97b";
       return theme.colors.border;
     }};
-  border-radius: 18px;
-  padding: 24px;
+  border-radius: 12px;
+  padding: 14px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
   position: relative;
   overflow: hidden;
 
@@ -62,7 +56,7 @@ export const PaymentCard = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
+    width: 3px;
     height: 100%;
     background: ${({ $priority, $paid }) => {
       if ($paid) return "#66bb6a";
@@ -70,21 +64,14 @@ export const PaymentCard = styled.div`
       if ($priority === "low") return "#43e97b";
       return "#667eea";
     }};
-    transform: translateX(-4px);
-    transition: transform 0.3s ease;
   }
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-
-    &::before {
-      transform: translateX(0);
-    }
+  &:active {
+    transform: scale(0.99);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 18px;
+    padding: 12px;
   }
 `;
 
@@ -92,8 +79,8 @@ export const PaymentHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
-  gap: 15px;
+  margin-bottom: 10px;
+  gap: 10px;
 `;
 
 export const PaymentInfo = styled.div`
@@ -102,7 +89,7 @@ export const PaymentInfo = styled.div`
 `;
 
 export const PaymentName = styled.h3`
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
   margin: 0 0 4px 0;
@@ -113,12 +100,12 @@ export const PaymentName = styled.h3`
   white-space: nowrap;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    font-size: 16px;
+    font-size: 14px;
   }
 `;
 
 export const PaymentCategory = styled.span`
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.secondary};
   text-transform: uppercase;
@@ -126,25 +113,25 @@ export const PaymentCategory = styled.span`
 `;
 
 export const PaymentAmount = styled.div`
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 900;
   color: ${({ $paid }) => ($paid ? "#66bb6a" : "#667eea")};
   white-space: nowrap;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    font-size: 18px;
+    font-size: 15px;
   }
 `;
 
 export const PaymentDetails = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 12px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 8px;
   }
 `;
 
@@ -155,7 +142,7 @@ export const DetailItem = styled.div`
 `;
 
 export const DetailLabel = styled.span`
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.secondary};
   text-transform: uppercase;
@@ -163,34 +150,34 @@ export const DetailLabel = styled.span`
 `;
 
 export const DetailValue = styled.span`
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.text};
 `;
 
 export const PaymentNotes = styled.p`
-  font-size: 14px;
+  font-size: 12px;
   color: ${({ theme }) => theme.colors.secondary};
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
   line-height: 1.5;
   font-style: italic;
 `;
 
 export const PaymentActions = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
-  padding-top: 16px;
-  margin-top: 16px;
-  border-top: 2px solid ${({ theme }) => theme.colors.border};
+  padding-top: 10px;
+  margin-top: 10px;
+  border-top: 1.5px solid ${({ theme }) => theme.colors.border};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    gap: 8px;
+    gap: 6px;
   }
 `;
 
 export const ActionButton = styled.button`
-  padding: 10px 18px;
+  padding: 7px 12px;
   background: ${({ $variant }) => {
     switch ($variant) {
       case "status":
@@ -207,29 +194,29 @@ export const ActionButton = styled.button`
   }};
   color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   &:active {
-    transform: translateY(-1px);
+    transform: scale(0.98);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    padding: 8px 14px;
-    font-size: 13px;
+    padding: 6px 10px;
+    font-size: 11px;
   }
 `;
 

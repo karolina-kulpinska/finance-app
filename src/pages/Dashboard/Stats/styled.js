@@ -14,11 +14,11 @@ const fadeIn = keyframes`
 export const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 12px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
 `;
 
@@ -37,8 +37,8 @@ export const StatCard = styled.div`
         return theme.colors.white;
     }
   }};
-  border-radius: 20px;
-  padding: 28px 24px;
+  border-radius: 16px;
+  padding: 16px 12px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
   transition: all 0.3s ease;
   animation: ${fadeIn} 0.5s ease-out;
@@ -52,32 +52,31 @@ export const StatCard = styled.div`
     position: absolute;
     top: 0;
     right: 0;
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     transform: translate(30%, -30%);
   }
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: ${({ theme }) => theme.shadows.hover};
+  &:active {
+    transform: scale(0.98);
   }
 `;
 
 export const StatIcon = styled.div`
-  font-size: 32px;
-  margin-bottom: 12px;
+  font-size: 24px;
+  margin-bottom: 8px;
   position: relative;
   z-index: 1;
 `;
 
 export const StatLabel = styled.div`
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 600;
   color: ${({ $variant }) =>
     $variant ? "rgba(255, 255, 255, 0.9)" : "#7c8db5"};
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   position: relative;
@@ -85,22 +84,23 @@ export const StatLabel = styled.div`
 `;
 
 export const StatValue = styled.div`
-  font-size: 32px;
+  font-size: 18px;
   font-weight: 900;
   color: ${({ $variant }) => ($variant ? "white" : "#2d3748")};
   position: relative;
   z-index: 1;
+  line-height: 1.2;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    font-size: 28px;
+    font-size: 16px;
   }
 `;
 
 export const StatSubtext = styled.div`
-  font-size: 13px;
+  font-size: 10px;
   color: ${({ $variant }) =>
     $variant ? "rgba(255, 255, 255, 0.8)" : "#a0aec0"};
-  margin-top: 6px;
+  margin-top: 4px;
   position: relative;
   z-index: 1;
 `;

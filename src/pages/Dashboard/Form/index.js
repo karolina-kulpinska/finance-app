@@ -451,10 +451,17 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
             {paymentType !== "installments" && paymentType !== "insurance" && (
               <S.FormGroup $fullWidth>
                 <S.Label>Bank/Metoda płatności</S.Label>
-                <BankSelector
-                  value={watch("bank") || "other"}
-                  onChange={(bankValue) => setValue("bank", bankValue)}
-                />
+                <S.Select
+                  {...register("bank")}
+                  defaultValue={watch("bank") || "other"}
+                  style={{ maxWidth: 320, width: "100%", fontSize: 14 }}
+                >
+                  {bankOptions.map((bank) => (
+                    <option key={bank.value} value={bank.value}>
+                      {bank.label}
+                    </option>
+                  ))}
+                </S.Select>
               </S.FormGroup>
             )}
 

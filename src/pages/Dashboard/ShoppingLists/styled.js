@@ -184,6 +184,10 @@ export const Input = styled.input`
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   }
+  @media (max-width: 480px) {
+    width: 100%;
+    font-size: 15px;
+  }
 `;
 
 export const SaveButton = styled.button`
@@ -205,6 +209,10 @@ export const SaveButton = styled.button`
 
   &:active {
     transform: scale(0.98);
+  }
+  @media (max-width: 480px) {
+    width: 100%;
+    font-size: 15px;
   }
 `;
 
@@ -359,6 +367,11 @@ export const AddItemForm = styled.form`
   gap: 8px;
   margin-bottom: 16px;
   align-items: center;
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
 `;
 
 export const SectionBlock = styled.div`

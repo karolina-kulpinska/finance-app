@@ -12,7 +12,7 @@ import { showNotification } from "../../../features/notification/notificationSli
 import { bankOptions, getBankConfig } from "../../../utils/bankIcons";
 import * as S from "./styled";
 
-const AddPaymentForm = () => {
+const AddPaymentForm = ({ paymentType, onClose }) => {
   const dispatch = useDispatch();
   const editingPayment = useSelector(selectEditingPayment);
   const [isCompressing, setIsCompressing] = useState(false);
@@ -22,7 +22,10 @@ const AddPaymentForm = () => {
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm();
+
+  const watchInstallments = watch("installments");
 
   useEffect(() => {
     if (editingPayment) {
@@ -117,12 +120,11 @@ const AddPaymentForm = () => {
         })
       );
     } else {
-      // Sprawdź czy to płatność ratalna
-      const installments = parseInt(data.installments) || 0;
-      const installmentAmount = parseFloat(data.installmentAmount) || 0;
-      
-      if (installments > 0 && installmentAmount > 0) {
-        // Generuj płatności ratalne
+      // Sprawdź typ płatności
+      if (paymentType === "installments") {
+        // Płatności ratalne
+        const installments = parseInt(data.installments) || 0;
+        const installmentAmount = parseFloat(data.installmentAmount) || 0;
         const startDate = new Date(data.date);
         
         for (let i = 0; i < installments; i++) {
@@ -134,6 +136,8 @@ const AddPaymentForm = () => {
             name: `${data.name} (Rata ${i + 1}/${installments})`,
             amount: installmentAmount,
             date: installmentDate.toISOString().split("T")[0],
+            category: "other",
+            paymentType: "installments",
             isInstallment: true,
             installmentInfo: {
               current: i + 1,
@@ -142,28 +146,155 @@ const AddPaymentForm = () => {
             },
           };
           
-          // Tylko pierwsza rata dostaje załącznik
-          if (i > 0) {
-            delete installmentData.attachment;
-          }
-          
+          if (i > 0) delete installmentData.attachment;
           dispatch(addPaymentRequest(installmentData));
         }
+      } else if (paymentType === "insurance") {
+        // Ubezpieczenie - płatności cykliczne
+        const duration = parseInt(data.duration) || 12;
+        const startDate = new Date(data.date);
+        
+        for (let i = 0; i < duration; i++) {
+          const paymentDate = new Date(startDate);
+          paymentDate.setMonth(startDate.getMonth() + i);
+          
+          const insuranceData = {
+            ...data,
+            name: `${data.name} (${i + 1}/${duration})`,
+            date: paymentDate.toISOString().split("T")[0],
+            category: "other",
+            paymentType: "insurance",
+            isRecurring: true,
+          };
+          
+          if (i > 0) delete insuranceData.attachment;
+          dispatch(addPaymentRequest(insuranceData));
+        }
       } else {
-        // Zwykła płatność
-        dispatch(addPaymentRequest(data));
+        // Zwykła płatność (bills, shopping, other)
+        const paymentData = {
+          ...data,
+          category: paymentType === "bills" ? "bills" : paymentType === "shopping" ? "shopping" : data.category,
+          paymentType: paymentType || "other",
+        };
+        dispatch(addPaymentRequest(paymentData));
       }
     }
     
     dispatch(toggleModal());
   };
 
+  const getFormTitle = () => {
+    if (editingPayment) return "Edytuj płatność";
+    
+    switch (paymentType) {
+      case "installments":
+        return "📅 Nowa płatność ratalna";
+      case "bills":
+        return "🧾 Nowy rachunek";
+      case "shopping":
+        return "🛒 Nowe zakupy";
+      case "insurance":
+        return "🛡️ Nowe ubezpieczenie";
+      default:
+        return "📌 Nowa płatność";
+    }
+  };
+
+  const renderTypeSpecificFields = () => {
+    switch (paymentType) {
+      case "installments":
+        return (
+          <>
+            <S.FormGroup>
+              <S.Label>Liczba rat *</S.Label>
+              <S.Input
+                type="number"
+                min="2"
+                {...register("installments", { 
+                  required: "Podaj liczbę rat",
+                  min: { value: 2, message: "Minimum 2 raty" }
+                })}
+                placeholder="np. 12"
+              />
+              {errors.installments && (
+                <S.ErrorMessage>{errors.installments.message}</S.ErrorMessage>
+              )}
+            </S.FormGroup>
+            <S.FormGroup>
+              <S.Label>Kwota raty *</S.Label>
+              <S.Input
+                type="number"
+                step="0.01"
+                {...register("installmentAmount", {
+                  required: "Podaj kwotę raty",
+                  min: { value: 0.01, message: "Kwota musi być większa niż 0" },
+                })}
+                placeholder="np. 250.00"
+              />
+              {errors.installmentAmount && (
+                <S.ErrorMessage>{errors.installmentAmount.message}</S.ErrorMessage>
+              )}
+            </S.FormGroup>
+            {watchInstallments && (
+              <S.InfoBox $fullWidth>
+                💡 Zostanie utworzonych {watchInstallments} płatności co miesiąc
+              </S.InfoBox>
+            )}
+          </>
+        );
+      
+      case "insurance":
+        return (
+          <>
+            <S.FormGroup>
+              <S.Label>Okres trwania (miesiące) *</S.Label>
+              <S.Input
+                type="number"
+                min="1"
+                {...register("duration", { 
+                  required: "Podaj okres trwania",
+                  min: { value: 1, message: "Minimum 1 miesiąc" }
+                })}
+                placeholder="np. 12"
+              />
+              {errors.duration && (
+                <S.ErrorMessage>{errors.duration.message}</S.ErrorMessage>
+              )}
+            </S.FormGroup>
+            <S.FormGroup>
+              <S.Label>Numer polisy</S.Label>
+              <S.Input
+                {...register("policyNumber")}
+                placeholder="np. POL/2026/12345"
+              />
+            </S.FormGroup>
+            <S.InfoBox $fullWidth>
+              💡 Płatność będzie powtarzana automatycznie co miesiąc
+            </S.InfoBox>
+          </>
+        );
+      
+      case "bills":
+        return (
+          <S.FormGroup>
+            <S.Label>Numer konta/umowy</S.Label>
+            <S.Input
+              {...register("accountNumber")}
+              placeholder="np. 12 3456 7890..."
+            />
+          </S.FormGroup>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
-    <S.Overlay onClick={() => dispatch(toggleModal())}>
+    <S.Overlay onClick={onClose}>
       <S.Modal onClick={(e) => e.stopPropagation()}>
-        <S.FormTitle>
-          {editingPayment ? "Edytuj płatność" : "Dodaj nową płatność"}
-        </S.FormTitle>
+        <S.FormTitle>{getFormTitle()}</S.FormTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
           <S.FormGrid>
             <S.FormGroup $fullWidth>
@@ -236,26 +367,7 @@ const AddPaymentForm = () => {
               </S.Select>
             </S.FormGroup>
 
-            <S.FormGroup $fullWidth>
-              <S.Label>Raty (opcjonalnie)</S.Label>
-              <S.InstallmentRow>
-                <S.SmallInput
-                  type="number"
-                  min="1"
-                  {...register("installments")}
-                  placeholder="Liczba rat"
-                />
-                <S.SmallInput
-                  type="number"
-                  step="0.01"
-                  {...register("installmentAmount")}
-                  placeholder="Kwota raty"
-                />
-              </S.InstallmentRow>
-              <S.HelpText>
-                💡 Jeśli zaznaczysz raty, płatności będą powtarzać się co miesiąc
-              </S.HelpText>
-            </S.FormGroup>
+            {renderTypeSpecificFields()}
 
             <S.FormGroup $fullWidth>
               <S.Label>Notatki</S.Label>

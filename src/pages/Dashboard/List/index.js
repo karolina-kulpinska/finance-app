@@ -11,6 +11,7 @@ import {
 import { showConfirm } from "../../../features/notification/confirmSlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import { getBankConfig } from "../../../utils/bankIcons";
+import { FaUniversity } from "react-icons/fa";
 import * as S from "./styled";
 
 const PaymentsList = () => {
@@ -71,14 +72,19 @@ const PaymentsList = () => {
 
   const renderBankIcon = (bank) => {
     if (!bank) return null;
-    const config = getBankConfig(bank);
-    const IconComponent = config.icon;
-    return (
-      <S.BankIconWrapper $color={config.color}>
-        <IconComponent size={14} />
-        <span>{config.label}</span>
-      </S.BankIconWrapper>
-    );
+    try {
+      const config = getBankConfig(bank);
+      const IconComponent = config.icon || FaUniversity;
+      return (
+        <S.BankIconWrapper $color={config.color}>
+          <IconComponent size={14} style={{ flexShrink: 0 }} />
+          <span>{config.label}</span>
+        </S.BankIconWrapper>
+      );
+    } catch (error) {
+      console.error("Error rendering bank icon:", error);
+      return <S.DetailValue>{bank}</S.DetailValue>;
+    }
   };
 
   const handleStatusToggle = (payment) => {

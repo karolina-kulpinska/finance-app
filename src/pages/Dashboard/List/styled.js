@@ -177,6 +177,23 @@ export const PaymentNotes = styled.p`
   text-align: left;
 `;
 
+export const BankIconWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: ${({ $color }) => `${$color}15`};
+  border: 1px solid ${({ $color }) => `${$color}40`};
+  border-radius: 6px;
+  color: ${({ $color }) => $color};
+  font-size: 11px;
+  font-weight: 600;
+  
+  svg {
+    flex-shrink: 0;
+  }
+`;
+
 export const PaymentActions = styled.div`
   display: flex;
   gap: 6px;
@@ -253,19 +270,6 @@ export const PriorityBadge = styled.span`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-`;
-
-export const BankIconWrapper = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 8px;
-  background: ${({ $color }) => `${$color}10`};
-  color: ${({ $color }) => $color};
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  border: 1px solid ${({ $color }) => `${$color}30`};
 `;
 
 export const NoData = styled.div`

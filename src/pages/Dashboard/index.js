@@ -12,6 +12,7 @@ import Charts from "./Charts";
 import Filters from "./Filters";
 import MiniPayments from "./MiniPayments";
 import AddPaymentForm from "./Form";
+import PaymentTypeSelector from "./PaymentTypeSelector";
 import PaymentsList from "./List";
 import ShoppingLists from "./ShoppingLists";
 import Profile from "./Profile";
@@ -25,12 +26,25 @@ const Dashboard = () => {
   const payments = useSelector(selectPayments);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showFilters, setShowFilters] = useState(false);
+  const [showTypeSelector, setShowTypeSelector] = useState(false);
+  const [selectedPaymentType, setSelectedPaymentType] = useState(null);
 
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
   }, [dispatch]);
 
   const handleAddPayment = () => {
+    setShowTypeSelector(true);
+  };
+
+  const handleSelectType = (type) => {
+    setSelectedPaymentType(type);
+    setShowTypeSelector(false);
+    dispatch(toggleModal());
+  };
+
+  const handleCloseForm = () => {
+    setSelectedPaymentType(null);
     dispatch(toggleModal());
   };
 
@@ -91,7 +105,13 @@ const Dashboard = () => {
         {renderContent()}
       </S.Container>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
-      {isModalOpen && <AddPaymentForm />}
+      {showTypeSelector && (
+        <PaymentTypeSelector 
+          onSelectType={handleSelectType}
+          onClose={() => setShowTypeSelector(false)}
+        />
+      )}
+      {isModalOpen && <AddPaymentForm paymentType={selectedPaymentType} onClose={handleCloseForm} />}
     </S.Wrapper>
   );
 };

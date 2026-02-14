@@ -270,3 +270,15 @@ export const HelpText = styled.div`
   font-style: italic;
   margin-top: 2px;
 `;
+
+export const InfoBox = styled.div`
+  grid-column: ${({ $fullWidth }) => ($fullWidth ? "1 / -1" : "auto")};
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 11px;
+  color: #2e7d32;
+  font-weight: 600;
+  border: 1px solid #66bb6a;
+  text-align: center;
+`;

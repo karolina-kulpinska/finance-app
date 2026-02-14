@@ -17,7 +17,17 @@ users/
               ├── paid: boolean
               ├── notes: string
               ├── attachmentUrl: string
-              └── attachmentName: string
+              ├── attachmentName: string
+              ├── bank: string (opcjonalne - revolut/mbank/ing/pko/millennium/santander/alior/credit_card/blik/cash/other)
+              ├── paymentType: string (opcjonalne - installments/bills/shopping/insurance/other)
+              ├── isInstallment: boolean (opcjonalne)
+              ├── installmentInfo: object (opcjonalne)
+              │   ├── current: number
+              │   ├── total: number
+              │   └── originalName: string
+              ├── isRecurring: boolean (opcjonalne - dla ubezpieczeń)
+              ├── policyNumber: string (opcjonalne - dla ubezpieczeń)
+              └── accountNumber: string (opcjonalne - dla rachunków)
 ```
 
 ### Firebase Storage:

@@ -4,13 +4,14 @@ import { Link } from "react-router-dom";
 import { GoogleIcon } from "../../../components/Icons";
 import { toRegistration } from "../../../routes";
 import * as S from "./styled";
+import * as R from "./RememberMe.styled";
 
 const LoginForm = ({ onSubmit, onGoogleLogin, isLoading }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ defaultValues: { remember: true } });
 
   return (
     <S.Wrapper>
@@ -42,6 +43,11 @@ const LoginForm = ({ onSubmit, onGoogleLogin, isLoading }) => {
             <S.ErrorMessage>{errors.password.message}</S.ErrorMessage>
           )}
         </S.InputWrapper>
+
+        <R.CheckboxWrapper>
+          <R.Checkbox type="checkbox" {...register("remember")} id="remember" />
+          <R.CheckboxLabel htmlFor="remember">Zapamiętaj mnie</R.CheckboxLabel>
+        </R.CheckboxWrapper>
 
         <S.StyledButton type="submit" disabled={isLoading}>
           {isLoading ? "Logowanie..." : "Zaloguj się"}

@@ -1,8 +1,5 @@
 import { call, put, takeLatest } from "redux-saga/effects";
-import {
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../api/firebase";
 import {
   loginRequest,
@@ -14,7 +11,17 @@ import { showNotification } from "../notification/notificationSlice";
 
 function* loginHandler({ payload }) {
   try {
-    const { email, password } = payload;
+    const { email, password, remember } = payload;
+    const {
+      setPersistence,
+      browserLocalPersistence,
+      browserSessionPersistence,
+    } = require("firebase/auth");
+    yield call(
+      setPersistence,
+      auth,
+      remember ? browserLocalPersistence : browserSessionPersistence,
+    );
     const userCredential = yield call(
       signInWithEmailAndPassword,
       auth,
@@ -30,7 +37,7 @@ function* loginHandler({ payload }) {
         displayName: user.displayName,
       }),
     );
-    
+
     yield put(
       showNotification({
         message: "Witaj ponownie! Zalogowano pomyślnie.",
@@ -39,9 +46,9 @@ function* loginHandler({ payload }) {
     );
   } catch (error) {
     yield put(loginError(error.message));
-    
+
     let errorMessage = "Wystąpił błąd podczas logowania.";
-    
+
     if (error.code === "auth/user-not-found") {
       errorMessage = "Nie znaleziono użytkownika z tym adresem e-mail.";
     } else if (error.code === "auth/wrong-password") {
@@ -51,7 +58,7 @@ function* loginHandler({ payload }) {
     } else if (error.code === "auth/too-many-requests") {
       errorMessage = "Zbyt wiele prób logowania. Spróbuj ponownie później.";
     }
-    
+
     yield put(
       showNotification({
         message: errorMessage,
@@ -65,7 +72,7 @@ function* loginWithGoogleHandler() {
   try {
     googleProvider.setCustomParameters({ prompt: "select_account" });
     const result = yield call(signInWithPopup, auth, googleProvider);
-    
+
     if (result && result.user) {
       yield put(
         loginSuccess({
@@ -74,7 +81,7 @@ function* loginWithGoogleHandler() {
           displayName: result.user.displayName,
         }),
       );
-      
+
       yield put(
         showNotification({
           message: "Zalogowano pomyślnie przez Google!",
@@ -83,20 +90,25 @@ function* loginWithGoogleHandler() {
       );
     }
   } catch (error) {
-    if (error.code === "auth/popup-closed-by-user" || error.code === "auth/cancelled-popup-request") {
+    if (
+      error.code === "auth/popup-closed-by-user" ||
+      error.code === "auth/cancelled-popup-request"
+    ) {
       return;
     }
-    
+
     yield put(loginError(error.message));
-    
-    let errorMessage = "Nie udało się zalogować przez Google. Spróbuj ponownie.";
-    
+
+    let errorMessage =
+      "Nie udało się zalogować przez Google. Spróbuj ponownie.";
+
     if (error.code === "auth/popup-blocked") {
-      errorMessage = "Okno logowania zostało zablokowane. Zezwól na wyskakujące okna.";
+      errorMessage =
+        "Okno logowania zostało zablokowane. Zezwól na wyskakujące okna.";
     } else if (error.code === "auth/network-request-failed") {
       errorMessage = "Brak połączenia z internetem. Sprawdź swoje połączenie.";
     }
-    
+
     yield put(
       showNotification({
         message: errorMessage,

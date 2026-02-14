@@ -26,6 +26,19 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
   } = useForm();
 
   const watchInstallments = watch("installments");
+  const watchInstallmentAmount = watch("installmentAmount");
+  const watchDuration = watch("duration");
+  const watchAmount = watch("amount");
+
+  // Oblicz całkowitą kwotę dla rat
+  const totalInstallmentAmount = watchInstallments && watchInstallmentAmount 
+    ? (parseFloat(watchInstallmentAmount) * parseInt(watchInstallments)).toFixed(2)
+    : null;
+
+  // Oblicz całkowitą kwotę dla ubezpieczenia
+  const totalInsuranceAmount = watchDuration && watchAmount
+    ? (parseFloat(watchAmount) * parseInt(watchDuration)).toFixed(2)
+    : null;
 
   useEffect(() => {
     if (editingPayment) {
@@ -131,20 +144,22 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
           const installmentDate = new Date(startDate);
           installmentDate.setMonth(startDate.getMonth() + i);
           
-          const installmentData = {
-            ...data,
-            name: `${data.name} (Rata ${i + 1}/${installments})`,
-            amount: installmentAmount,
-            date: installmentDate.toISOString().split("T")[0],
-            category: "other",
-            paymentType: "installments",
-            isInstallment: true,
-            installmentInfo: {
-              current: i + 1,
-              total: installments,
-              originalName: data.name,
-            },
-          };
+            const installmentData = {
+              ...data,
+              name: `${data.name} (Rata ${i + 1}/${installments})`,
+              amount: installmentAmount,
+              date: installmentDate.toISOString().split("T")[0],
+              paymentType: "installments",
+              isInstallment: true,
+              installmentInfo: {
+                current: i + 1,
+                total: installments,
+                originalName: data.name,
+              },
+            };
+            delete installmentData.category;
+            delete installmentData.installments;
+            delete installmentData.installmentAmount;
           
           if (i > 0) delete installmentData.attachment;
           dispatch(addPaymentRequest(installmentData));
@@ -162,10 +177,11 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
             ...data,
             name: `${data.name} (${i + 1}/${duration})`,
             date: paymentDate.toISOString().split("T")[0],
-            category: "other",
             paymentType: "insurance",
             isRecurring: true,
           };
+          delete insuranceData.category;
+          delete insuranceData.duration;
           
           if (i > 0) delete insuranceData.attachment;
           dispatch(addPaymentRequest(insuranceData));
@@ -174,9 +190,12 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         // Zwykła płatność (bills, shopping, other)
         const paymentData = {
           ...data,
-          category: paymentType === "bills" ? "bills" : paymentType === "shopping" ? "shopping" : data.category,
           paymentType: paymentType || "other",
         };
+        // Usuń kategorię dla nowych typów płatności
+        if (paymentType && paymentType !== "other") {
+          delete paymentData.category;
+        }
         dispatch(addPaymentRequest(paymentData));
       }
     }
@@ -207,6 +226,21 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         return (
           <>
             <S.FormGroup>
+              <S.Label>Kwota raty (zł) *</S.Label>
+              <S.Input
+                type="number"
+                step="0.01"
+                {...register("installmentAmount", {
+                  required: "Podaj kwotę raty",
+                  min: { value: 0.01, message: "Kwota musi być większa niż 0" },
+                })}
+                placeholder="np. 250.00"
+              />
+              {errors.installmentAmount && (
+                <S.ErrorMessage>{errors.installmentAmount.message}</S.ErrorMessage>
+              )}
+            </S.FormGroup>
+            <S.FormGroup>
               <S.Label>Liczba rat *</S.Label>
               <S.Input
                 type="number"
@@ -221,32 +255,40 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
                 <S.ErrorMessage>{errors.installments.message}</S.ErrorMessage>
               )}
             </S.FormGroup>
-            <S.FormGroup>
-              <S.Label>Kwota raty *</S.Label>
-              <S.Input
-                type="number"
-                step="0.01"
-                {...register("installmentAmount", {
-                  required: "Podaj kwotę raty",
-                  min: { value: 0.01, message: "Kwota musi być większa niż 0" },
-                })}
-                placeholder="np. 250.00"
-              />
-              {errors.installmentAmount && (
-                <S.ErrorMessage>{errors.installmentAmount.message}</S.ErrorMessage>
-              )}
-            </S.FormGroup>
-            {watchInstallments && (
-              <S.InfoBox $fullWidth>
-                💡 Zostanie utworzonych {watchInstallments} płatności co miesiąc
-              </S.InfoBox>
+            {totalInstallmentAmount && (
+              <S.TotalAmountBox>
+                <S.TotalLabel>Kwota całkowita:</S.TotalLabel>
+                <S.TotalValue>{totalInstallmentAmount} zł</S.TotalValue>
+              </S.TotalAmountBox>
             )}
+            <S.FormGroup>
+              <S.Label>Numer konta (opcjonalnie)</S.Label>
+              <S.Input
+                {...register("accountNumber")}
+                placeholder="np. 12 3456 7890..."
+              />
+            </S.FormGroup>
           </>
         );
       
       case "insurance":
         return (
           <>
+            <S.FormGroup>
+              <S.Label>Miesięczna kwota (zł) *</S.Label>
+              <S.Input
+                type="number"
+                step="0.01"
+                {...register("amount", {
+                  required: "Podaj miesięczną kwotę",
+                  min: { value: 0.01, message: "Kwota musi być większa niż 0" },
+                })}
+                placeholder="np. 150.00"
+              />
+              {errors.amount && (
+                <S.ErrorMessage>{errors.amount.message}</S.ErrorMessage>
+              )}
+            </S.FormGroup>
             <S.FormGroup>
               <S.Label>Okres trwania (miesiące) *</S.Label>
               <S.Input
@@ -262,16 +304,26 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
                 <S.ErrorMessage>{errors.duration.message}</S.ErrorMessage>
               )}
             </S.FormGroup>
+            {totalInsuranceAmount && (
+              <S.TotalAmountBox>
+                <S.TotalLabel>Kwota całkowita:</S.TotalLabel>
+                <S.TotalValue>{totalInsuranceAmount} zł</S.TotalValue>
+              </S.TotalAmountBox>
+            )}
             <S.FormGroup>
-              <S.Label>Numer polisy</S.Label>
+              <S.Label>Numer konta</S.Label>
+              <S.Input
+                {...register("accountNumber")}
+                placeholder="np. 12 3456 7890..."
+              />
+            </S.FormGroup>
+            <S.FormGroup>
+              <S.Label>Numer polisy (opcjonalnie)</S.Label>
               <S.Input
                 {...register("policyNumber")}
                 placeholder="np. POL/2026/12345"
               />
             </S.FormGroup>
-            <S.InfoBox $fullWidth>
-              💡 Płatność będzie powtarzana automatycznie co miesiąc
-            </S.InfoBox>
           </>
         );
       
@@ -298,31 +350,45 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <S.FormGrid>
             <S.FormGroup $fullWidth>
-              <S.Label>Nazwa płatności *</S.Label>
+              <S.Label>
+                Nazwa płatności *
+                {paymentType === "installments" && " (np. lodówka, pralka, TV, telefon)"}
+                {paymentType === "shopping" && " (np. zakupy spożywcze)"}
+                {paymentType === "insurance" && " (np. ubezpieczenie na życie)"}
+              </S.Label>
               <S.Input
                 {...register("name", { required: "Podaj nazwę płatności" })}
-                placeholder="np. Prąd, Czynsz, Zakupy spożywcze"
+                placeholder={
+                  paymentType === "installments" ? "np. Lodówka Samsung" :
+                  paymentType === "shopping" ? "np. Zakupy spożywcze" :
+                  paymentType === "insurance" ? "np. Ubezpieczenie na życie" :
+                  paymentType === "bills" ? "np. Rachunek za prąd" :
+                  "np. Prąd, Czynsz, Zakupy spożywcze"
+                }
               />
               {errors.name && (
                 <S.ErrorMessage>{errors.name.message}</S.ErrorMessage>
               )}
             </S.FormGroup>
 
-            <S.FormGroup>
-              <S.Label>Kwota (zł) *</S.Label>
-              <S.Input
-                type="number"
-                step="0.01"
-                {...register("amount", {
-                  required: "Podaj kwotę",
-                  min: { value: 0.01, message: "Kwota musi być większa niż 0" },
-                })}
-                placeholder="0.00"
-              />
-              {errors.amount && (
-                <S.ErrorMessage>{errors.amount.message}</S.ErrorMessage>
-              )}
-            </S.FormGroup>
+            {/* Kwota - tylko dla typów które nie mają kwoty w polach specyficznych */}
+            {paymentType !== "installments" && paymentType !== "insurance" && (
+              <S.FormGroup>
+                <S.Label>Kwota (zł) *</S.Label>
+                <S.Input
+                  type="number"
+                  step="0.01"
+                  {...register("amount", {
+                    required: "Podaj kwotę",
+                    min: { value: 0.01, message: "Kwota musi być większa niż 0" },
+                  })}
+                  placeholder="0.00"
+                />
+                {errors.amount && (
+                  <S.ErrorMessage>{errors.amount.message}</S.ErrorMessage>
+                )}
+              </S.FormGroup>
+            )}
 
             <S.FormGroup>
               <S.Label>Termin płatności *</S.Label>
@@ -335,14 +401,17 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               )}
             </S.FormGroup>
 
-            <S.FormGroup>
-              <S.Label>Kategoria</S.Label>
-              <S.Select {...register("category")} defaultValue="other">
-                <option value="bills">🧾 Rachunki</option>
-                <option value="shopping">🛒 Zakupy</option>
-                <option value="other">📌 Inne</option>
-              </S.Select>
-            </S.FormGroup>
+            {/* Kategoria - tylko dla starych płatności (bez paymentType) */}
+            {!paymentType && (
+              <S.FormGroup>
+                <S.Label>Kategoria</S.Label>
+                <S.Select {...register("category")} defaultValue="other">
+                  <option value="bills">🧾 Rachunki</option>
+                  <option value="shopping">🛒 Zakupy</option>
+                  <option value="other">📌 Inne</option>
+                </S.Select>
+              </S.FormGroup>
+            )}
 
             <S.FormGroup>
               <S.Label>Priorytet</S.Label>
@@ -353,19 +422,22 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               </S.Select>
             </S.FormGroup>
 
-            <S.FormGroup>
-              <S.Label>Bank/Metoda płatności</S.Label>
-              <S.Select {...register("bank")} defaultValue="other">
-                {bankOptions.map((bank) => {
-                  const config = getBankConfig(bank.value);
-                  return (
-                    <option key={bank.value} value={bank.value}>
-                      {config.label}
-                    </option>
-                  );
-                })}
-              </S.Select>
-            </S.FormGroup>
+            {/* Bank/Metoda - tylko dla typów które tego potrzebują (nie dla raty i ubezpieczenia) */}
+            {paymentType !== "installments" && paymentType !== "insurance" && (
+              <S.FormGroup>
+                <S.Label>Bank/Metoda płatności</S.Label>
+                <S.Select {...register("bank")} defaultValue="other">
+                  {bankOptions.map((bank) => {
+                    const config = getBankConfig(bank.value);
+                    return (
+                      <option key={bank.value} value={bank.value}>
+                        {config.label}
+                      </option>
+                    );
+                  })}
+                </S.Select>
+              </S.FormGroup>
+            )}
 
             {renderTypeSpecificFields()}
 

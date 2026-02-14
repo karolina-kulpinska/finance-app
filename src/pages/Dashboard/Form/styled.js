@@ -282,3 +282,28 @@ export const InfoBox = styled.div`
   border: 1px solid #66bb6a;
   text-align: center;
 `;
+
+export const TotalAmountBox = styled.div`
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 8px 0;
+`;
+
+export const TotalLabel = styled.div`
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+export const TotalValue = styled.div`
+  font-size: 20px;
+  font-weight: 900;
+  color: white;
+`;

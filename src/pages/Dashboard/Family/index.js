@@ -2,14 +2,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import { db } from "../../../api/firebase";
-import { 
-  doc, 
-  getDoc, 
-  setDoc, 
+import {
+  doc,
+  getDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   arrayUnion,
-  serverTimestamp 
+  serverTimestamp,
 } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { showNotification } from "../../../features/notification/notificationSlice";
@@ -26,12 +26,12 @@ const Family = () => {
 
   const loadFamily = useCallback(async () => {
     if (!user?.uid) return;
-    
+
     try {
       setLoading(true);
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const userData = userDoc.data();
-      
+
       if (userData?.familyId) {
         const familyDoc = await getDoc(doc(db, "families", userData.familyId));
         if (familyDoc.exists()) {
@@ -71,21 +71,35 @@ const Family = () => {
         ],
       };
 
-      await setDoc(doc(db, "users", user.uid), {
-        email: user.email,
-        displayName: user.displayName || "",
-        familyId: familyId,
-      }, { merge: true });
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          email: user.email,
+          displayName: user.displayName || "",
+          familyId: familyId,
+        },
+        { merge: true },
+      );
 
       await setDoc(doc(db, "families", familyId), familyData);
 
       setFamily({ id: familyId, ...familyData });
       setActiveView("main");
       setFamilyName("");
-      alert("✅ Rodzina utworzona pomyślnie!");
+      dispatch(
+        showNotification({
+          message: "✅ Rodzina utworzona pomyślnie!",
+          type: "success",
+        }),
+      );
     } catch (error) {
       console.error("Błąd tworzenia rodziny:", error);
-      alert(`❌ Nie udało się utworzyć rodziny: ${error.message}`);
+      dispatch(
+        showNotification({
+          message: `❌ Nie udało się utworzyć rodziny: ${error.message}`,
+          type: "error",
+        }),
+      );
     }
   };
 
@@ -102,7 +116,12 @@ const Family = () => {
   const handleCopyInviteLink = () => {
     const link = getInviteLink();
     navigator.clipboard.writeText(link);
-    alert("📋 Link skopiowany! Wyślij go członkom rodziny.");
+    dispatch(
+      showNotification({
+        message: "📋 Link skopiowany! Wyślij go członkom rodziny.",
+        type: "success",
+      }),
+    );
   };
 
   const handleInviteMember = async () => {
@@ -110,7 +129,7 @@ const Family = () => {
 
     try {
       const newMember = {
-        userId: null, 
+        userId: null,
         email: inviteEmail,
         displayName: inviteEmail.split("@")[0],
         role: "member",
@@ -128,10 +147,20 @@ const Family = () => {
       });
       setInviteEmail("");
       setActiveView("main");
-      alert(`Zaproszenie wysłane do ${inviteEmail}`);
+      dispatch(
+        showNotification({
+          message: `Zaproszenie wysłane do ${inviteEmail}`,
+          type: "success",
+        }),
+      );
     } catch (error) {
       console.error("Błąd zapraszania członka:", error);
-      alert("Nie udało się wysłać zaproszenia");
+      dispatch(
+        showNotification({
+          message: "Nie udało się wysłać zaproszenia",
+          type: "error",
+        }),
+      );
     }
   };
 
@@ -139,7 +168,9 @@ const Family = () => {
     if (!family || !window.confirm(`Usunąć ${memberEmail} z rodziny?`)) return;
 
     try {
-      const updatedMembers = family.members.filter(m => m.email !== memberEmail);
+      const updatedMembers = family.members.filter(
+        (m) => m.email !== memberEmail,
+      );
       await updateDoc(doc(db, "families", family.id), {
         members: updatedMembers,
       });
@@ -153,19 +184,19 @@ const Family = () => {
   const handleDeleteFamily = async () => {
     const confirmed = window.confirm(
       "⚠️ CZY NA PEWNO CHCESZ USUNĄĆ RODZINĘ?\n\n" +
-      "Ta operacja:\n" +
-      "• Usunie rodzinę na zawsze\n" +
-      "• Usunie wszystkich członków z rodziny\n" +
-      "• NIE usunie żadnych danych (płatności, zakupy, pliki pozostaną)\n\n" +
-      "Czy jesteś pewien?"
+        "Ta operacja:\n" +
+        "• Usunie rodzinę na zawsze\n" +
+        "• Usunie wszystkich członków z rodziny\n" +
+        "• NIE usunie żadnych danych (płatności, zakupy, pliki pozostaną)\n\n" +
+        "Czy jesteś pewien?",
     );
 
     if (!confirmed) return;
 
     const doubleConfirm = window.confirm(
       "🔴 OSTATNIE OSTRZEŻENIE!\n\n" +
-      "Naprawdę chcesz usunąć rodzinę?\n" +
-      "Tej operacji NIE MOŻNA cofnąć!"
+        "Naprawdę chcesz usunąć rodzinę?\n" +
+        "Tej operacji NIE MOŻNA cofnąć!",
     );
 
     if (!doubleConfirm) return;
@@ -174,27 +205,31 @@ const Family = () => {
       if (!family?.id) return;
 
       const updatePromises = family.members
-        .filter(m => m.userId)
-        .map(m => updateDoc(doc(db, "users", m.userId), { familyId: null }));
+        .filter((m) => m.userId)
+        .map((m) => updateDoc(doc(db, "users", m.userId), { familyId: null }));
 
       await Promise.all(updatePromises);
 
       // Usuń rodzinę
       await deleteDoc(doc(db, "families", family.id));
 
-      dispatch(showNotification({
-        message: "✅ Rodzina została usunięta",
-        type: "success",
-      }));
+      dispatch(
+        showNotification({
+          message: "✅ Rodzina została usunięta",
+          type: "success",
+        }),
+      );
 
       setFamily(null);
       setActiveView("main");
     } catch (error) {
       console.error("Error deleting family:", error);
-      dispatch(showNotification({
-        message: `❌ Nie udało się usunąć rodziny: ${error.message}`,
-        type: "error",
-      }));
+      dispatch(
+        showNotification({
+          message: `❌ Nie udało się usunąć rodziny: ${error.message}`,
+          type: "error",
+        }),
+      );
     }
   };
 
@@ -210,7 +245,9 @@ const Family = () => {
     return (
       <S.Container>
         <S.Header>
-          <S.BackButton onClick={() => setActiveView("main")}>← Powrót</S.BackButton>
+          <S.BackButton onClick={() => setActiveView("main")}>
+            ← Powrót
+          </S.BackButton>
           <S.Title>Utwórz rodzinę</S.Title>
         </S.Header>
 
@@ -220,15 +257,18 @@ const Family = () => {
           <S.CreateDesc>
             Stwórz rodzinę, aby udostępniać płatności, listy zakupów i dokumenty
           </S.CreateDesc>
-          
+
           <S.Input
             type="text"
             value={familyName}
             onChange={(e) => setFamilyName(e.target.value)}
             placeholder="np. Rodzina Kowalskich"
           />
-          
-          <S.CreateButton onClick={handleCreateFamily} disabled={!familyName.trim()}>
+
+          <S.CreateButton
+            onClick={handleCreateFamily}
+            disabled={!familyName.trim()}
+          >
             ✨ Utwórz rodzinę
           </S.CreateButton>
         </S.CreateCard>
@@ -240,22 +280,27 @@ const Family = () => {
     return (
       <S.Container>
         <S.Header>
-          <S.BackButton onClick={() => setActiveView("main")}>← Powrót</S.BackButton>
+          <S.BackButton onClick={() => setActiveView("main")}>
+            ← Powrót
+          </S.BackButton>
           <S.Title>Zaproś członka</S.Title>
         </S.Header>
 
         <S.InviteCard>
           <S.InviteIcon>📧</S.InviteIcon>
           <S.InviteTitle>Dodaj członka rodziny</S.InviteTitle>
-          
+
           <S.Input
             type="email"
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
             placeholder="adres@email.com"
           />
-          
-          <S.InviteButton onClick={handleInviteMember} disabled={!inviteEmail.trim()}>
+
+          <S.InviteButton
+            onClick={handleInviteMember}
+            disabled={!inviteEmail.trim()}
+          >
             📨 Wyślij zaproszenie
           </S.InviteButton>
         </S.InviteCard>
@@ -283,8 +328,10 @@ const Family = () => {
   }
 
   const isOwner = family.ownerId === user?.uid;
-  const activeMembers = family.members?.filter(m => m.status === "active") || [];
-  const pendingMembers = family.members?.filter(m => m.status === "pending") || [];
+  const activeMembers =
+    family.members?.filter((m) => m.status === "active") || [];
+  const pendingMembers =
+    family.members?.filter((m) => m.status === "pending") || [];
 
   return (
     <S.Container>
@@ -292,7 +339,8 @@ const Family = () => {
         <S.HeaderIcon>👨‍👩‍👧‍👦</S.HeaderIcon>
         <S.FamilyTitle>{family.name}</S.FamilyTitle>
         <S.FamilySubtitle>
-          {activeMembers.length} {activeMembers.length === 1 ? "członek" : "członków"}
+          {activeMembers.length}{" "}
+          {activeMembers.length === 1 ? "członek" : "członków"}
         </S.FamilySubtitle>
       </S.FamilyHeader>
 
@@ -316,7 +364,9 @@ const Family = () => {
               </S.MemberInfo>
               {member.role === "owner" && <S.OwnerBadge>👑</S.OwnerBadge>}
               {isOwner && member.role !== "owner" && (
-                <S.RemoveButton onClick={() => handleRemoveMember(member.email)}>
+                <S.RemoveButton
+                  onClick={() => handleRemoveMember(member.email)}
+                >
                   ✕
                 </S.RemoveButton>
               )}
@@ -332,7 +382,9 @@ const Family = () => {
                 <S.PendingIcon>📧</S.PendingIcon>
                 <S.PendingEmail>{member.email}</S.PendingEmail>
                 {isOwner && (
-                  <S.RemoveButton onClick={() => handleRemoveMember(member.email)}>
+                  <S.RemoveButton
+                    onClick={() => handleRemoveMember(member.email)}
+                  >
                     ✕
                   </S.RemoveButton>
                 )}

@@ -69,10 +69,17 @@ const PaymentsList = ({
       filtered = filtered.filter((p) => Number(p.amount) <= Number(maxAmount));
     }
 
-    return filtered.sort((a, b) => {
+    // Najpierw niezapłacone i po terminie
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const overdue = filtered.filter((p) => !p.paid && new Date(p.date) < today);
+    const rest = filtered.filter((p) => p.paid || new Date(p.date) >= today);
+    overdue.sort((a, b) => new Date(a.date) - new Date(b.date));
+    rest.sort((a, b) => {
       if (a.paid !== b.paid) return a.paid ? 1 : -1;
       return new Date(a.date) - new Date(b.date);
     });
+    return [...overdue, ...rest];
   }, [
     payments,
     statusFilter,
@@ -205,7 +212,23 @@ const PaymentsList = ({
                   $paid={payment.paid}
                   $overdue={isOverdue(payment)}
                 >
-                  {isOverdue(payment) && "⚠️ "}
+                  {isOverdue(payment) && (
+                    <>
+                      ⚠️{" "}
+                      <b style={{ color: "#f5576c" }}>
+                        Po terminie:{" "}
+                        {Math.max(
+                          1,
+                          Math.floor(
+                            (new Date() - new Date(payment.date)) /
+                              (1000 * 60 * 60 * 24),
+                          ),
+                        )}{" "}
+                        dni
+                      </b>{" "}
+                      <br />
+                    </>
+                  )}
                   {payment.name}
                   {payment.isInstallment && (
                     <S.InstallmentBadge>

@@ -118,7 +118,7 @@ const Dashboard = () => {
             activeTab === "profile"
           }
         />
-        {showFilters &&
+        {(showFilters || window.innerWidth >= 768) &&
           activeTab !== "shopping" &&
           activeTab !== "family" &&
           activeTab !== "files" &&

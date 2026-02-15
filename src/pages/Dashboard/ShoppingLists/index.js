@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../api/firebase";
+import { openStorageDownloadUrl } from "../../../utils/firebaseStorageDownload";
 import { selectUser } from "../../../features/auth/authSlice";
 import { ListView } from "./ListView";
 import { ListDetailView } from "./ListDetailView";
@@ -130,39 +131,35 @@ const ShoppingLists = ({ sharedOnly = false }) => {
     ) {
       return;
     }
+    const fileName = file.name;
     setReceiptUploadingListId(listId);
     try {
       if (user?.uid) {
-        const fileName = `receipts/${user.uid}/${listId}_${Date.now()}_${file.name}`;
-        const storageRef = ref(storage, fileName);
+        const storagePath = `receipts/${user.uid}/${listId}_${Date.now()}_${file.name}`;
+        const storageRef = ref(storage, storagePath);
         await uploadBytes(storageRef, file);
         const url = await getDownloadURL(storageRef);
-        setLists(
-          lists.map((list) => {
-            if (list.id === listId) {
-              return { ...list, receipt: { name: file.name, url } };
-            }
-            return list;
-          })
+        setLists((prev) =>
+          prev.map((list) =>
+            list.id === listId
+              ? { ...list, receipt: { name: fileName, url } }
+              : list
+          )
         );
       } else {
-        setLists(
-          lists.map((list) => {
-            if (list.id === listId) {
-              return { ...list, receipt: { name: file.name } };
-            }
-            return list;
-          })
+        setLists((prev) =>
+          prev.map((list) =>
+            list.id === listId
+              ? { ...list, receipt: { name: fileName } }
+              : list
+          )
         );
       }
     } catch {
-      setLists(
-        lists.map((list) => {
-          if (list.id === listId) {
-            return { ...list, receipt: { name: file.name } };
-          }
-          return list;
-        })
+      setLists((prev) =>
+        prev.map((list) =>
+          list.id === listId ? { ...list, receipt: { name: fileName } } : list
+        )
       );
     } finally {
       setReceiptUploadingListId(null);
@@ -174,6 +171,10 @@ const ShoppingLists = ({ sharedOnly = false }) => {
     if (selectedList?.id === listId) {
       setSelectedList(null);
     }
+  };
+
+  const handleDownloadReceipt = (url) => {
+    openStorageDownloadUrl(url);
   };
 
   if (selectedList) {
@@ -195,6 +196,7 @@ const ShoppingLists = ({ sharedOnly = false }) => {
         onDeleteItem={handleDeleteItem}
         onReceiptUpload={handleReceiptUpload}
         receiptUploading={receiptUploadingListId === list.id}
+        onDownloadReceipt={handleDownloadReceipt}
         onDeleteList={handleDeleteList}
       />
     );

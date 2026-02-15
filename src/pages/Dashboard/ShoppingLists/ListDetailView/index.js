@@ -17,6 +17,7 @@ export const ListDetailView = ({
   onDeleteItem,
   onReceiptUpload,
   receiptUploading,
+  onDownloadReceipt,
   onDeleteList,
 }) => {
   const receiptInputRef = useRef(null);
@@ -67,7 +68,18 @@ export const ListDetailView = ({
       {list.receipt && (
         <S.ReceiptInfo>
           <S.ReceiptName>📎 {list.receipt.name}</S.ReceiptName>
-          <S.ReceiptRemove onClick={handleReceiptRemove}>✕</S.ReceiptRemove>
+          <S.ReceiptActions>
+            {list.receipt.url && (
+              <S.ReceiptDownload
+                type="button"
+                onClick={() => onDownloadReceipt(list.receipt.url, list.receipt.name)}
+                title="Pobierz plik"
+              >
+                ⬇️ Pobierz
+              </S.ReceiptDownload>
+            )}
+            <S.ReceiptRemove onClick={handleReceiptRemove}>✕</S.ReceiptRemove>
+          </S.ReceiptActions>
         </S.ReceiptInfo>
       )}
 

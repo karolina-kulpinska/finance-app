@@ -173,12 +173,39 @@ export const ReceiptInfo = styled.div`
   background: #e3f2fd;
   border-radius: 8px;
   border: 1px solid #90caf9;
+  gap: 8px;
 `;
 
 export const ReceiptName = styled.span`
   font-size: 13px;
   font-weight: 500;
   color: #1565c0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const ReceiptActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+`;
+
+export const ReceiptDownload = styled.button`
+  padding: 4px 8px;
+  background: #1565c0;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #0d47a1;
+  }
 `;
 
 export const ReceiptRemove = styled.button`

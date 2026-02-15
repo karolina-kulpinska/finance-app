@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ref, deleteObject } from "firebase/storage";
 import { storage } from "../../../api/firebase";
+import { openStorageDownloadUrl } from "../../../utils/firebaseStorageDownload";
 import { selectPayments } from "../../../features/payments/paymentSlice";
 import { updatePaymentRequest } from "../../../features/payments/paymentSlice";
 import * as S from "./styled";
@@ -73,6 +74,10 @@ const Files = ({ sharedOnly = false }) => {
 
   const handleDownload = (url, name) => {
     const fileName = name || "plik";
+    if (url && url.includes("firebasestorage.googleapis.com")) {
+      openStorageDownloadUrl(url);
+      return;
+    }
     const link = document.createElement("a");
     link.href = url;
     link.download = fileName;

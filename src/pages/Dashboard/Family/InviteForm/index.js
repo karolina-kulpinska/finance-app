@@ -9,15 +9,14 @@ export const InviteForm = ({
 }) => (
   <S.Container>
     <S.Header>
-      <S.BackButton onClick={onBack}>← Powrót</S.BackButton>
+      <S.BackButton onClick={onBack}>←</S.BackButton>
       <S.Title>Zaproś członka</S.Title>
     </S.Header>
 
     <S.InviteCard>
-      <S.InviteIcon>📧</S.InviteIcon>
-      <S.InviteTitle>Dodaj członka rodziny</S.InviteTitle>
+      <S.InviteTitle>Zaproś członka</S.InviteTitle>
       <S.InviteHint>
-        Wpisz e-mail – zaproszenie zostanie wysłane na ten adres (z linkiem do dołączenia). Osoba pojawi się też na liście „Oczekujące zaproszenia”.
+        Wpisz e-mail. Otrzyma link do dołączenia do rodziny.
       </S.InviteHint>
 
       <S.Input
@@ -31,7 +30,7 @@ export const InviteForm = ({
         onClick={onInviteMember}
         disabled={!inviteEmail.trim()}
       >
-        📨 Wyślij zaproszenie e-mailem
+        Wyślij zaproszenie
       </S.InviteButton>
     </S.InviteCard>
   </S.Container>

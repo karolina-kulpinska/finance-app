@@ -16,7 +16,6 @@ import { EmptyState } from "./EmptyState";
 import { CreateForm } from "./CreateForm";
 import { InviteForm } from "./InviteForm";
 import { MainView } from "./MainView";
-import { SECTION_KEYS, getInitialSectionOpen } from "./constants";
 import * as S from "./styled";
 
 const generateInviteToken = () =>
@@ -30,26 +29,6 @@ const Family = () => {
   const [activeView, setActiveView] = useState("main");
   const [familyName, setFamilyName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
-  const [sectionOpen, setSectionOpen] = useState(getInitialSectionOpen);
-
-  useEffect(() => {
-    const onResize = () => {
-      const isMobile = window.innerWidth < 768;
-      setSectionOpen((prev) =>
-        Object.keys(SECTION_KEYS).reduce(
-          (acc, key) => ({ ...acc, [key]: isMobile ? prev[key] : true }),
-          {}
-        )
-      );
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  const toggleSection = (key) => {
-    if (window.innerWidth >= 768) return;
-    setSectionOpen((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
 
   const loadFamily = useCallback(async () => {
     if (!user?.uid) return;
@@ -222,8 +201,6 @@ const Family = () => {
       activeMembers={activeMembers}
       pendingMembers={pendingMembers}
       isOwner={isOwner}
-      sectionOpen={sectionOpen}
-      toggleSection={toggleSection}
       onAddMember={() => setActiveView("invite")}
       onCopyInviteLink={handleCopyInviteLink}
       getInviteLink={getInviteLink}

@@ -20,13 +20,13 @@ export const Title = styled.h2`
 `;
 
 export const BackButton = styled.button`
+  padding: 4px 8px;
   background: white;
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.text};
+  border: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
@@ -38,31 +38,31 @@ export const BackButton = styled.button`
 
 export const CreateCard = styled.div`
   background: white;
-  border-radius: 16px;
-  padding: 32px 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  text-align: center;
-  max-width: 400px;
-  margin: 40px auto;
-`;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  max-width: 360px;
+  margin: 0 auto;
 
-export const CreateIcon = styled.div`
-  font-size: 60px;
-  margin-bottom: 16px;
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 20px;
+    margin-top: 20px;
+  }
 `;
 
 export const CreateTitle = styled.h3`
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 16px;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
   margin: 0 0 8px 0;
 `;
 
 export const CreateDesc = styled.p`
-  font-size: 13px;
+  font-size: 12px;
   color: ${({ theme }) => theme.colors.secondary};
   line-height: 1.5;
-  margin: 0 0 20px 0;
+  margin: 0 0 16px 0;
 `;
 
 export const Input = styled.input`

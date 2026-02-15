@@ -9,15 +9,14 @@ export const CreateForm = ({
 }) => (
   <S.Container>
     <S.Header>
-      <S.BackButton onClick={onBack}>← Powrót</S.BackButton>
+      <S.BackButton onClick={onBack}>←</S.BackButton>
       <S.Title>Utwórz rodzinę</S.Title>
     </S.Header>
 
     <S.CreateCard>
-      <S.CreateIcon>👨‍👩‍👧‍👦</S.CreateIcon>
       <S.CreateTitle>Nowa rodzina</S.CreateTitle>
       <S.CreateDesc>
-        Stwórz rodzinę, aby udostępniać płatności, listy zakupów i dokumenty
+        Wpisz nazwę rodziny. Będziesz mógł udostępniać płatności, listy zakupów i pliki.
       </S.CreateDesc>
 
       <S.Input
@@ -31,7 +30,7 @@ export const CreateForm = ({
         onClick={onCreateFamily}
         disabled={!familyName.trim()}
       >
-        ✨ Utwórz rodzinę
+        Utwórz rodzinę
       </S.CreateButton>
     </S.CreateCard>
   </S.Container>

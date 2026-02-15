@@ -13,5 +13,11 @@ export const getInitialSectionOpen = () => {
     return keys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
   }
   const isMobile = window.innerWidth < 768;
-  return keys.reduce((acc, key) => ({ ...acc, [key]: !isMobile }), {});
+  return keys.reduce(
+    (acc, key) => ({
+      ...acc,
+      [key]: isMobile ? key === SECTION_KEYS.members : true,
+    }),
+    {}
+  );
 };

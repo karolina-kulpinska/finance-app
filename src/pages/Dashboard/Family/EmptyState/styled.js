@@ -7,46 +7,65 @@ export const Container = styled.div`
 
 export const EmptyState = styled.div`
   text-align: center;
-  padding: 60px 20px;
+  padding: 32px 20px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 24px 16px;
+  }
 `;
 
 export const EmptyIcon = styled.div`
-  font-size: 80px;
-  margin-bottom: 20px;
+  color: #667eea;
+  margin-bottom: 16px;
+  opacity: 0.9;
+
+  svg {
+    display: block;
+    margin: 0 auto;
+  }
 `;
 
 export const EmptyTitle = styled.h3`
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 18px;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    font-size: 16px;
+  }
 `;
 
 export const EmptyText = styled.p`
-  font-size: 14px;
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.secondary};
-  line-height: 1.6;
-  margin: 0 0 24px 0;
-  max-width: 400px;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  max-width: 320px;
   margin-left: auto;
   margin-right: auto;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
 `;
 
 export const CreateFamilyButton = styled.button`
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
-  border-radius: 12px;
-  padding: 14px 28px;
-  font-size: 15px;
-  font-weight: 700;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
   color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
   }
 
   &:active {

@@ -13,7 +13,7 @@ export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemov
             <S.MemberName>{member.displayName}</S.MemberName>
             <S.MemberEmail>{member.email}</S.MemberEmail>
           </S.MemberInfo>
-          {member.role === "owner" && <S.OwnerBadge>👑</S.OwnerBadge>}
+          {member.role === "owner" && <S.OwnerBadge>Właściciel</S.OwnerBadge>}
           {isOwner && member.role !== "owner" && (
             <S.RemoveButton onClick={() => onRemoveMember(member.email)}>✕</S.RemoveButton>
           )}
@@ -25,7 +25,7 @@ export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemov
         <S.PendingDivider>Oczekujące zaproszenia</S.PendingDivider>
         {pendingMembers.map((member) => (
           <S.PendingCard key={member.email}>
-            <S.PendingIcon>📧</S.PendingIcon>
+            <S.PendingIcon />
             <S.PendingEmail>{member.email}</S.PendingEmail>
             {isOwner && (
               <S.RemoveButton onClick={() => onRemoveMember(member.email)}>✕</S.RemoveButton>

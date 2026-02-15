@@ -3,28 +3,36 @@ import styled from "styled-components";
 export const MembersList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    gap: 4px;
+  }
 `;
 
 export const MemberCard = styled.div`
   background: white;
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 12px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  transition: all 0.2s ease;
+  gap: 10px;
 
-  &:hover {
-    border-color: #667eea;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 8px 10px;
+    gap: 8px;
   }
 `;
 
 export const MemberAvatar = styled.div`
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    width: 34px;
+    height: 34px;
+  }
   border-radius: 50%;
   background: ${({ $isOwner }) =>
     $isOwner
@@ -33,8 +41,8 @@ export const MemberAvatar = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  font-weight: 900;
+  font-size: 16px;
+  font-weight: 700;
   color: ${({ $isOwner }) => ($isOwner ? "#333" : "white")};
   flex-shrink: 0;
 `;
@@ -45,8 +53,12 @@ export const MemberInfo = styled.div`
 `;
 
 export const MemberName = styled.div`
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    font-size: 12px;
+  }
   color: ${({ theme }) => theme.colors.text};
   margin-bottom: 2px;
 `;
@@ -61,13 +73,13 @@ export const MemberEmail = styled.div`
 
 export const OwnerBadge = styled.span`
   display: inline-block;
-  padding: 3px 8px;
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #333;
-  margin-top: 4px;
+  padding: 2px 6px;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  color: #b8860b;
+  margin-top: 2px;
 `;
 
 export const RemoveButton = styled.button`
@@ -106,17 +118,25 @@ export const PendingDivider = styled.div`
 `;
 
 export const PendingCard = styled.div`
-  background: #fff8e1;
-  border: 1.5px dashed #ffa726;
-  border-radius: 10px;
-  padding: 10px 12px;
+  background: #fffbf0;
+  border: 1px dashed rgba(255, 167, 38, 0.5);
+  border-radius: 8px;
+  padding: 8px 10px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 6px 8px;
+  }
   display: flex;
   align-items: center;
   gap: 10px;
 `;
 
 export const PendingIcon = styled.div`
-  font-size: 20px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffa726;
+  flex-shrink: 0;
 `;
 
 export const PendingEmail = styled.div`

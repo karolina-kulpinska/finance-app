@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   toggleModal,
@@ -31,6 +31,7 @@ const Dashboard = () => {
   const isModalOpen = useSelector(selectIsModalOpen);
   const payments = useSelector(selectPayments);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const scrollPositions = useRef({});
   const [showFilters, setShowFilters] = useState(false);
   const [showTypeSelector, setShowTypeSelector] = useState(false);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);
@@ -51,6 +52,25 @@ const Dashboard = () => {
     }
   }, [dispatch, user?.uid]);
 
+  const handleTabChange = (newTab) => {
+    scrollPositions.current[activeTab] = window.scrollY ?? document.documentElement.scrollTop;
+    setActiveTab(newTab);
+  };
+
+  useEffect(() => {
+    const pos = scrollPositions.current[activeTab];
+    const restore = () => {
+      if (pos !== undefined && pos > 0) {
+        window.scrollTo({ top: pos, behavior: "instant" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+    };
+    requestAnimationFrame(() => {
+      requestAnimationFrame(restore);
+    });
+  }, [activeTab]);
+
   const handleAddPayment = () => {
     setShowTypeSelector(true);
   };
@@ -67,7 +87,7 @@ const Dashboard = () => {
   };
 
   const handlePaymentClick = (paymentId) => {
-    setActiveTab("payments");
+    handleTabChange("payments");
     // Scroll do płatności po małym opóźnieniu
     setTimeout(() => {
       const element = document.getElementById(`payment-${paymentId}`);
@@ -151,7 +171,7 @@ const Dashboard = () => {
         {renderContent()}
         <AdBanner />
       </S.Container>
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       {showTypeSelector && (
         <PaymentTypeSelector
           onSelectType={handleSelectType}

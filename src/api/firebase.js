@@ -5,13 +5,13 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB78AyeCpSqedgoCd1puxgn_vQTNeF3fc0",
-  authDomain: "myfinanceapp-e2a0c.firebaseapp.com",
-  projectId: "myfinanceapp-e2a0c",
-  storageBucket: "myfinanceapp-e2a0c.firebasestorage.app",
-  messagingSenderId: "1029791390659",
-  appId: "1:1029791390659:web:b32ab0c10f5aefc1c6fb76",
-  measurementId: "G-D2LM8D2G4P",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);

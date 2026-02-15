@@ -39,7 +39,7 @@ const Dashboard = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showTypeSelector, setShowTypeSelector] = useState(false);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);
-  const [collapseAllPayments, setCollapseAllPayments] = useState(false);
+  const [collapseAllPayments] = useState(false);
   const [minDate, setMinDate] = useState("");
   const [maxDate, setMaxDate] = useState("");
   const [minAmount, setMinAmount] = useState("");

@@ -53,7 +53,7 @@ const ReceiptScanner = ({ onScanComplete }) => {
     for (const line of lines) {
       const match = line.match(dateRegex);
       if (match) {
-        const [_, day, month, year] = match;
+        const [, day, month, year] = match;
         date = `${year}-${month}-${day}`;
         break;
       }

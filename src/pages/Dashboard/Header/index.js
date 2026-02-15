@@ -8,7 +8,6 @@ import {
 import {
   getCreateCheckoutSession,
   getVerifyAndSetProFromStripe,
-  getSetCurrentUserPro,
 } from "../../../api/firebase";
 import * as S from "./styled";
 
@@ -25,13 +24,6 @@ const Header = ({
   const isPro = useSelector(selectIsPro);
   const [showUpgradeTip, setShowUpgradeTip] = useState(false);
   const [upgradeError, setUpgradeError] = useState("");
-  const [proGranting, setProGranting] = useState(false);
-  const [showProFallbackLink, setShowProFallbackLink] = useState(false);
-  const [cameFromPaymentSuccess, setCameFromPaymentSuccess] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.location.search.includes("payment=success"),
-  );
 
   useEffect(() => {
     if (typeof window === "undefined" || !user?.uid) return;
@@ -41,8 +33,6 @@ const Header = ({
       "",
       window.location.pathname + (window.location.hash || ""),
     );
-    setCameFromPaymentSuccess(true);
-    setShowProFallbackLink(false);
     const uid = user.uid;
     let attempts = 0;
     let maxAttempts = 15;
@@ -72,13 +62,6 @@ const Header = ({
       clearTimeout(timeout);
     };
   }, [user?.uid, dispatch, isPro]);
-
-  useEffect(() => {
-    if (isPro) {
-      setShowProFallbackLink(false);
-      setCameFromPaymentSuccess(false);
-    }
-  }, [isPro]);
 
   const handleUpgradeClick = async () => {
     if (onOpenUpgrade) {

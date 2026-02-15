@@ -27,7 +27,7 @@ const Filters = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   useEffect(() => {
     dispatch(setDateFilter("month"));
-  }, []);
+  }, [dispatch]);
 
   const statusFilters = [
     { id: "all", label: "Wszystkie" },

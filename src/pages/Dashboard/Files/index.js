@@ -85,16 +85,18 @@ const Files = ({ sharedOnly = false }) => {
 
   return (
     <S.Container>
-      <S.FiltersRow>
-        {filters.map((filter) => (
-          <S.FilterChip
-            key={filter.id}
-            $active={activeFilter === filter.id}
-            onClick={() => setActiveFilter(filter.id)}
-          >
-            {filter.icon} {filter.label}
-          </S.FilterChip>
-        ))}
+      <S.FiltersWrapper>
+        <S.FiltersChipsRow>
+          {filters.map((filter) => (
+            <S.FilterChip
+              key={filter.id}
+              $active={activeFilter === filter.id}
+              onClick={() => setActiveFilter(filter.id)}
+            >
+              {filter.icon} {filter.label}
+            </S.FilterChip>
+          ))}
+        </S.FiltersChipsRow>
         <S.DateInputs>
           <S.DateInput
             type="date"
@@ -110,7 +112,7 @@ const Files = ({ sharedOnly = false }) => {
             placeholder="Do"
           />
         </S.DateInputs>
-      </S.FiltersRow>
+      </S.FiltersWrapper>
 
       {filteredFiles.length === 0 ? (
         <S.EmptyState>
@@ -137,15 +139,15 @@ const Files = ({ sharedOnly = false }) => {
             <S.DownloadSelectedButton
               disabled={selected.length === 0}
               onClick={handleDownloadSelected}
+              title="Pobierz wybrane"
             >
               Pobierz wybrane ({selected.length})
             </S.DownloadSelectedButton>
             <S.DownloadSelectedButton
               disabled={selected.length === 0}
               onClick={handleDownloadPDF}
-              style={{
-                background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-              }}
+              $variant="pdf"
+              title="PDF zestawienie"
             >
               PDF zestawienie
             </S.DownloadSelectedButton>

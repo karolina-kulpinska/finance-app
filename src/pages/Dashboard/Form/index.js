@@ -10,9 +10,10 @@ import {
 import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
 import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
-import { bankOptions, getBankConfig } from "../../../utils/bankIcons";
+import { bankOptions } from "../../../utils/bankIcons";
 import ReceiptScanner from "../../../components/ReceiptScanner";
-import BankSelector from "../../../components/BankSelector";
+import { TypeSpecificFields } from "./TypeSpecificFields";
+import { AttachmentField } from "./AttachmentField";
 import * as S from "./styled";
 
 const AddPaymentForm = ({ paymentType, onClose }) => {
@@ -153,9 +154,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         }),
       );
     } else {
-      // Sprawdź typ płatności
       if (paymentType === "installments") {
-        // Płatności ratalne
         const installments = parseInt(data.installments) || 0;
         const installmentAmount = parseFloat(data.installmentAmount) || 0;
         const startDate = new Date(data.date);
@@ -237,131 +236,6 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         return "🛡️ Nowe ubezpieczenie";
       default:
         return "📌 Nowa płatność";
-    }
-  };
-
-  const renderTypeSpecificFields = () => {
-    switch (paymentType) {
-      case "installments":
-        return (
-          <>
-            <S.FormGroup>
-              <S.Label>Kwota raty (zł) *</S.Label>
-              <S.Input
-                type="number"
-                step="0.01"
-                {...register("installmentAmount", {
-                  required: "Podaj kwotę raty",
-                  min: { value: 0.01, message: "Kwota musi być większa niż 0" },
-                })}
-                placeholder="np. 250.00"
-              />
-              {errors.installmentAmount && (
-                <S.ErrorMessage>
-                  {errors.installmentAmount.message}
-                </S.ErrorMessage>
-              )}
-            </S.FormGroup>
-            <S.FormGroup>
-              <S.Label>Liczba rat *</S.Label>
-              <S.Input
-                type="number"
-                min="2"
-                {...register("installments", {
-                  required: "Podaj liczbę rat",
-                  min: { value: 2, message: "Minimum 2 raty" },
-                })}
-                placeholder="np. 12"
-              />
-              {errors.installments && (
-                <S.ErrorMessage>{errors.installments.message}</S.ErrorMessage>
-              )}
-            </S.FormGroup>
-            {totalInstallmentAmount && (
-              <S.TotalAmountBox>
-                <S.TotalLabel>Kwota całkowita:</S.TotalLabel>
-                <S.TotalValue>{totalInstallmentAmount} zł</S.TotalValue>
-              </S.TotalAmountBox>
-            )}
-            <S.FormGroup>
-              <S.Label>Numer konta (opcjonalnie)</S.Label>
-              <S.Input
-                {...register("accountNumber")}
-                placeholder="np. 12 3456 7890..."
-              />
-            </S.FormGroup>
-          </>
-        );
-
-      case "insurance":
-        return (
-          <>
-            <S.FormGroup>
-              <S.Label>Miesięczna kwota (zł) *</S.Label>
-              <S.Input
-                type="number"
-                step="0.01"
-                {...register("amount", {
-                  required: "Podaj miesięczną kwotę",
-                  min: { value: 0.01, message: "Kwota musi być większa niż 0" },
-                })}
-                placeholder="np. 150.00"
-              />
-              {errors.amount && (
-                <S.ErrorMessage>{errors.amount.message}</S.ErrorMessage>
-              )}
-            </S.FormGroup>
-            <S.FormGroup>
-              <S.Label>Okres trwania (miesiące) *</S.Label>
-              <S.Input
-                type="number"
-                min="1"
-                {...register("duration", {
-                  required: "Podaj okres trwania",
-                  min: { value: 1, message: "Minimum 1 miesiąc" },
-                })}
-                placeholder="np. 12"
-              />
-              {errors.duration && (
-                <S.ErrorMessage>{errors.duration.message}</S.ErrorMessage>
-              )}
-            </S.FormGroup>
-            {totalInsuranceAmount && (
-              <S.TotalAmountBox>
-                <S.TotalLabel>Kwota całkowita:</S.TotalLabel>
-                <S.TotalValue>{totalInsuranceAmount} zł</S.TotalValue>
-              </S.TotalAmountBox>
-            )}
-            <S.FormGroup>
-              <S.Label>Numer konta</S.Label>
-              <S.Input
-                {...register("accountNumber")}
-                placeholder="np. 12 3456 7890..."
-              />
-            </S.FormGroup>
-            <S.FormGroup>
-              <S.Label>Numer polisy (opcjonalnie)</S.Label>
-              <S.Input
-                {...register("policyNumber")}
-                placeholder="np. POL/2026/12345"
-              />
-            </S.FormGroup>
-          </>
-        );
-
-      case "bills":
-        return (
-          <S.FormGroup>
-            <S.Label>Numer konta/umowy</S.Label>
-            <S.Input
-              {...register("accountNumber")}
-              placeholder="np. 12 3456 7890..."
-            />
-          </S.FormGroup>
-        );
-
-      default:
-        return null;
     }
   };
 
@@ -475,7 +349,13 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               </S.FormGroup>
             )}
 
-            {renderTypeSpecificFields()}
+            <TypeSpecificFields
+              paymentType={paymentType}
+              register={register}
+              errors={errors}
+              totalInstallmentAmount={totalInstallmentAmount}
+              totalInsuranceAmount={totalInsuranceAmount}
+            />
 
             <S.FormGroup $fullWidth>
               <S.Label>Notatki</S.Label>
@@ -501,40 +381,12 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
               </S.CheckboxWrapper>
             </S.FormGroup>
 
-            <S.FormGroup $fullWidth>
-              <S.Label>Załącznik (PDF, zdjęcie)</S.Label>
-              {isPro ? (
-                <>
-                  <S.Input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    {...register("attachment")}
-                    onChange={handleFileChange}
-                  />
-                  {fileInfo && (
-                    <S.FileInfo>
-                      📎 {fileInfo.name}
-                      <br />
-                      {fileInfo.compressing && "🔄 Kompresowanie..."}
-                      {fileInfo.compressedSize && (
-                        <S.CompressionInfo>
-                          ✅ Skompresowano: {fileInfo.originalSize} →{" "}
-                          {fileInfo.compressedSize}
-                          (oszczędność: {fileInfo.savings})
-                        </S.CompressionInfo>
-                      )}
-                      {!fileInfo.compressing && !fileInfo.compressedSize && (
-                        <span>📄 PDF - {fileInfo.originalSize}</span>
-                      )}
-                    </S.FileInfo>
-                  )}
-                </>
-              ) : (
-                <S.ProUpsell>
-                  🔒 Dodawanie załączników dostępne w planie Pro. Ulepsz, aby dodawać zdjęcia i PDF-y.
-                </S.ProUpsell>
-              )}
-            </S.FormGroup>
+            <AttachmentField
+              isPro={isPro}
+              register={register}
+              fileInfo={fileInfo}
+              onFileChange={handleFileChange}
+            />
           </S.FormGrid>
 
           <S.ButtonGroup>

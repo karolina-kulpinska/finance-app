@@ -1,6 +1,9 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { onRequest } = require("firebase-functions/v2/https");
-const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const {
+  onDocumentCreated,
+  onDocumentUpdated,
+} = require("firebase-functions/v2/firestore");
 const { defineSecret, defineString } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const { Resend } = require("resend");
@@ -15,16 +18,6 @@ const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 const stripePriceId = defineString("STRIPE_PRICE_ID", { default: "" });
 
-/**
- * Wysyła e-mail z linkiem zaproszenia do rodziny.
- * Wywołanie z aplikacji: httpsCallable('sendFamilyInviteEmail')({ email, inviteLink, familyName })
- *
- * Konfiguracja:
- * 1. Konto na https://resend.com (darmowy plan: 100 maili/dzień)
- * 2. Utwórz API Key w Resend Dashboard
- * 3. Ustaw secret: firebase functions:secrets:set RESEND_API_KEY
- * 4. Nadawca (from): zweryfikuj domenę w Resend LUB użyj "onboarding@resend.dev" tylko do testów
- */
 exports.sendFamilyInviteEmail = onCall(
   { secrets: [resendApiKey] },
   async (request) => {
@@ -36,7 +29,7 @@ exports.sendFamilyInviteEmail = onCall(
     if (!email || !inviteLink) {
       throw new HttpsError(
         "invalid-argument",
-        "Podaj email i link zaproszenia (inviteLink)."
+        "Podaj email i link zaproszenia (inviteLink).",
       );
     }
 
@@ -44,7 +37,7 @@ exports.sendFamilyInviteEmail = onCall(
     if (!apiKey) {
       throw new HttpsError(
         "failed-precondition",
-        "Brak klucza RESEND_API_KEY. Ustaw: firebase functions:secrets:set RESEND_API_KEY"
+        "Brak klucza RESEND_API_KEY. Ustaw: firebase functions:secrets:set RESEND_API_KEY",
       );
     }
 
@@ -78,7 +71,10 @@ exports.sendFamilyInviteEmail = onCall(
 
       if (error) {
         console.error("Resend error:", error);
-        throw new HttpsError("internal", error.message || "Błąd wysyłki e-mail.");
+        throw new HttpsError(
+          "internal",
+          error.message || "Błąd wysyłki e-mail.",
+        );
       }
 
       return { success: true, id: data?.id };
@@ -87,18 +83,12 @@ exports.sendFamilyInviteEmail = onCall(
       console.error("sendFamilyInviteEmail error:", err);
       throw new HttpsError(
         "internal",
-        err.message || "Nie udało się wysłać e-maila."
+        err.message || "Nie udało się wysłać e-maila.",
       );
     }
-  }
+  },
 );
 
-// ========== STRIPE – płatność za plan Pro ==========
-
-/**
- * Tworzy sesję Stripe Checkout – użytkownik zostaje przekierowany do Stripe, po opłaceniu webhook ustawi plan Pro.
- * Wywołanie z aplikacji: httpsCallable('createCheckoutSession')({ successUrl, cancelUrl })
- */
 exports.createCheckoutSession = onCall(
   { secrets: [stripeSecretKey] },
   async (request) => {
@@ -110,7 +100,7 @@ exports.createCheckoutSession = onCall(
     if (!priceId) {
       throw new HttpsError(
         "failed-precondition",
-        "Ustaw STRIPE_PRICE_ID w pliku functions/.env (patrz docs/STRIPE_SETUP.md)"
+        "Ustaw STRIPE_PRICE_ID w pliku functions/.env (patrz docs/STRIPE_SETUP.md)",
       );
     }
 
@@ -118,11 +108,13 @@ exports.createCheckoutSession = onCall(
     if (!successUrl || !cancelUrl) {
       throw new HttpsError(
         "invalid-argument",
-        "Podaj successUrl i cancelUrl (np. adres Twojej aplikacji)."
+        "Podaj successUrl i cancelUrl (np. adres Twojej aplikacji).",
       );
     }
 
-    const stripe = new Stripe(stripeSecretKey.value(), { apiVersion: "2024-11-20.acacia" });
+    const stripe = new Stripe(stripeSecretKey.value(), {
+      apiVersion: "2024-11-20.acacia",
+    });
     const uid = request.auth.uid;
 
     try {
@@ -138,29 +130,33 @@ exports.createCheckoutSession = onCall(
       return { url: session.url };
     } catch (err) {
       console.error("createCheckoutSession error:", err);
-      throw new HttpsError("internal", err.message || "Błąd tworzenia sesji płatności.");
+      throw new HttpsError(
+        "internal",
+        err.message || "Błąd tworzenia sesji płatności.",
+      );
     }
-  }
+  },
 );
 
-/**
- * Webhook Stripe – po udanej płatności ustawia plan Pro w Firestore.
- * W Stripe Dashboard: Developers → Webhooks → Add endpoint → URL: https://us-central1-PROJECT_ID.cloudfunctions.net/stripeWebhook
- * Wybierz zdarzenie: checkout.session.completed
- */
 const stripeWebhookApp = express();
 stripeWebhookApp.use(express.raw({ type: "application/json" }));
 
 stripeWebhookApp.post("/", async (req, res) => {
   const sig = req.headers["stripe-signature"];
   const webhookSecret = stripeWebhookSecret.value();
-  const stripe = new Stripe(stripeSecretKey.value(), { apiVersion: "2024-11-20.acacia" });
+  const stripe = new Stripe(stripeSecretKey.value(), {
+    apiVersion: "2024-11-20.acacia",
+  });
 
   let event;
   try {
     event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
   } catch (err) {
-    console.error("Webhook signature verification failed:", err.message, "- Upewnij się, że STRIPE_WEBHOOK_SECRET to Signing secret z Stripe (Developers → Webhooks).");
+    console.error(
+      "Webhook signature verification failed:",
+      err.message,
+      "- Upewnij się, że STRIPE_WEBHOOK_SECRET to Signing secret z Stripe (Developers → Webhooks).",
+    );
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
@@ -175,7 +171,10 @@ stripeWebhookApp.post("/", async (req, res) => {
     }
 
     try {
-      await db.collection("users").doc(uid).set({ plan: "pro" }, { merge: true });
+      await db
+        .collection("users")
+        .doc(uid)
+        .set({ plan: "pro" }, { merge: true });
       console.log("Plan set to pro for user:", uid);
     } catch (e) {
       console.error("Error updating user plan:", e);
@@ -187,14 +186,16 @@ stripeWebhookApp.post("/", async (req, res) => {
 
 exports.stripeWebhook = onRequest(
   { secrets: [stripeWebhookSecret, stripeSecretKey] },
-  stripeWebhookApp
+  stripeWebhookApp,
 );
 
-// Gdy rozszerzenie Stripe zapisze udaną płatność lub aktywną subskrypcję – ustaw plan Pro
 async function setUserPlanPro(userId) {
   if (!userId) return;
   try {
-    await db.collection("users").doc(userId).set({ plan: "pro" }, { merge: true });
+    await db
+      .collection("users")
+      .doc(userId)
+      .set({ plan: "pro" }, { merge: true });
     console.log("Plan set to pro for user (extension):", userId);
   } catch (e) {
     console.error("Error setting plan pro:", e);
@@ -209,14 +210,14 @@ exports.onStripePaymentCreated = onDocumentCreated(
   "customers/{userId}/payments/{paymentId}",
   async (event) => {
     handlePaymentSnapshot(event.data, event.params.userId);
-  }
+  },
 );
 
 exports.onStripePaymentUpdated = onDocumentUpdated(
   "customers/{userId}/payments/{paymentId}",
   async (event) => {
     handlePaymentSnapshot(event.data?.after, event.params.userId);
-  }
+  },
 );
 
 exports.onStripeSubscriptionActive = onDocumentUpdated(
@@ -225,27 +226,24 @@ exports.onStripeSubscriptionActive = onDocumentUpdated(
     const snap = event.data?.after;
     if (!snap || snap.data().status !== "active") return;
     await setUserPlanPro(event.params.userId);
-  }
+  },
 );
 
-/**
- * Po powrocie z Stripe (?payment=success). Sprawdza w Stripe API czy jest
- * ukończona sesja checkout dla tego użytkownika – jeśli tak, ustawia Pro.
- * Nie zależy od webhooka.
- */
 exports.verifyAndSetProFromStripe = onCall(
   { secrets: [stripeSecretKey] },
   async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "Zaloguj się.");
     const uid = request.auth.uid;
-    const stripe = new Stripe(stripeSecretKey.value(), { apiVersion: "2024-11-20.acacia" });
+    const stripe = new Stripe(stripeSecretKey.value(), {
+      apiVersion: "2024-11-20.acacia",
+    });
 
     try {
       const sessions = await stripe.checkout.sessions.list({ limit: 100 });
       const forUser = sessions.data.filter(
         (s) =>
           (s.client_reference_id === uid || s.metadata?.firebaseUid === uid) &&
-          (s.status === "complete" || s.payment_status === "paid")
+          (s.status === "complete" || s.payment_status === "paid"),
       );
       if (forUser.length > 0) {
         await setUserPlanPro(uid);
@@ -254,16 +252,14 @@ exports.verifyAndSetProFromStripe = onCall(
       return { ok: true, planSet: false };
     } catch (e) {
       console.error("verifyAndSetProFromStripe:", e);
-      throw new HttpsError("internal", e.message || "Błąd weryfikacji płatności.");
+      throw new HttpsError(
+        "internal",
+        e.message || "Błąd weryfikacji płatności.",
+      );
     }
-  }
+  },
 );
 
-/**
- * Wywołaj po powrocie z Stripe (?payment=success). Sprawdza w Firestore
- * (customers/{uid}/payments, subscriptions, checkout_sessions) czy jest
- * udana płatność / aktywna subskrypcja i ustawia users/{uid}.plan = "pro".
- */
 exports.syncProPlanAfterPayment = onCall(async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Musisz być zalogowany.");
@@ -273,13 +269,21 @@ exports.syncProPlanAfterPayment = onCall(async (request) => {
   try {
     const customerRef = db.collection("customers").doc(uid);
 
-    const paymentsSnap = await customerRef.collection("payments").where("status", "==", "succeeded").limit(1).get();
+    const paymentsSnap = await customerRef
+      .collection("payments")
+      .where("status", "==", "succeeded")
+      .limit(1)
+      .get();
     if (!paymentsSnap.empty) {
       await setUserPlanPro(uid);
       return { ok: true, planSet: true, reason: "payment" };
     }
 
-    const subsSnap = await customerRef.collection("subscriptions").where("status", "==", "active").limit(1).get();
+    const subsSnap = await customerRef
+      .collection("subscriptions")
+      .where("status", "==", "active")
+      .limit(1)
+      .get();
     if (!subsSnap.empty) {
       await setUserPlanPro(uid);
       return { ok: true, planSet: true, reason: "subscription" };
@@ -287,13 +291,20 @@ exports.syncProPlanAfterPayment = onCall(async (request) => {
 
     let sessionsSnap;
     try {
-      sessionsSnap = await customerRef.collection("checkout_sessions").limit(10).get();
+      sessionsSnap = await customerRef
+        .collection("checkout_sessions")
+        .limit(10)
+        .get();
     } catch (_) {
       sessionsSnap = { docs: [] };
     }
     for (const d of sessionsSnap.docs) {
       const data = d.data();
-      if (data.status === "complete" || data.status === "completed" || data.payment_status === "paid") {
+      if (
+        data.status === "complete" ||
+        data.status === "completed" ||
+        data.payment_status === "paid"
+      ) {
         await setUserPlanPro(uid);
         return { ok: true, planSet: true, reason: "session" };
       }
@@ -302,7 +313,10 @@ exports.syncProPlanAfterPayment = onCall(async (request) => {
     return { ok: true, planSet: false };
   } catch (e) {
     console.error("syncProPlanAfterPayment:", e);
-    throw new HttpsError("internal", e.message || "Błąd sprawdzania płatności.");
+    throw new HttpsError(
+      "internal",
+      e.message || "Błąd sprawdzania płatności.",
+    );
   }
 });
 
@@ -319,9 +333,12 @@ exports.setCurrentUserPro = onCall(async (request) => {
   if (data.proGrantedAt) {
     return { ok: true, message: "Pro już wcześniej przyznany." };
   }
-  await userRef.set({
-    plan: "pro",
-    proGrantedAt: admin.firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
+  await userRef.set(
+    {
+      plan: "pro",
+      proGrantedAt: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
   return { ok: true, message: "Plan Pro ustawiony." };
 });

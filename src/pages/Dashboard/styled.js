@@ -115,6 +115,32 @@ export const CollapseButton = styled.button`
   }
 `;
 
+export const CategoryBackBar = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+export const CategoryBackButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: #667eea;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover {
+    color: #5568d3;
+  }
+`;
+
 export const FiltersBox = styled.div`
   background: white;
   border-radius: 10px;

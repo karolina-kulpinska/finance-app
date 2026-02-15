@@ -1,15 +1,17 @@
 import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   selectPayments,
   selectFilter,
   selectCategoryFilter,
   selectDateFilter,
+  setCategoryFilter,
 } from "../../../features/payments/paymentSlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
-const Charts = () => {
+const Charts = ({ onBeforeCategorySelect }) => {
+  const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
   const statusFilter = useSelector(selectFilter);
   const categoryFilter = useSelector(selectCategoryFilter);
@@ -80,7 +82,32 @@ const Charts = () => {
 
       <S.ChartsGrid>
         {Object.entries(categoryStats).map(([key, stat]) => (
-          <S.CategoryCard key={key} $color={stat.color}>
+          <S.CategoryCard
+            key={key}
+            $color={stat.color}
+            $active={categoryFilter === key}
+            onClick={() => {
+              if (categoryFilter === key) {
+                dispatch(setCategoryFilter("all"));
+              } else {
+                onBeforeCategorySelect?.();
+                dispatch(setCategoryFilter(key));
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                if (categoryFilter === key) {
+                  dispatch(setCategoryFilter("all"));
+                } else {
+                  onBeforeCategorySelect?.();
+                  dispatch(setCategoryFilter(key));
+                }
+              }
+            }}
+          >
             <S.CategoryIcon>{stat.icon}</S.CategoryIcon>
             <S.CategoryName>{stat.name}</S.CategoryName>
             <S.CategoryAmount $color={stat.color}>

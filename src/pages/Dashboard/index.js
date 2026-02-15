@@ -4,6 +4,8 @@ import {
   toggleModal,
   selectIsModalOpen,
   selectPayments,
+  selectCategoryFilter,
+  setCategoryFilter,
   fetchPaymentsRequest,
 } from "../../features/payments/paymentSlice";
 
@@ -30,6 +32,8 @@ const Dashboard = () => {
   const user = useSelector(selectUser);
   const isModalOpen = useSelector(selectIsModalOpen);
   const payments = useSelector(selectPayments);
+  const categoryFilter = useSelector(selectCategoryFilter);
+  const scrollBeforeCategoryRef = useRef(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const scrollPositions = useRef({});
   const [showFilters, setShowFilters] = useState(false);
@@ -113,6 +117,26 @@ const Dashboard = () => {
       case "payments":
         return (
           <>
+            {categoryFilter !== "all" && (
+              <S.CategoryBackBar>
+                <S.CategoryBackButton
+                  onClick={() => {
+                    dispatch(setCategoryFilter("all"));
+                    const pos = scrollBeforeCategoryRef.current;
+                    requestAnimationFrame(() => {
+                      requestAnimationFrame(() => {
+                        window.scrollTo({
+                          top: pos ?? 0,
+                          behavior: "instant",
+                        });
+                      });
+                    });
+                  }}
+                >
+                  ← Wróć
+                </S.CategoryBackButton>
+              </S.CategoryBackBar>
+            )}
             <PaymentsList
               collapseAll={collapseAllPayments}
               minDate={minDate}
@@ -120,7 +144,15 @@ const Dashboard = () => {
               minAmount={minAmount}
               maxAmount={maxAmount}
             />
-            <Charts payments={payments} />
+            {categoryFilter === "all" && (
+              <Charts
+                payments={payments}
+                onBeforeCategorySelect={() => {
+                  scrollBeforeCategoryRef.current =
+                    window.scrollY ?? document.documentElement.scrollTop;
+                }}
+              />
+            )}
           </>
         );
       case "shopping":

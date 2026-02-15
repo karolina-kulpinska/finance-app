@@ -53,13 +53,19 @@ export const ChartsGrid = styled.div`
 `;
 
 export const CategoryCard = styled.div`
-  background: ${({ $color }) => `${$color}10`};
+  position: relative;
+  background: ${({ $color, $active }) => ($active ? `${$color}20` : `${$color}10`)};
   border: 2px solid ${({ $color }) => $color};
   border-radius: 12px;
   padding: 12px 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: default;
+  cursor: pointer;
   text-align: center;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
 
   &:active {
     transform: scale(0.98);

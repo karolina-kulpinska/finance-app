@@ -181,6 +181,12 @@ const Dashboard = () => {
             activeTab === "files" ||
             activeTab === "profile"
           }
+          hideAddPayment={
+            activeTab === "shopping" ||
+            activeTab === "family" ||
+            activeTab === "files" ||
+            activeTab === "profile"
+          }
         />
         {(showFilters || window.innerWidth >= 768) &&
           activeTab !== "shopping" &&

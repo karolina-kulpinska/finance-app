@@ -26,7 +26,7 @@ export const AddItemForm = ({
         }
       }}
     />
-    <S.Input
+    <S.PriceInput
       type="number"
       step="0.01"
       placeholder="Cena..."

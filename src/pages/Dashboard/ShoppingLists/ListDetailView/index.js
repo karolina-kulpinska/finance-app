@@ -1,7 +1,6 @@
 import React from "react";
 import { AddItemForm } from "../AddItemForm";
 import { ItemsSection } from "../ItemsSection";
-import { ReceiptSection } from "../ReceiptSection";
 import * as S from "./styled";
 
 export const ListDetailView = ({
@@ -36,27 +35,9 @@ export const ListDetailView = ({
   return (
     <S.Container>
       <S.Header>
-        <S.BackButton onClick={onBack}>← Powrót</S.BackButton>
+        <S.BackButton onClick={onBack}>←</S.BackButton>
         <S.Title>{list.name}</S.Title>
-        <S.DeleteButton onClick={() => onDeleteList(list.id)}>🗑️</S.DeleteButton>
       </S.Header>
-
-      <S.GroupToggle>
-        <S.Checkbox
-          type="checkbox"
-          id="shareListFamily"
-          checked={list.sharedWithFamily === true}
-          onChange={(e) => handleShareChange(e.target.checked)}
-        />
-        <S.CheckboxLabel htmlFor="shareListFamily">
-          👨‍👩‍👧‍👦 Udostępnij rodzinie
-        </S.CheckboxLabel>
-      </S.GroupToggle>
-
-      <S.TotalCard>
-        <S.TotalLabel>Suma:</S.TotalLabel>
-        <S.TotalAmount>{list.totalPrice.toFixed(2)} zł</S.TotalAmount>
-      </S.TotalCard>
 
       <AddItemForm
         newItemName={newItemName}
@@ -75,12 +56,50 @@ export const ListDetailView = ({
         />
       )}
 
-      <ReceiptSection
-        receipt={list.receipt}
-        listId={list.id}
-        onUpload={onReceiptUpload}
-        onRemove={handleReceiptRemove}
-      />
+      <S.TotalCard>
+        <S.TotalLabel>Suma:</S.TotalLabel>
+        <S.TotalAmount>{list.totalPrice.toFixed(2)} zł</S.TotalAmount>
+      </S.TotalCard>
+
+      {list.receipt && (
+        <S.ReceiptInfo>
+          <S.ReceiptName>📎 {list.receipt.name}</S.ReceiptName>
+          <S.ReceiptRemove onClick={handleReceiptRemove}>✕</S.ReceiptRemove>
+        </S.ReceiptInfo>
+      )}
+
+      <S.BottomButtons>
+        <S.BottomButton $variant="danger" onClick={() => onDeleteList(list.id)}>
+          🗑️ Usuń listę
+        </S.BottomButton>
+        <S.BottomButton
+          $variant="family"
+          $active={list.sharedWithFamily === true}
+          onClick={() => handleShareChange(!list.sharedWithFamily)}
+        >
+          👨‍👩‍👧‍👦 {list.sharedWithFamily ? "Usuń z rodziny" : "Dodaj do rodziny"}
+        </S.BottomButton>
+        <>
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onReceiptUpload(list.id, file);
+              e.target.value = "";
+            }}
+            id={`receipt-upload-${list.id}`}
+            style={{ display: "none" }}
+          />
+          <S.BottomButton
+            as="label"
+            htmlFor={`receipt-upload-${list.id}`}
+            $variant="receipt"
+          >
+            📎 Dodaj paragon
+          </S.BottomButton>
+        </>
+      </S.BottomButtons>
     </S.Container>
   );
 };

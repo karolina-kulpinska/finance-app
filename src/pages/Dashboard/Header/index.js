@@ -17,6 +17,7 @@ const Header = ({
   onToggleFilters,
   showFilters,
   hideFilters,
+  hideAddPayment,
   onOpenUpgrade,
 }) => {
   const dispatch = useDispatch();
@@ -144,7 +145,9 @@ const Header = ({
         </S.TitleSection>
         <S.Actions>
           <S.ProDesktop>{proOrUpgrade}</S.ProDesktop>
-          <S.AddButton onClick={onAddPayment}>+ Dodaj płatność</S.AddButton>
+          {!hideAddPayment && (
+            <S.AddButton onClick={onAddPayment}>+ Dodaj płatność</S.AddButton>
+          )}
           {!hideFilters && (
             <S.FilterToggleButton onClick={onToggleFilters}>
               {showFilters ? "▲" : "▼"}

@@ -10,39 +10,36 @@ export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
+  padding: 8px 12px;
   background: white;
   border-radius: 12px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
   border: 1px solid ${({ theme }) => theme.colors.border};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    flex-direction: column;
-    gap: 10px;
-  }
 `;
 
 export const Title = styled.h2`
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
+  text-align: right;
 `;
 
 export const BackButton = styled.button`
-  padding: 6px 12px;
+  padding: 4px 8px;
   background: white;
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
+  color: #000;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
 
   &:hover {
     background: #f8f9fa;
+    color: #000;
   }
 `;
 
@@ -98,7 +95,6 @@ export const TotalCard = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
 `;
 
 export const TotalLabel = styled.div`
@@ -111,4 +107,84 @@ export const TotalAmount = styled.div`
   font-size: 24px;
   font-weight: 900;
   color: white;
+`;
+
+export const BottomButtons = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL || "480px"}) {
+    flex-direction: column;
+  }
+`;
+
+export const BottomButton = styled.button`
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  border: 1px solid transparent;
+
+  ${({ $variant }) =>
+    $variant === "danger" &&
+    `
+    background: #fff5f5;
+    color: #c62828;
+    border-color: #ffcdd2;
+    &:hover { background: #ffebee; }
+  `}
+
+  ${({ $variant, $active, theme }) =>
+    $variant === "family" &&
+    `
+    background: ${$active ? "#e8f5e9" : "white"};
+    color: ${$active ? "#2e7d32" : "#333"};
+    border-color: ${theme?.colors?.border || "#e0e0e0"};
+    &:hover { background: #f1f8e9; }
+  `}
+
+  ${({ $variant }) =>
+    $variant === "receipt" &&
+    `
+    background: #e3f2fd;
+    color: #1565c0;
+    border-color: #90caf9;
+    &:hover { background: #bbdefb; }
+  `}
+`;
+
+export const ReceiptInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #e3f2fd;
+  border-radius: 8px;
+  border: 1px solid #90caf9;
+`;
+
+export const ReceiptName = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  color: #1565c0;
+`;
+
+export const ReceiptRemove = styled.button`
+  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  color: #1565c0;
+  cursor: pointer;
+  font-size: 14px;
+
+  &:hover {
+    color: #0d47a1;
+  }
 `;

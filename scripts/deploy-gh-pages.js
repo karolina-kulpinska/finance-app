@@ -60,29 +60,56 @@ try {
     }
   }
 
-  // add worktree (force recreate if exists)
-  try {
-    run("git worktree remove build --force");
-  } catch (e) {}
-
-  run("git worktree add -B gh-pages build origin/gh-pages");
-
-  // commit build content
-  try {
-    run("git -C build add --all");
+  // Use a temp worktree folder to avoid conflicts with build/
+  const worktreeDir = "gh-pages-tmp";
+  const fs = require("fs");
+  // Remove temp worktree if exists
+  if (fs.existsSync(worktreeDir)) {
     try {
-      run('git -C build commit -m "Deploy to gh-pages"');
+      run(`rd /s /q ${worktreeDir}`);
     } catch (e) {
-      console.log("Nothing to commit in build.");
+      try {
+        run(`rm -rf ${worktreeDir}`);
+      } catch (e2) {}
     }
-    run("git -C build push origin gh-pages --force");
+  }
+  try {
+    run(`git worktree add -B gh-pages ${worktreeDir} origin/gh-pages`);
+    // Clean worktree contents
+    const files = fs.readdirSync(worktreeDir);
+    for (const file of files) {
+      if (file === ".git") continue;
+      const filePath = `${worktreeDir}/${file}`;
+      fs.rmSync(filePath, { recursive: true, force: true });
+    }
+    // Copy build/* to worktree
+    const copydir = require("copy-dir");
+    copydir.sync("build", worktreeDir, {
+      utimes: true,
+      mode: true,
+      cover: true,
+    });
+    // Commit and push
+    run(`git -C ${worktreeDir} add --all`);
+    try {
+      run(`git -C ${worktreeDir} commit -m "Deploy to gh-pages"`);
+    } catch (e) {
+      console.log("Nothing to commit in gh-pages-tmp.");
+    }
+    run(`git -C ${worktreeDir} push origin gh-pages --force`);
   } finally {
     // cleanup worktree
     try {
-      run("git worktree remove build --force");
+      run(`git worktree remove ${worktreeDir} --force`);
     } catch (e) {}
+    try {
+      run(`rd /s /q ${worktreeDir}`);
+    } catch (e) {
+      try {
+        run(`rm -rf ${worktreeDir}`);
+      } catch (e2) {}
+    }
   }
-
   console.log("Deploy finished.");
 } catch (err) {
   console.error("Deploy failed:", err);

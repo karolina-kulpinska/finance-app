@@ -1,3 +1,13 @@
+const fs = require("fs");
+if (fs.existsSync("build")) {
+  try {
+    require("child_process").execSync("rd /s /q build");
+  } catch (e) {
+    try {
+      require("child_process").execSync("rm -rf build");
+    } catch (e2) {}
+  }
+}
 const { execSync } = require("child_process");
 
 function run(cmd) {
@@ -6,9 +16,7 @@ function run(cmd) {
 }
 
 try {
-  // ensure build exists
   run("node -v");
-  // create or update gh-pages worktree from origin
   let remoteExists = true;
   try {
     run("git fetch origin gh-pages");
@@ -20,7 +28,6 @@ try {
   }
 
   if (!remoteExists) {
-    // Fallback: initialize a temporary git repo inside `build` and push to origin
     try {
       const originUrl = require("child_process")
         .execSync("git config --get remote.origin.url")
@@ -44,7 +51,6 @@ try {
       }
       run("git -C build branch -M gh-pages");
       run("git -C build push -f origin gh-pages");
-      // cleanup
       try {
         run("rd /s /q build\\.git");
       } catch (e) {
@@ -60,10 +66,8 @@ try {
     }
   }
 
-  // Use a temp worktree folder to avoid conflicts with build/
   const worktreeDir = "gh-pages-tmp";
   const fs = require("fs");
-  // Remove temp worktree if exists
   if (fs.existsSync(worktreeDir)) {
     try {
       run(`rd /s /q ${worktreeDir}`);
@@ -75,21 +79,18 @@ try {
   }
   try {
     run(`git worktree add -B gh-pages ${worktreeDir} origin/gh-pages`);
-    // Clean worktree contents
     const files = fs.readdirSync(worktreeDir);
     for (const file of files) {
       if (file === ".git") continue;
       const filePath = `${worktreeDir}/${file}`;
       fs.rmSync(filePath, { recursive: true, force: true });
     }
-    // Copy build/* to worktree
     const copydir = require("copy-dir");
     copydir.sync("build", worktreeDir, {
       utimes: true,
       mode: true,
       cover: true,
     });
-    // Commit and push
     run(`git -C ${worktreeDir} add --all`);
     try {
       run(`git -C ${worktreeDir} commit -m "Deploy to gh-pages"`);
@@ -98,7 +99,6 @@ try {
     }
     run(`git -C ${worktreeDir} push origin gh-pages --force`);
   } finally {
-    // cleanup worktree
     try {
       run(`git worktree remove ${worktreeDir} --force`);
     } catch (e) {}

@@ -14,6 +14,12 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
+if (!firebaseConfig.apiKey) {
+  throw new Error(
+    "Brak REACT_APP_FIREBASE_API_KEY. Upewnij się, że plik .env istnieje w katalogu projektu (obok package.json) i zrestartuj serwer (npm start)."
+  );
+}
+
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);

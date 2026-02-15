@@ -297,3 +297,39 @@ export const LinkContainer = styled.div`
     margin-top: 24px;
   }
 `;
+
+export const ForgotPasswordRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+`;
+
+export const ForgotPasswordLink = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #764ba2;
+    text-decoration: underline;
+  }
+`;
+
+export const SuccessMessage = styled.p`
+  color: ${({ theme }) => theme.colors.success || "#0f7d4a"};
+  font-size: 14px;
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(15, 125, 74, 0.08);
+  border-radius: 10px;
+  text-align: center;
+`;

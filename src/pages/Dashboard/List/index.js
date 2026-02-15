@@ -10,8 +10,7 @@ import {
 } from "../../../features/payments/paymentSlice";
 import { showConfirm } from "../../../features/notification/confirmSlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
-import { getBankConfig } from "../../../utils/bankIcons";
-import { FaUniversity } from "react-icons/fa";
+import { PaymentCard } from "./PaymentCard";
 import * as S from "./styled";
 
 const PaymentsList = ({
@@ -28,6 +27,7 @@ const PaymentsList = ({
   const categoryFilter = useSelector(selectCategoryFilter);
   const dateFilter = useSelector(selectDateFilter);
   const [expandedPayment, setExpandedPayment] = React.useState(null);
+  const [collapsed, setCollapsed] = React.useState(false);
 
   React.useEffect(() => {
     if (collapseAll) {
@@ -92,52 +92,10 @@ const PaymentsList = ({
     sharedOnly,
   ]);
 
-  const getCategoryLabel = (category) => {
-    switch (category) {
-      case "bills":
-        return "🧾 Rachunki";
-      case "shopping":
-        return "🛒 Zakupy";
-      default:
-        return "📌 Inne";
+  const handleCardClick = (paymentId) => {
+    if (!collapsed) {
+      setExpandedPayment(expandedPayment === paymentId ? null : paymentId);
     }
-  };
-
-  const getPriorityLabel = (priority) => {
-    switch (priority) {
-      case "high":
-        return "Wysoki";
-      case "low":
-        return "Niski";
-      default:
-        return "Normalny";
-    }
-  };
-
-  const renderBankIcon = (bank) => {
-    if (!bank) return null;
-    try {
-      const config = getBankConfig(bank);
-      const IconComponent = config.icon || FaUniversity;
-      return (
-        <S.BankIconWrapper $color={config.color}>
-          <IconComponent size={14} style={{ flexShrink: 0 }} />
-          <span>{config.label}</span>
-        </S.BankIconWrapper>
-      );
-    } catch (error) {
-      console.error("Error rendering bank icon:", error);
-      return <S.DetailValue>{bank}</S.DetailValue>;
-    }
-  };
-
-  const isOverdue = (payment) => {
-    if (payment.paid) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const paymentDate = new Date(payment.date);
-    paymentDate.setHours(0, 0, 0, 0);
-    return paymentDate < today;
   };
 
   const handleStatusToggle = (payment) => {
@@ -145,7 +103,7 @@ const PaymentsList = ({
       updatePaymentStatusRequest({
         id: payment.id,
         currentStatus: payment.paid,
-      }),
+      })
     );
   };
 
@@ -158,25 +116,17 @@ const PaymentsList = ({
       showConfirm({
         message: "Czy na pewno chcesz usunąć tę płatność?",
         paymentId,
-      }),
+      })
     );
   };
 
-  const handleDownload = (url, name) => {
+  const handleDownload = (url) => {
     window.open(url, "_blank");
   };
-
-  const [collapsed, setCollapsed] = React.useState(false);
 
   if (!payments || payments.length === 0 || filteredPayments.length === 0) {
     return null;
   }
-
-  const handleCardClick = (paymentId) => {
-    if (!collapsed) {
-      setExpandedPayment(expandedPayment === paymentId ? null : paymentId);
-    }
-  };
 
   return (
     <S.ListContainer>
@@ -198,131 +148,16 @@ const PaymentsList = ({
       <S.PaymentGrid>
         {!collapsed &&
           filteredPayments.map((payment) => (
-            <S.PaymentCard
+            <PaymentCard
               key={payment.id}
-              id={`payment-${payment.id}`}
-              $paid={payment.paid}
-              $overdue={isOverdue(payment)}
-              $priority={payment.priority}
-              $expanded={expandedPayment === payment.id}
-              onClick={() => handleCardClick(payment.id)}
-            >
-              <S.PaymentIcon>
-                {getCategoryLabel(payment.category).split(" ")[0]}
-              </S.PaymentIcon>
-              <S.CompactInfo>
-                <S.CompactName
-                  $paid={payment.paid}
-                  $overdue={isOverdue(payment)}
-                >
-                  {isOverdue(payment) && (
-                    <>
-                      ⚠️{" "}
-                      <b style={{ color: "#f5576c" }}>
-                        Po terminie:{" "}
-                        {Math.max(
-                          1,
-                          Math.floor(
-                            (new Date() - new Date(payment.date)) /
-                              (1000 * 60 * 60 * 24),
-                          ),
-                        )}{" "}
-                        dni
-                      </b>{" "}
-                      <br />
-                    </>
-                  )}
-                  {payment.name}
-                  {payment.isInstallment && (
-                    <S.InstallmentBadge>
-                      {payment.installmentInfo.current}/
-                      {payment.installmentInfo.total}
-                    </S.InstallmentBadge>
-                  )}
-                  {payment.sharedWithFamily && (
-                    <S.FamilyBadge>👨‍👩‍👧‍👦</S.FamilyBadge>
-                  )}
-                </S.CompactName>
-                <S.CompactAmount
-                  $paid={payment.paid}
-                  $expanded={expandedPayment === payment.id}
-                >
-                  {Number(payment.amount).toFixed(2)} zł
-                </S.CompactAmount>
-                <S.CompactDate>{payment.date}</S.CompactDate>
-              </S.CompactInfo>
-
-              {expandedPayment === payment.id && (
-                <S.ExpandedDetails
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <S.DetailRow>
-                    <S.DetailLabel>Kategoria:</S.DetailLabel>
-                    <S.DetailValue>
-                      {getCategoryLabel(payment.category)}
-                    </S.DetailValue>
-                  </S.DetailRow>
-                  <S.DetailRow>
-                    <S.DetailLabel>Priorytet:</S.DetailLabel>
-                    <S.PriorityBadge $priority={payment.priority}>
-                      {getPriorityLabel(payment.priority)}
-                    </S.PriorityBadge>
-                  </S.DetailRow>
-                  <S.DetailRow>
-                    <S.DetailLabel>Status:</S.DetailLabel>
-                    <S.DetailValue>
-                      {payment.paid ? "✅ Zapłacone" : "⏳ Do zapłaty"}
-                    </S.DetailValue>
-                  </S.DetailRow>
-                  {payment.bank && (
-                    <S.DetailRow>
-                      <S.DetailLabel>Płatność:</S.DetailLabel>
-                      {renderBankIcon(payment.bank)}
-                    </S.DetailRow>
-                  )}
-
-                  {payment.notes && (
-                    <S.PaymentNotes>"{payment.notes}"</S.PaymentNotes>
-                  )}
-
-                  <S.PaymentActions>
-                    <S.ActionButton
-                      $variant="status"
-                      onClick={() => handleStatusToggle(payment)}
-                    >
-                      {payment.paid ? "↩️" : "✓"}
-                    </S.ActionButton>
-                    <S.ActionButton
-                      $variant="edit"
-                      onClick={() => handleEdit(payment)}
-                    >
-                      ✏️
-                    </S.ActionButton>
-                    {payment.attachmentUrl && (
-                      <S.ActionButton
-                        $variant="download"
-                        onClick={() =>
-                          handleDownload(
-                            payment.attachmentUrl,
-                            payment.attachmentName,
-                          )
-                        }
-                      >
-                        📎
-                      </S.ActionButton>
-                    )}
-                    <S.ActionButton
-                      $variant="delete"
-                      onClick={() => handleDelete(payment.id)}
-                    >
-                      🗑️
-                    </S.ActionButton>
-                  </S.PaymentActions>
-                </S.ExpandedDetails>
-              )}
-            </S.PaymentCard>
+              payment={payment}
+              isExpanded={expandedPayment === payment.id}
+              onCardClick={handleCardClick}
+              onStatusToggle={handleStatusToggle}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onDownload={handleDownload}
+            />
           ))}
       </S.PaymentGrid>
     </S.ListContainer>

@@ -22,5 +22,9 @@ export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const functions = getFunctions(app);
 export const getSendFamilyInviteEmail = () => httpsCallable(functions, "sendFamilyInviteEmail");
+export const getCreateCheckoutSession = () => httpsCallable(functions, "createCheckoutSession");
+export const getSyncProPlanAfterPayment = () => httpsCallable(functions, "syncProPlanAfterPayment");
+export const getVerifyAndSetProFromStripe = () => httpsCallable(functions, "verifyAndSetProFromStripe");
+export const getSetCurrentUserPro = () => httpsCallable(functions, "setCurrentUserPro");
 
 export default app;

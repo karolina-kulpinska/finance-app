@@ -1,6 +1,15 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
+import {
+  selectIsPro,
+  fetchSubscriptionRequest,
+} from "../../../features/subscription/subscriptionSlice";
+import {
+  getCreateCheckoutSession,
+  getVerifyAndSetProFromStripe,
+  getSetCurrentUserPro,
+} from "../../../api/firebase";
 import * as S from "./styled";
 
 const Header = ({
@@ -8,25 +17,148 @@ const Header = ({
   onToggleFilters,
   showFilters,
   hideFilters,
+  onOpenUpgrade,
 }) => {
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const isPro = useSelector(selectIsPro);
+  const [showUpgradeTip, setShowUpgradeTip] = useState(false);
+  const [upgradeError, setUpgradeError] = useState("");
+  const [proGranting, setProGranting] = useState(false);
+  const [showProFallbackLink, setShowProFallbackLink] = useState(false);
+  const [cameFromPaymentSuccess, setCameFromPaymentSuccess] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.location.search.includes("payment=success"),
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !user?.uid) return;
+    if (!window.location.search.includes("payment=success")) return;
+    window.history.replaceState(
+      {},
+      "",
+      window.location.pathname + (window.location.hash || ""),
+    );
+    setCameFromPaymentSuccess(true);
+    setShowProFallbackLink(false);
+    const uid = user.uid;
+    let attempts = 0;
+    let maxAttempts = 15;
+    let interval = null;
+    const refetch = () => {
+      console.log("[ProSync] Refetching plan for UID:", uid);
+      dispatch(fetchSubscriptionRequest({ uid }));
+    };
+    const verify = () => {
+      console.log("[ProSync] Calling verifyAndSetProFromStripe for UID:", uid);
+      getVerifyAndSetProFromStripe()()
+        .then(() => refetch())
+        .catch(() => refetch());
+    };
+    // Pierwsze wywołanie natychmiast
+    verify();
+    // Potem co 2 sekundy przez 30 sekund
+    interval = window.setInterval(() => {
+      if (attempts >= maxAttempts || isPro) {
+        clearInterval(interval);
+        return;
+      }
+      attempts++;
+      verify();
+    }, 2000);
+    // Po 30 sekundach kończymy próbę
+    const timeout = window.setTimeout(() => {
+      clearInterval(interval);
+      if (!isPro) {
+        console.warn(
+          "[ProSync] Nie udało się zsynchronizować planu Pro po płatności Stripe w 30 sekund.",
+        );
+      }
+    }, 30000);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [user?.uid, dispatch, isPro]);
+
+  useEffect(() => {
+    if (isPro) {
+      setShowProFallbackLink(false);
+      setCameFromPaymentSuccess(false);
+    }
+  }, [isPro]);
 
   return (
     <S.Header>
-      <S.TitleSection>
-        <S.Title>Panel Finansowy</S.Title>
-        <S.Subtitle>
-          Witaj, {user?.displayName ? user.displayName : "Użytkowniku"}!
-        </S.Subtitle>
-      </S.TitleSection>
-      <S.Actions>
-        <S.AddButton onClick={onAddPayment}>+ Dodaj płatność</S.AddButton>
-        {!hideFilters && (
-          <S.FilterToggleButton onClick={onToggleFilters}>
-            {showFilters ? "▲" : "▼"}
-          </S.FilterToggleButton>
-        )}
-      </S.Actions>
+      <S.HeaderRow>
+        <S.TitleSection>
+          <S.Title>Panel Finansowy</S.Title>
+          <S.Subtitle>
+            Witaj, {user?.displayName ? user.displayName : "Użytkowniku"}!
+          </S.Subtitle>
+        </S.TitleSection>
+        <S.Actions>
+          {isPro ? (
+            <S.ProBadge>Pro</S.ProBadge>
+          ) : (
+            <S.UpgradeButton
+              onClick={async () => {
+                if (onOpenUpgrade) {
+                  onOpenUpgrade();
+                  return;
+                }
+                const base =
+                  window.location.origin +
+                  window.location.pathname +
+                  (window.location.hash || "");
+                const sep = base.includes("?") ? "&" : "?";
+                const successUrl = base + sep + "payment=success";
+                const cancelUrl = base + sep + "payment=cancel";
+                try {
+                  const createCheckout = getCreateCheckoutSession();
+                  const { data } = await createCheckout({
+                    successUrl,
+                    cancelUrl,
+                  });
+                  if (data?.url) {
+                    window.location.assign(data.url);
+                    return;
+                  }
+                  setUpgradeError(
+                    "Brak linku do płatności. Sprawdź docs/STRIPE_SETUP.md.",
+                  );
+                  setShowUpgradeTip(true);
+                } catch (e) {
+                  console.error("Ulepsz do Pro – błąd:", e);
+                  setUpgradeError(e?.message || String(e));
+                  setShowUpgradeTip(true);
+                }
+              }}
+            >
+              Ulepsz do Pro
+            </S.UpgradeButton>
+          )}
+          <S.AddButton onClick={onAddPayment}>+ Dodaj płatność</S.AddButton>
+          {!hideFilters && (
+            <S.FilterToggleButton onClick={onToggleFilters}>
+              {showFilters ? "▲" : "▼"}
+            </S.FilterToggleButton>
+          )}
+        </S.Actions>
+      </S.HeaderRow>
+      {showUpgradeTip && !onOpenUpgrade && (
+        <S.UpgradeTip
+          onClick={() => {
+            setShowUpgradeTip(false);
+            setUpgradeError("");
+          }}
+        >
+          Plan Pro: wszystkie funkcje, załączniki, zero reklam.
+          {upgradeError && ` Błąd: ${upgradeError}`} (Kliknij, aby zamknąć)
+        </S.UpgradeTip>
+      )}
+      {/* Usunięto przycisk awaryjny. Synchronizacja odbywa się automatycznie. */}
     </S.Header>
   );
 };

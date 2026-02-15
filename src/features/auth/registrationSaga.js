@@ -31,6 +31,7 @@ function* registerHandler({ payload }) {
       email: user.email,
       displayName: displayName || "",
       createdAt: new Date().toISOString(),
+      plan: "free",
     };
 
     // Jeśli jest zaproszenie do rodziny, dodaj użytkownika

@@ -6,6 +6,9 @@ import {
   selectPayments,
   fetchPaymentsRequest,
 } from "../../features/payments/paymentSlice";
+
+import { fetchSubscriptionRequest } from "../../features/subscription/subscriptionSlice";
+import { selectUser } from "../../features/auth/authSlice";
 import Header from "./Header";
 import Stats from "./Stats";
 import Charts from "./Charts";
@@ -19,10 +22,12 @@ import Profile from "./Profile";
 import Files from "./Files";
 import Family from "./Family";
 import BottomNav from "../../components/BottomNav";
+import AdBanner from "../../components/AdBanner";
 import * as S from "./styled";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
   const isModalOpen = useSelector(selectIsModalOpen);
   const payments = useSelector(selectPayments);
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -38,6 +43,13 @@ const Dashboard = () => {
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
   }, [dispatch]);
+
+  // Dodane: odświeżanie planu użytkownika po wejściu na Dashboard
+  useEffect(() => {
+    if (user?.uid) {
+      dispatch(fetchSubscriptionRequest({ uid: user.uid }));
+    }
+  }, [dispatch, user?.uid]);
 
   const handleAddPayment = () => {
     setShowTypeSelector(true);
@@ -137,6 +149,7 @@ const Dashboard = () => {
             </S.FiltersBox>
           )}
         {renderContent()}
+        <AdBanner />
       </S.Container>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       {showTypeSelector && (

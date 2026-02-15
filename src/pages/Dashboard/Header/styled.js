@@ -1,11 +1,14 @@
 import styled from "styled-components";
 
 export const Header = styled.header`
+  margin-bottom: 8px;
+`;
+
+export const HeaderRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0;
-  margin-bottom: 8px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     flex-direction: column;
@@ -103,5 +106,65 @@ export const AddButton = styled.button`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     width: 100%;
+  }
+`;
+
+export const ProBadge = styled.span`
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: #1a1a1a;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+`;
+
+export const UpgradeButton = styled.button`
+  padding: 6px 12px;
+  background: transparent;
+  color: #667eea;
+  border: 1.5px solid #667eea;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+
+  &:hover {
+    background: rgba(102, 126, 234, 0.1);
+  }
+`;
+
+export const UpgradeTip = styled.div`
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(102, 126, 234, 0.08);
+  border: 1px dashed #667eea;
+  border-radius: 8px;
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.text};
+  cursor: pointer;
+`;
+
+export const ProGrantLink = styled.button`
+  margin-top: 8px;
+  padding: 6px 0;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #667eea;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+  display: block;
+
+  &:hover {
+    color: #764ba2;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: wait;
   }
 `;

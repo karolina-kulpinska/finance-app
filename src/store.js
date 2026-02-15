@@ -3,8 +3,10 @@ import createSagaMiddleware from "redux-saga";
 import { all } from "redux-saga/effects";
 import authReducer from "./features/auth/authSlice";
 import registrationReducer from "./features/auth/registrationSlice";
+import subscriptionReducer from "./features/subscription/subscriptionSlice";
 import { authSaga } from "./features/auth/authSaga";
 import { registrationSaga } from "./features/auth/registrationSaga";
+import { subscriptionSaga } from "./features/subscription/subscriptionSaga";
 import paymentReducer from "./features/payments/paymentSlice";
 import { paymentSaga } from "./features/payments/paymentSaga";
 import notificationReducer from "./features/notification/notificationSlice";
@@ -18,7 +20,7 @@ const sagaMiddleware = createSagaMiddleware({
 
 function* rootSaga() {
   try {
-    yield all([authSaga(), registrationSaga(), paymentSaga()]);
+    yield all([authSaga(), registrationSaga(), subscriptionSaga(), paymentSaga()]);
   } catch (error) {
     console.error("❌ Root Saga Error:", error);
   }
@@ -28,6 +30,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     registration: registrationReducer,
+    subscription: subscriptionReducer,
     payments: paymentReducer,
     notification: notificationReducer,
     confirm: confirmReducer,

@@ -253,6 +253,16 @@ export const CompressionInfo = styled.span`
   font-size: 10px;
 `;
 
+export const ProUpsell = styled.div`
+  padding: 10px 12px;
+  background: rgba(102, 126, 234, 0.08);
+  border: 1px dashed rgba(102, 126, 234, 0.4);
+  border-radius: 8px;
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.secondary};
+  line-height: 1.4;
+`;
+
 export const InstallmentRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;

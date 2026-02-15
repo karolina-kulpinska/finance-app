@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@invertase/firestore-stripe-payments": "^0.0.8",
     "@reduxjs/toolkit": "^2.11.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

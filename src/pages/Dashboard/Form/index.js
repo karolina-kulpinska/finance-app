@@ -7,6 +7,7 @@ import {
   toggleModal,
   selectEditingPayment,
 } from "../../../features/payments/paymentSlice";
+import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
 import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
 import { bankOptions, getBankConfig } from "../../../utils/bankIcons";
@@ -17,6 +18,7 @@ import * as S from "./styled";
 const AddPaymentForm = ({ paymentType, onClose }) => {
   const dispatch = useDispatch();
   const editingPayment = useSelector(selectEditingPayment);
+  const isPro = useSelector(selectIsPro);
   const [isCompressing, setIsCompressing] = useState(false);
   const [fileInfo, setFileInfo] = useState(null);
   const {
@@ -126,6 +128,7 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
   };
 
   const onSubmit = async (data) => {
+    if (!isPro) delete data.attachment;
     if (data.attachment?.[0] && data.attachment[0].type.startsWith("image/")) {
       setIsCompressing(true);
       try {
@@ -500,28 +503,36 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
 
             <S.FormGroup $fullWidth>
               <S.Label>Załącznik (PDF, zdjęcie)</S.Label>
-              <S.Input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                {...register("attachment")}
-                onChange={handleFileChange}
-              />
-              {fileInfo && (
-                <S.FileInfo>
-                  📎 {fileInfo.name}
-                  <br />
-                  {fileInfo.compressing && "🔄 Kompresowanie..."}
-                  {fileInfo.compressedSize && (
-                    <S.CompressionInfo>
-                      ✅ Skompresowano: {fileInfo.originalSize} →{" "}
-                      {fileInfo.compressedSize}
-                      (oszczędność: {fileInfo.savings})
-                    </S.CompressionInfo>
+              {isPro ? (
+                <>
+                  <S.Input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    {...register("attachment")}
+                    onChange={handleFileChange}
+                  />
+                  {fileInfo && (
+                    <S.FileInfo>
+                      📎 {fileInfo.name}
+                      <br />
+                      {fileInfo.compressing && "🔄 Kompresowanie..."}
+                      {fileInfo.compressedSize && (
+                        <S.CompressionInfo>
+                          ✅ Skompresowano: {fileInfo.originalSize} →{" "}
+                          {fileInfo.compressedSize}
+                          (oszczędność: {fileInfo.savings})
+                        </S.CompressionInfo>
+                      )}
+                      {!fileInfo.compressing && !fileInfo.compressedSize && (
+                        <span>📄 PDF - {fileInfo.originalSize}</span>
+                      )}
+                    </S.FileInfo>
                   )}
-                  {!fileInfo.compressing && !fileInfo.compressedSize && (
-                    <span>📄 PDF - {fileInfo.originalSize}</span>
-                  )}
-                </S.FileInfo>
+                </>
+              ) : (
+                <S.ProUpsell>
+                  🔒 Dodawanie załączników dostępne w planie Pro. Ulepsz, aby dodawać zdjęcia i PDF-y.
+                </S.ProUpsell>
               )}
             </S.FormGroup>
           </S.FormGrid>

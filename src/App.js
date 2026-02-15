@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./api/firebase";
 import { loginSuccess, logout, selectUser } from "./features/auth/authSlice";
+import { fetchSubscriptionRequest } from "./features/subscription/subscriptionSlice";
 import LandingPage from "./pages/Landing";
 import LoginPage from "./pages/Login";
 import RegistrationPage from "./pages/Registration";
@@ -55,6 +56,7 @@ function App() {
             displayName: user.displayName,
           }),
         );
+        dispatch(fetchSubscriptionRequest({ uid: user.uid }));
       } else {
         dispatch(logout());
       }

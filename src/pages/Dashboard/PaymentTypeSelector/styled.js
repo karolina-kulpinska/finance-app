@@ -8,7 +8,7 @@ const fadeIn = keyframes`
 const slideUp = keyframes`
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -34,26 +34,26 @@ export const Overlay = styled.div`
 
 export const Container = styled.div`
   background: white;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 12px;
+  padding: 16px;
   width: 100%;
-  max-width: 500px;
+  max-width: 340px;
   animation: ${slideUp} 0.4s ease;
 `;
 
 export const Title = styled.h2`
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 15px;
+  font-weight: 800;
   color: ${({ theme }) => theme.colors.text};
-  margin: 0 0 20px 0;
+  margin: 0 0 12px 0;
   text-align: center;
 `;
 
 export const TypeGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 12px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
     grid-template-columns: 1fr;
@@ -62,52 +62,53 @@ export const TypeGrid = styled.div`
 
 export const TypeCard = styled.button`
   background: white;
-  border: 2px solid ${({ $color }) => $color};
-  border-radius: 12px;
-  padding: 20px 16px;
+  border: 1.5px solid ${({ $color }) => $color};
+  border-radius: 10px;
+  padding: 10px 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
+  gap: 4px;
+  font-family: inherit;
 
   &:hover {
-    background: ${({ $color }) => `${$color}10`};
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    background: ${({ $color }) => `${$color}12`};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   &:active {
-    transform: translateY(-2px);
+    transform: translateY(0);
   }
 `;
 
 export const TypeIcon = styled.div`
-  font-size: 40px;
+  font-size: 24px;
 `;
 
 export const TypeTitle = styled.div`
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
 `;
 
 export const TypeDesc = styled.div`
-  font-size: 11px;
+  font-size: 10px;
   color: ${({ theme }) => theme.colors.secondary};
-  line-height: 1.4;
+  line-height: 1.3;
 `;
 
 export const CancelButton = styled.button`
   width: 100%;
-  padding: 10px;
+  padding: 8px;
   background: transparent;
   color: ${({ theme }) => theme.colors.secondary};
   border: 1.5px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;

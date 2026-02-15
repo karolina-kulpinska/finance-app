@@ -89,56 +89,61 @@ const Header = ({
     }
   }, [isPro]);
 
+  const handleUpgradeClick = async () => {
+    if (onOpenUpgrade) {
+      onOpenUpgrade();
+      return;
+    }
+    const base =
+      window.location.origin +
+      window.location.pathname +
+      (window.location.hash || "");
+    const sep = base.includes("?") ? "&" : "?";
+    const successUrl = base + sep + "payment=success";
+    const cancelUrl = base + sep + "payment=cancel";
+    try {
+      const createCheckout = getCreateCheckoutSession();
+      const { data } = await createCheckout({
+        successUrl,
+        cancelUrl,
+      });
+      if (data?.url) {
+        window.location.assign(data.url);
+        return;
+      }
+      setUpgradeError(
+        "Brak linku do płatności. Sprawdź docs/STRIPE_SETUP.md.",
+      );
+      setShowUpgradeTip(true);
+    } catch (e) {
+      console.error("Ulepsz do Pro – błąd:", e);
+      setUpgradeError(e?.message || String(e));
+      setShowUpgradeTip(true);
+    }
+  };
+
+  const proOrUpgrade = isPro ? (
+    <S.ProBadge>Pro</S.ProBadge>
+  ) : (
+    <S.UpgradeButton onClick={handleUpgradeClick} aria-label="Ulepsz do Pro">
+      Ulepsz do Pro
+    </S.UpgradeButton>
+  );
+
   return (
     <S.Header>
       <S.HeaderRow>
         <S.TitleSection>
-          <S.Title>Panel Finansowy</S.Title>
+          <S.TitleRow>
+            <S.Title>Smart Budget</S.Title>
+            <S.ProCorner>{proOrUpgrade}</S.ProCorner>
+          </S.TitleRow>
           <S.Subtitle>
             Witaj, {user?.displayName ? user.displayName : "Użytkowniku"}!
           </S.Subtitle>
         </S.TitleSection>
         <S.Actions>
-          {isPro ? (
-            <S.ProBadge>Pro</S.ProBadge>
-          ) : (
-            <S.UpgradeButton
-              onClick={async () => {
-                if (onOpenUpgrade) {
-                  onOpenUpgrade();
-                  return;
-                }
-                const base =
-                  window.location.origin +
-                  window.location.pathname +
-                  (window.location.hash || "");
-                const sep = base.includes("?") ? "&" : "?";
-                const successUrl = base + sep + "payment=success";
-                const cancelUrl = base + sep + "payment=cancel";
-                try {
-                  const createCheckout = getCreateCheckoutSession();
-                  const { data } = await createCheckout({
-                    successUrl,
-                    cancelUrl,
-                  });
-                  if (data?.url) {
-                    window.location.assign(data.url);
-                    return;
-                  }
-                  setUpgradeError(
-                    "Brak linku do płatności. Sprawdź docs/STRIPE_SETUP.md.",
-                  );
-                  setShowUpgradeTip(true);
-                } catch (e) {
-                  console.error("Ulepsz do Pro – błąd:", e);
-                  setUpgradeError(e?.message || String(e));
-                  setShowUpgradeTip(true);
-                }
-              }}
-            >
-              Ulepsz do Pro
-            </S.UpgradeButton>
-          )}
+          <S.ProDesktop>{proOrUpgrade}</S.ProDesktop>
           <S.AddButton onClick={onAddPayment}>+ Dodaj płatność</S.AddButton>
           {!hideFilters && (
             <S.FilterToggleButton onClick={onToggleFilters}>

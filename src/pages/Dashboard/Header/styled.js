@@ -21,6 +21,15 @@ export const TitleSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
+  flex: 1;
+  min-width: 0;
+`;
+
+export const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 `;
 
 export const Title = styled.h1`
@@ -34,7 +43,27 @@ export const Title = styled.h1`
   background-clip: text;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    font-size: 22px;
+    font-size: 20px;
+  }
+`;
+
+export const ProCorner = styled.div`
+  display: none;
+  flex-shrink: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+`;
+
+export const ProDesktop = styled.div`
+  display: flex;
+  align-items: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    display: none;
   }
 `;
 
@@ -114,9 +143,15 @@ export const ProBadge = styled.span`
   background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
   color: #1a1a1a;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
 `;
 
 export const UpgradeButton = styled.button`
@@ -125,14 +160,20 @@ export const UpgradeButton = styled.button`
   color: #667eea;
   border: 1.5px solid #667eea;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
+  white-space: nowrap;
 
   &:hover {
     background: rgba(102, 126, 234, 0.1);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 5px 10px;
+    font-size: 10px;
   }
 `;
 

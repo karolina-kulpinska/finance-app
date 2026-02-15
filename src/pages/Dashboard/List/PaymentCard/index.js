@@ -8,6 +8,8 @@ import * as S from "./styled";
 export const PaymentCard = ({
   payment,
   isExpanded,
+  selected,
+  onSelect,
   onCardClick,
   onStatusToggle,
   onEdit,
@@ -42,6 +44,16 @@ export const PaymentCard = ({
       $expanded={isExpanded}
       onClick={() => onCardClick(payment.id)}
     >
+      {onSelect && (
+        <S.CardCheckboxWrapper onClick={(e) => e.stopPropagation()}>
+          <S.CardCheckbox
+            type="checkbox"
+            checked={!!selected}
+            onChange={() => onSelect()}
+            aria-label={`Zaznacz ${payment.name}`}
+          />
+        </S.CardCheckboxWrapper>
+      )}
       <S.PaymentIcon>
         {getCategoryLabel(payment.category).split(" ")[0]}
       </S.PaymentIcon>

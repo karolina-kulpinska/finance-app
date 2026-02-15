@@ -1,12 +1,40 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { ref, deleteObject } from "firebase/storage";
+import { storage } from "../../../api/firebase";
 import { selectPayments } from "../../../features/payments/paymentSlice";
+import { updatePaymentRequest } from "../../../features/payments/paymentSlice";
 import * as S from "./styled";
 import { generateFilesPDF } from "./generatePDF";
 
+function getShoppingListReceipts(sharedOnly) {
+  try {
+    const raw = localStorage.getItem("shoppingLists");
+    const lists = raw ? JSON.parse(raw) : [];
+    return lists
+      .filter((l) => l.receipt && (!sharedOnly || l.sharedWithFamily === true))
+      .map((l) => ({
+        id: `receipt-${l.id}`,
+        name: l.name,
+        attachmentName: l.receipt.name,
+        date: l.createdAt
+          ? new Date(l.createdAt).toLocaleDateString("pl-PL")
+          : "",
+        category: "shopping",
+        attachmentUrl: l.receipt.url || null,
+        fromShoppingList: true,
+      }));
+  } catch {
+    return [];
+  }
+}
+
 const Files = ({ sharedOnly = false }) => {
+  const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
   const [activeFilter, setActiveFilter] = useState("all");
+  const [deletingId, setDeletingId] = useState(null);
+  const [fileToDelete, setFileToDelete] = useState(null);
   const [minDate, setMinDate] = useState("");
   const [maxDate, setMaxDate] = useState("");
   const [selected, setSelected] = useState([]);
@@ -18,14 +46,19 @@ const Files = ({ sharedOnly = false }) => {
     { id: "other", label: "Inne", icon: "📌" },
   ];
 
-  const filesWithAttachments = payments.filter(
+  const filesFromPayments = payments.filter(
     (p) => p.attachmentUrl && (!sharedOnly || p.sharedWithFamily === true)
   );
+  const filesFromLists = getShoppingListReceipts(sharedOnly);
+  const allFiles = [
+    ...filesFromPayments.map((p) => ({ ...p, fromShoppingList: false })),
+    ...filesFromLists,
+  ];
 
   let filteredFiles =
     activeFilter === "all"
-      ? filesWithAttachments
-      : filesWithAttachments.filter((p) => p.category === activeFilter);
+      ? allFiles
+      : allFiles.filter((f) => f.category === activeFilter);
 
   if (minDate) {
     filteredFiles = filteredFiles.filter(
@@ -67,7 +100,9 @@ const Files = ({ sharedOnly = false }) => {
   };
 
   const handleDownloadSelected = () => {
-    const toDownload = filteredFiles.filter((f) => selected.includes(f.id));
+    const toDownload = filteredFiles.filter(
+      (f) => selected.includes(f.id) && f.attachmentUrl
+    );
     toDownload.forEach((f, i) => {
       setTimeout(
         () => handleDownload(f.attachmentUrl, f.attachmentName),
@@ -83,8 +118,79 @@ const Files = ({ sharedOnly = false }) => {
     }
   };
 
+  const handleDeleteFile = async (file) => {
+    if (deletingId) return;
+    setDeletingId(file.id);
+    try {
+      if (file.fromShoppingList) {
+        const listId = String(file.id).replace(/^receipt-/, "");
+        const raw = localStorage.getItem("shoppingLists");
+        const lists = raw ? JSON.parse(raw) : [];
+        const updated = lists.map((l) =>
+          String(l.id) === listId ? { ...l, receipt: null } : l
+        );
+        localStorage.setItem("shoppingLists", JSON.stringify(updated));
+        if (file.attachmentUrl) {
+          try {
+            const storageRef = ref(storage, file.attachmentUrl);
+            await deleteObject(storageRef);
+          } catch {
+          }
+        }
+        window.dispatchEvent(new CustomEvent("shoppingListsUpdated"));
+      } else {
+        const payment = payments.find((p) => p.id === file.id);
+        if (payment) {
+          dispatch(
+            updatePaymentRequest({
+              id: payment.id,
+              ...payment,
+              attachmentUrl: null,
+              attachmentName: null,
+              oldAttachmentUrl: payment.attachmentUrl,
+            })
+          );
+        }
+      }
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <S.Container>
+      {fileToDelete && (
+        <S.ConfirmOverlay
+          onClick={() => setFileToDelete(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-delete-title"
+        >
+          <S.ConfirmModalBox onClick={(e) => e.stopPropagation()}>
+            <S.ConfirmTitle id="confirm-delete-title">
+              Usuń plik
+            </S.ConfirmTitle>
+            <S.ConfirmMessage>
+              Czy na pewno chcesz usunąć ten plik z całej aplikacji? Ta czynność
+              jest nieodwracalna.
+            </S.ConfirmMessage>
+            <S.ConfirmButtonGroup>
+              <S.ConfirmCancelBtn onClick={() => setFileToDelete(null)}>
+                Anuluj
+              </S.ConfirmCancelBtn>
+              <S.ConfirmDeleteBtn
+                onClick={() => {
+                  handleDeleteFile(fileToDelete);
+                  setFileToDelete(null);
+                }}
+                disabled={deletingId === fileToDelete.id}
+              >
+                {deletingId === fileToDelete.id ? "Usuwanie…" : "Usuń"}
+              </S.ConfirmDeleteBtn>
+            </S.ConfirmButtonGroup>
+          </S.ConfirmModalBox>
+        </S.ConfirmOverlay>
+      )}
       <S.FiltersWrapper>
         <S.FiltersChipsRow>
           {filters.map((filter) => (
@@ -121,7 +227,7 @@ const Files = ({ sharedOnly = false }) => {
           <S.EmptyText>
             {sharedOnly
               ? "Brak plików udostępnionych rodzinie. Zaznacz „Udostępnij rodzinie” przy płatności z załącznikiem."
-              : "Dodaj załączniki do płatności, aby zobaczyć je tutaj"}
+              : "Dodaj załączniki do płatności lub paragony do list zakupów, aby zobaczyć je tutaj."}
           </S.EmptyText>
         </S.EmptyState>
       ) : (
@@ -153,31 +259,57 @@ const Files = ({ sharedOnly = false }) => {
             </S.DownloadSelectedButton>
           </S.FilesActions>
           <S.FilesGrid>
-            {filteredFiles.map((payment) => (
-              <S.FileCard key={payment.id}>
+            {filteredFiles.map((file) => (
+              <S.FileCard key={file.id}>
                 <S.FileCheckbox
                   type="checkbox"
-                  checked={selected.includes(payment.id)}
-                  onChange={() => handleSelect(payment.id)}
+                  checked={selected.includes(file.id)}
+                  onChange={() => handleSelect(file.id)}
                 />
                 <S.FileIcon>
-                  {payment.attachmentName.endsWith(".pdf") ? "📄" : "🖼️"}
+                  {file.attachmentName?.endsWith(".pdf") ? "📄" : "🖼️"}
                 </S.FileIcon>
                 <S.FileInfo>
-                  <S.FileName>{payment.name}</S.FileName>
-                  <S.FileDetails>{payment.attachmentName}</S.FileDetails>
-                  <S.FileDate>{payment.date}</S.FileDate>
+                  <S.FileName>
+                    {file.fromShoppingList ? `🛒 ${file.name}` : file.name}
+                  </S.FileName>
+                  <S.FileDetails>{file.attachmentName}</S.FileDetails>
+                  <S.FileDate>{file.date}</S.FileDate>
                 </S.FileInfo>
-                <S.DownloadIcon
-                  onClick={() =>
-                    handleDownload(
-                      payment.attachmentUrl,
-                      payment.attachmentName,
-                    )
-                  }
-                >
-                  ⬇️
-                </S.DownloadIcon>
+                <S.FileActions>
+                  {file.attachmentUrl ? (
+                    <S.DownloadIcon
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload(file.attachmentUrl, file.attachmentName);
+                      }}
+                      title="Pobierz"
+                    >
+                      ⬇️
+                    </S.DownloadIcon>
+                  ) : (
+                    <span
+                      style={{
+                        fontSize: 20,
+                        flexShrink: 0,
+                        opacity: 0.7,
+                      }}
+                      title="Załączony do listy zakupów"
+                    >
+                      📎
+                    </span>
+                  )}
+                  <S.DeleteIcon
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFileToDelete(file);
+                    }}
+                    disabled={deletingId === file.id}
+                    title="Usuń plik"
+                  >
+                    {deletingId === file.id ? "⏳" : "🗑️"}
+                  </S.DeleteIcon>
+                </S.FileActions>
               </S.FileCard>
             ))}
           </S.FilesGrid>

@@ -6,7 +6,9 @@ export const AttachmentField = ({
   register,
   fileInfo,
   onFileChange,
-}) => (
+}) => {
+  const { onChange: formOnChange, ...attachmentRegister } = register("attachment");
+  return (
   <S.FormGroup $fullWidth>
     <S.Label>Załącznik (PDF, zdjęcie)</S.Label>
     {isPro ? (
@@ -14,8 +16,11 @@ export const AttachmentField = ({
         <S.Input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
-          {...register("attachment")}
-          onChange={onFileChange}
+          {...attachmentRegister}
+          onChange={(e) => {
+            formOnChange(e);
+            onFileChange(e);
+          }}
         />
         {fileInfo && (
           <S.FileInfo>
@@ -40,4 +45,5 @@ export const AttachmentField = ({
       </S.ProUpsell>
     )}
   </S.FormGroup>
-);
+  );
+};

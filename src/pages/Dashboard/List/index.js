@@ -7,6 +7,7 @@ import {
   selectDateFilter,
   updatePaymentStatusRequest,
   openEditModal,
+  deletePaymentRequest,
 } from "../../../features/payments/paymentSlice";
 import { showConfirm } from "../../../features/notification/confirmSlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
@@ -28,6 +29,8 @@ const PaymentsList = ({
   const dateFilter = useSelector(selectDateFilter);
   const [expandedPayment, setExpandedPayment] = React.useState(null);
   const [collapsed, setCollapsed] = React.useState(false);
+  const [selectedIds, setSelectedIds] = React.useState([]);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = React.useState(false);
 
   React.useEffect(() => {
     if (collapseAll) {
@@ -120,6 +123,31 @@ const PaymentsList = ({
     );
   };
 
+  const allFilteredSelected =
+    filteredPayments.length > 0 &&
+    selectedIds.length === filteredPayments.length;
+  const handleSelectAll = () => {
+    if (allFilteredSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredPayments.map((p) => p.id));
+    }
+  };
+
+  const handleToggleSelect = (paymentId) => {
+    setSelectedIds((prev) =>
+      prev.includes(paymentId)
+        ? prev.filter((id) => id !== paymentId)
+        : [...prev, paymentId]
+    );
+  };
+
+  const handleBulkDeleteConfirm = () => {
+    selectedIds.forEach((id) => dispatch(deletePaymentRequest(id)));
+    setSelectedIds([]);
+    setShowBulkDeleteConfirm(false);
+  };
+
   const handleDownload = (url) => {
     window.open(url, "_blank");
   };
@@ -130,20 +158,71 @@ const PaymentsList = ({
 
   return (
     <S.ListContainer>
-      <S.ListHeader>
-        <S.ListTitle>
-          {sharedOnly
-            ? `Płatności udostępnione rodzinie (${filteredPayments.length})`
-            : `Wszystkie płatności (${filteredPayments.length})`}
-        </S.ListTitle>
-        <S.CollapseButton
-          onClick={() => {
-            setCollapsed(!collapsed);
-            setExpandedPayment(null);
-          }}
+      {showBulkDeleteConfirm && (
+        <S.ConfirmOverlay
+          onClick={() => setShowBulkDeleteConfirm(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="bulk-delete-title"
         >
-          {collapsed ? "Rozwiń" : "Zwiń"}
-        </S.CollapseButton>
+          <S.ConfirmModalBox onClick={(e) => e.stopPropagation()}>
+            <S.ConfirmTitle id="bulk-delete-title">
+              Usuń zaznaczone płatności
+            </S.ConfirmTitle>
+            <S.ConfirmMessage>
+              Czy na pewno chcesz usunąć {selectedIds.length} płatności? Ta
+              czynność jest nieodwracalna.
+            </S.ConfirmMessage>
+            <S.ConfirmButtonGroup>
+              <S.ConfirmCancelBtn onClick={() => setShowBulkDeleteConfirm(false)}>
+                Anuluj
+              </S.ConfirmCancelBtn>
+              <S.ConfirmDeleteBtn onClick={handleBulkDeleteConfirm}>
+                Usuń ({selectedIds.length})
+              </S.ConfirmDeleteBtn>
+            </S.ConfirmButtonGroup>
+          </S.ConfirmModalBox>
+        </S.ConfirmOverlay>
+      )}
+      <S.ListHeader>
+        <S.TitleRow>
+          <S.ListTitle>
+            {sharedOnly
+              ? `Płatności udostępnione rodzinie (${filteredPayments.length})`
+              : `Wszystkie płatności (${filteredPayments.length})`}
+          </S.ListTitle>
+          <S.CollapseButton
+            onClick={() => {
+              setCollapsed(!collapsed);
+              setExpandedPayment(null);
+            }}
+          >
+            {collapsed ? "Rozwiń" : "Zwiń"}
+          </S.CollapseButton>
+        </S.TitleRow>
+        <S.HeaderActions>
+          {filteredPayments.length > 0 && (
+            <S.SelectAllWrapper onClick={(e) => e.stopPropagation()}>
+              <S.SelectAllCheckbox
+                type="checkbox"
+                checked={allFilteredSelected}
+                onChange={handleSelectAll}
+                id="select-all-payments"
+              />
+              <S.SelectAllLabel htmlFor="select-all-payments">
+                Zaznacz wszystkie
+              </S.SelectAllLabel>
+            </S.SelectAllWrapper>
+          )}
+          {selectedIds.length > 0 && (
+            <S.BulkDeleteButton
+              type="button"
+              onClick={() => setShowBulkDeleteConfirm(true)}
+            >
+              🗑️ Usuń zaznaczone ({selectedIds.length})
+            </S.BulkDeleteButton>
+          )}
+        </S.HeaderActions>
       </S.ListHeader>
       <S.PaymentGrid>
         {!collapsed &&
@@ -152,6 +231,8 @@ const PaymentsList = ({
               key={payment.id}
               payment={payment}
               isExpanded={expandedPayment === payment.id}
+              selected={selectedIds.includes(payment.id)}
+              onSelect={() => handleToggleSelect(payment.id)}
               onCardClick={handleCardClick}
               onStatusToggle={handleStatusToggle}
               onEdit={handleEdit}

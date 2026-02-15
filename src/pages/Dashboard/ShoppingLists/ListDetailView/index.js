@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { AddItemForm } from "../AddItemForm";
 import { ItemsSection } from "../ItemsSection";
 import * as S from "./styled";
@@ -16,8 +16,11 @@ export const ListDetailView = ({
   onTogglePurchased,
   onDeleteItem,
   onReceiptUpload,
+  receiptUploading,
   onDeleteList,
 }) => {
+  const receiptInputRef = useRef(null);
+
   const handleShareChange = (checked) => {
     setLists(
       lists.map((l) =>
@@ -81,6 +84,7 @@ export const ListDetailView = ({
         </S.BottomButton>
         <>
           <input
+            ref={receiptInputRef}
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
             onChange={(e) => {
@@ -88,15 +92,15 @@ export const ListDetailView = ({
               if (file) onReceiptUpload(list.id, file);
               e.target.value = "";
             }}
-            id={`receipt-upload-${list.id}`}
             style={{ display: "none" }}
           />
           <S.BottomButton
-            as="label"
-            htmlFor={`receipt-upload-${list.id}`}
+            type="button"
             $variant="receipt"
+            disabled={receiptUploading}
+            onClick={() => receiptInputRef.current?.click()}
           >
-            📎 Dodaj paragon
+            {receiptUploading ? "⏳ Wgrywanie…" : "📎 Dodaj paragon"}
           </S.BottomButton>
         </>
       </S.BottomButtons>

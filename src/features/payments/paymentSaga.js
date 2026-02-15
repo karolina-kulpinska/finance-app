@@ -223,6 +223,14 @@ function* updatePaymentHandler({ payload }) {
       yield call(uploadBytes, storageRef, file);
       attachmentUrl = yield call(getDownloadURL, storageRef);
       attachmentName = file.name;
+    } else if (updateData.oldAttachmentUrl) {
+      try {
+        const oldRef = ref(storage, updateData.oldAttachmentUrl);
+        yield call(deleteObject, oldRef);
+      } catch (error) {
+      }
+      attachmentUrl = null;
+      attachmentName = null;
     }
     
     const paymentUpdateData = {

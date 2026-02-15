@@ -24,11 +24,12 @@ export const FiltersWrapper = styled.div`
 
 export const FiltersChipsRow = styled.div`
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 6px;
 
   @media (min-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
     flex: 1;
+    flex-wrap: nowrap;
   }
 `;
 
@@ -145,6 +146,8 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
+  overflow: hidden;
 `;
 
 export const FilterChip = styled.button`
@@ -181,6 +184,8 @@ export const FilesGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
+  min-width: 0;
+  overflow: hidden;
 `;
 
 export const FileCard = styled.div`
@@ -194,6 +199,7 @@ export const FileCard = styled.div`
   gap: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-width: 0;
 
   &:hover {
     transform: translateX(4px);
@@ -202,6 +208,11 @@ export const FileCard = styled.div`
 
   &:active {
     transform: scale(0.99);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 10px;
+    gap: 8px;
   }
 `;
 
@@ -240,10 +251,43 @@ export const FileDate = styled.div`
   color: ${({ theme }) => theme.colors.secondary};
 `;
 
+export const FileActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+`;
+
 export const DownloadIcon = styled.div`
   font-size: 20px;
-  flex-shrink: 0;
   opacity: 0.6;
+  cursor: pointer;
+`;
+
+export const DeleteIcon = styled.button`
+  font-size: 18px;
+  padding: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  opacity: 0.7;
+  border-radius: 4px;
+
+  &:hover:not(:disabled) {
+    opacity: 1;
+    background: #ffebee;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+`;
+
+export const FileFromListLabel = styled.span`
+  font-size: 20px;
+  flex-shrink: 0;
+  opacity: 0.7;
 `;
 
 export const EmptyState = styled.div`
@@ -270,4 +314,82 @@ export const EmptyText = styled.p`
   font-size: 14px;
   color: ${({ theme }) => theme.colors.secondary};
   margin: 0;
+`;
+
+export const ConfirmOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+`;
+
+export const ConfirmModalBox = styled.div`
+  background: ${({ theme }) => theme.colors?.white || "#fff"};
+  border-radius: 16px;
+  padding: 24px;
+  min-width: 280px;
+  max-width: 90vw;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  text-align: center;
+`;
+
+export const ConfirmTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: ${({ theme }) => theme.colors?.text || "#333"};
+`;
+
+export const ConfirmMessage = styled.p`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors?.secondary || "#666"};
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+`;
+
+export const ConfirmButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+`;
+
+export const ConfirmCancelBtn = styled.button`
+  padding: 10px 20px;
+  background: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+`;
+
+export const ConfirmDeleteBtn = styled.button`
+  padding: 10px 20px;
+  background: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: #c9302c;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 `;

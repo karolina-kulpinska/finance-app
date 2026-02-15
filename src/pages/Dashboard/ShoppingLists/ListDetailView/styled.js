@@ -132,6 +132,11 @@ export const BottomButton = styled.button`
   font-family: inherit;
   border: 1px solid transparent;
 
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
   ${({ $variant }) =>
     $variant === "danger" &&
     `

@@ -39,6 +39,19 @@ export const Card = styled.div`
   }
 `;
 
+export const CardCheckboxWrapper = styled.div`
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+`;
+
+export const CardCheckbox = styled.input`
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+`;
+
 export const PaymentIcon = styled.div`
   font-size: 32px;
   margin-bottom: 6px;

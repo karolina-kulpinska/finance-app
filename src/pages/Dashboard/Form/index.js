@@ -114,7 +114,6 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
           savings: `${savings}%`,
         });
       } catch (error) {
-        console.error("Błąd kompresji:", error);
       } finally {
         setIsCompressing(false);
       }
@@ -136,7 +135,6 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
         const compressed = await compressImage(data.attachment[0]);
         data.attachment = [compressed];
       } catch (error) {
-        console.error("Błąd kompresji podczas wysyłki:", error);
       } finally {
         setIsCompressing(false);
       }

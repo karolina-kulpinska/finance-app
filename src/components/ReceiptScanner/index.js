@@ -26,7 +26,6 @@ const ReceiptScanner = ({ onScanComplete }) => {
       const parsedData = parseReceipt(text);
       onScanComplete(parsedData);
     } catch (error) {
-      console.error("OCR Error:", error);
       alert("Nie udało się odczytać paragonu. Spróbuj ponownie.");
     } finally {
       setScanning(false);
@@ -37,7 +36,6 @@ const ReceiptScanner = ({ onScanComplete }) => {
   const parseReceipt = (text) => {
     const lines = text.split("\n").map((line) => line.trim());
     
-    // Szukaj kwoty (wzorce: 123.45, 123,45, itp.)
     const amountRegex = /(\d+[.,]\d{2})\s*(zł|PLN)?/gi;
     const amounts = [];
     lines.forEach((line) => {
@@ -50,24 +48,20 @@ const ReceiptScanner = ({ onScanComplete }) => {
       }
     });
 
-    // Szukaj daty (wzorce: DD.MM.YYYY, DD/MM/YYYY, DD-MM-YYYY)
     const dateRegex = /(\d{2})[./-](\d{2})[./-](\d{4})/;
     let date = "";
     for (const line of lines) {
       const match = line.match(dateRegex);
       if (match) {
-        // eslint-disable-next-line no-unused-vars
         const [_, day, month, year] = match;
         date = `${year}-${month}-${day}`;
         break;
       }
     }
 
-    // Szukaj nazwy sklepu (zazwyczaj w pierwszych 3 liniach)
     const storeName = lines.slice(0, 3)
       .find((line) => line.length > 3 && line.length < 50 && /[a-zA-Z]/.test(line)) || "";
 
-    // Wybierz największą kwotę jako sumę (zazwyczaj ostatnia lub największa)
     const totalAmount = amounts.length > 0 
       ? Math.max(...amounts) 
       : 0;

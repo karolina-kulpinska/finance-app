@@ -17,7 +17,6 @@ function* fetchSubscriptionHandler({ payload }) {
   }
 
   try {
-    // Rozszerzenie Stripe: aktywna subskrypcja lub udana płatność = Pro
     try {
       const subs = yield call(getCurrentUserSubscriptions, stripePayments, { status: "active" });
       const payments = yield call(getCurrentUserPayments, stripePayments, { status: "succeeded" });
@@ -26,7 +25,6 @@ function* fetchSubscriptionHandler({ payload }) {
         return;
       }
     } catch (_) {
-      // brak rozszerzenia lub błąd – używamy Firestore
     }
 
     const userRef = doc(db, "users", uid);
@@ -40,7 +38,6 @@ function* fetchSubscriptionHandler({ payload }) {
       yield put(setPlan("free"));
     }
   } catch (error) {
-    console.error("Błąd pobierania planu:", error);
     yield put(fetchSubscriptionError());
   }
 }

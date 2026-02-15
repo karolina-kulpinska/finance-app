@@ -12,6 +12,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { showNotification } from "../../../features/notification/notificationSlice";
+import { toInvite } from "../../../routes";
 import { EmptyState } from "./EmptyState";
 import { CreateForm } from "./CreateForm";
 import { InviteForm } from "./InviteForm";
@@ -43,7 +44,6 @@ const Family = () => {
         }
       }
     } catch (error) {
-      console.error("Błąd ładowania rodziny:", error);
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,8 @@ const Family = () => {
 
   const getInviteLink = () => {
     if (!family?.inviteToken) return "";
-    return `${window.location.origin}/invite/${family.inviteToken}`;
+    const base = window.location.origin + (window.location.pathname || "/");
+    return `${base}#${toInvite(family.inviteToken)}`;
   };
 
   const handleCreateFamily = async () => {
@@ -89,7 +90,6 @@ const Family = () => {
       setFamilyName("");
       dispatch(showNotification({ message: "✅ Rodzina utworzona pomyślnie!", type: "success" }));
     } catch (error) {
-      console.error("Błąd tworzenia rodziny:", error);
       dispatch(showNotification({ message: `❌ Nie udało się utworzyć rodziny: ${error.message}`, type: "error" }));
     }
   };

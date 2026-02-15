@@ -42,7 +42,7 @@ exports.sendFamilyInviteEmail = onCall(
     }
 
     const resend = new Resend(apiKey);
-    const from = "Moja Aplikacja Finansowa <onboarding@resend.dev>";
+    const from = "Smart Budget <onboarding@resend.dev>";
     const appName = familyName ? `Rodzina „${familyName}”` : "Rodzina";
 
     const html = `
@@ -51,12 +51,12 @@ exports.sendFamilyInviteEmail = onCall(
 <head><meta charset="utf-8"></head>
 <body style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 20px;">
   <h2 style="color: #333;">Zaproszenie do ${appName}</h2>
-  <p>Otrzymujesz zaproszenie do dołączenia do grupy rodzinnej w aplikacji finansowej.</p>
+  <p>Otrzymujesz zaproszenie do dołączenia do grupy rodzinnej w Smart Budget.</p>
   <p><strong>Kliknij w link poniżej, aby dołączyć:</strong></p>
   <p style="margin: 24px 0;"><a href="${inviteLink}" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Dołącz do rodziny</a></p>
   <p style="color: #666; font-size: 14px;">Jeśli przycisk nie działa, skopiuj i wklej ten adres w przeglądarce:</p>
   <p style="word-break: break-all; font-size: 13px; color: #667eea;">${inviteLink}</p>
-  <p style="color: #999; font-size: 12px; margin-top: 32px;">Ta wiadomość została wysłana przez aplikację Moja Aplikacja Finansowa.</p>
+  <p style="color: #999; font-size: 12px; margin-top: 32px;">Smart Budget – smartbudget.pl</p>
 </body>
 </html>
 `.trim();
@@ -70,7 +70,6 @@ exports.sendFamilyInviteEmail = onCall(
       });
 
       if (error) {
-        console.error("Resend error:", error);
         throw new HttpsError(
           "internal",
           error.message || "Błąd wysyłki e-mail.",
@@ -80,7 +79,6 @@ exports.sendFamilyInviteEmail = onCall(
       return { success: true, id: data?.id };
     } catch (err) {
       if (err instanceof HttpsError) throw err;
-      console.error("sendFamilyInviteEmail error:", err);
       throw new HttpsError(
         "internal",
         err.message || "Nie udało się wysłać e-maila.",
@@ -129,7 +127,6 @@ exports.createCheckoutSession = onCall(
 
       return { url: session.url };
     } catch (err) {
-      console.error("createCheckoutSession error:", err);
       throw new HttpsError(
         "internal",
         err.message || "Błąd tworzenia sesji płatności.",
@@ -152,11 +149,6 @@ stripeWebhookApp.post("/", async (req, res) => {
   try {
     event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
   } catch (err) {
-    console.error(
-      "Webhook signature verification failed:",
-      err.message,
-      "- Upewnij się, że STRIPE_WEBHOOK_SECRET to Signing secret z Stripe (Developers → Webhooks).",
-    );
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
@@ -165,7 +157,6 @@ stripeWebhookApp.post("/", async (req, res) => {
     const session = event.data.object;
     const uid = session.client_reference_id || session.metadata?.firebaseUid;
     if (!uid) {
-      console.error("No firebase UID in session");
       res.status(200).end();
       return;
     }
@@ -175,9 +166,7 @@ stripeWebhookApp.post("/", async (req, res) => {
         .collection("users")
         .doc(uid)
         .set({ plan: "pro" }, { merge: true });
-      console.log("Plan set to pro for user:", uid);
     } catch (e) {
-      console.error("Error updating user plan:", e);
     }
   }
 
@@ -196,9 +185,7 @@ async function setUserPlanPro(userId) {
       .collection("users")
       .doc(userId)
       .set({ plan: "pro" }, { merge: true });
-    console.log("Plan set to pro for user (extension):", userId);
   } catch (e) {
-    console.error("Error setting plan pro:", e);
   }
 }
 
@@ -251,7 +238,6 @@ exports.verifyAndSetProFromStripe = onCall(
       }
       return { ok: true, planSet: false };
     } catch (e) {
-      console.error("verifyAndSetProFromStripe:", e);
       throw new HttpsError(
         "internal",
         e.message || "Błąd weryfikacji płatności.",
@@ -312,7 +298,6 @@ exports.syncProPlanAfterPayment = onCall(async (request) => {
 
     return { ok: true, planSet: false };
   } catch (e) {
-    console.error("syncProPlanAfterPayment:", e);
     throw new HttpsError(
       "internal",
       e.message || "Błąd sprawdzania płatności.",
@@ -320,10 +305,7 @@ exports.syncProPlanAfterPayment = onCall(async (request) => {
   }
 });
 
-/**
- * Jednorazowe ustawienie planu Pro (np. gdy już zapłaciłeś, a sync nie znalazł danych).
- * Każdy użytkownik może wywołać tylko raz.
- */
+
 exports.setCurrentUserPro = onCall(async (request) => {
   if (!request.auth) throw new HttpsError("unauthenticated", "Zaloguj się.");
   const uid = request.auth.uid;

@@ -135,8 +135,6 @@ function* addPaymentHandler({ payload }) {
       }),
     );
   } catch (error) {
-    console.error("Błąd dodawania płatności:", error);
-    
     yield put(
       showNotification({
         message: "Nie udało się dodać płatności. Spróbuj ponownie.",
@@ -161,7 +159,6 @@ function* deletePaymentHandler({ payload }) {
         const attachmentRef = ref(storage, payment.attachmentUrl);
         yield call(deleteObject, attachmentRef);
       } catch (storageError) {
-        console.error("Błąd usuwania załącznika:", storageError);
       }
     }
 
@@ -174,8 +171,6 @@ function* deletePaymentHandler({ payload }) {
       }),
     );
   } catch (error) {
-    console.error("Błąd usuwania płatności:", error);
-    
     yield put(
       showNotification({
         message: "Nie udało się usunąć płatności.",
@@ -199,7 +194,6 @@ function* updateStatusHandler({ payload }) {
       paid: !payload.currentStatus,
     });
   } catch (error) {
-    console.error("Błąd aktualizacji statusu:", error);
   }
 }
 
@@ -223,7 +217,6 @@ function* updatePaymentHandler({ payload }) {
           const oldAttachmentRef = ref(storage, updateData.oldAttachmentUrl);
           yield call(deleteObject, oldAttachmentRef);
         } catch (error) {
-          console.error("Błąd usuwania starego załącznika:", error);
         }
       }
 
@@ -259,8 +252,6 @@ function* updatePaymentHandler({ payload }) {
       })
     );
   } catch (error) {
-    console.error("Błąd aktualizacji płatności:", error);
-
     yield put(
       showNotification({
         message: "Nie udało się zaktualizować płatności.",

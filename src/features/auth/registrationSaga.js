@@ -21,12 +21,10 @@ function* registerHandler({ payload }) {
     );
     const user = userCredential.user;
 
-    // Ustaw displayName jeśli podano
     if (displayName) {
       yield call(updateProfile, user, { displayName });
     }
 
-    // Utwórz dokument użytkownika w Firestore
     const userData = {
       email: user.email,
       displayName: displayName || "",
@@ -34,14 +32,12 @@ function* registerHandler({ payload }) {
       plan: "free",
     };
 
-    // Jeśli jest zaproszenie do rodziny, dodaj użytkownika
     if (pendingInvite && pendingInvite.familyId) {
       try {
         const familyRef = doc(db, "families", pendingInvite.familyId);
         const familyDoc = yield call(getDoc, familyRef);
         
         if (familyDoc.exists()) {
-          // Dodaj użytkownika do członków rodziny
           yield call(updateDoc, familyRef, {
             members: arrayUnion({
               userId: user.uid,
@@ -53,19 +49,14 @@ function* registerHandler({ payload }) {
             }),
           });
           
-          // Dodaj familyId do dokumentu użytkownika
           userData.familyId = pendingInvite.familyId;
           
-          // Wyczyść localStorage
           localStorage.removeItem("pendingFamilyInvite");
         }
       } catch (familyError) {
-        console.error("Błąd dołączania do rodziny:", familyError);
-        // Kontynuuj rejestrację nawet jeśli dołączanie do rodziny się nie powiodło
       }
     }
 
-    // Zapisz dokument użytkownika
     yield call(setDoc, doc(db, "users", user.uid), userData);
 
     yield put(registerSuccess());

@@ -14,7 +14,6 @@ import confirmReducer from "./features/notification/confirmSlice";
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (error) => {
-    console.error("Saga Error:", error);
   },
 });
 
@@ -22,7 +21,6 @@ function* rootSaga() {
   try {
     yield all([authSaga(), registrationSaga(), subscriptionSaga(), paymentSaga()]);
   } catch (error) {
-    console.error("❌ Root Saga Error:", error);
   }
 }
 

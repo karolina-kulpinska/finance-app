@@ -48,18 +48,14 @@ const Header = ({
     let maxAttempts = 15;
     let interval = null;
     const refetch = () => {
-      console.log("[ProSync] Refetching plan for UID:", uid);
       dispatch(fetchSubscriptionRequest({ uid }));
     };
     const verify = () => {
-      console.log("[ProSync] Calling verifyAndSetProFromStripe for UID:", uid);
       getVerifyAndSetProFromStripe()()
         .then(() => refetch())
         .catch(() => refetch());
     };
-    // Pierwsze wywołanie natychmiast
     verify();
-    // Potem co 2 sekundy przez 30 sekund
     interval = window.setInterval(() => {
       if (attempts >= maxAttempts || isPro) {
         clearInterval(interval);
@@ -68,14 +64,8 @@ const Header = ({
       attempts++;
       verify();
     }, 2000);
-    // Po 30 sekundach kończymy próbę
     const timeout = window.setTimeout(() => {
       clearInterval(interval);
-      if (!isPro) {
-        console.warn(
-          "[ProSync] Nie udało się zsynchronizować planu Pro po płatności Stripe w 30 sekund.",
-        );
-      }
     }, 30000);
     return () => {
       clearInterval(interval);
@@ -117,7 +107,6 @@ const Header = ({
       );
       setShowUpgradeTip(true);
     } catch (e) {
-      console.error("Ulepsz do Pro – błąd:", e);
       setUpgradeError(e?.message || String(e));
       setShowUpgradeTip(true);
     }
@@ -166,7 +155,6 @@ const Header = ({
           {upgradeError && ` Błąd: ${upgradeError}`} (Kliknij, aby zamknąć)
         </S.UpgradeTip>
       )}
-      {/* Usunięto przycisk awaryjny. Synchronizacja odbywa się automatycznie. */}
     </S.Header>
   );
 };

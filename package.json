@@ -2,6 +2,7 @@
   "name": "moja-aplikacja-finansowa",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://smartbudget.pl",
   "dependencies": {
     "@invertase/firestore-stripe-payments": "^0.0.8",
     "@reduxjs/toolkit": "^2.11.2",

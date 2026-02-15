@@ -1,5 +1,4 @@
-/* Minimalny Service Worker – PWA Moja Aplikacja Finansowa */
-const CACHE_NAME = "panel-finansowy-v1";
+const CACHE_NAME = "smartbudget-v1";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
@@ -15,6 +14,5 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  /* Sieć pierwsze, bez offline cache – możesz później dodać cache dla wybranych zasobów */
   event.respondWith(fetch(event.request));
 });

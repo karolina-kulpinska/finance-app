@@ -18,7 +18,6 @@ export const compressImage = async (file) => {
     const compressedFile = await imageCompression(file, options);
     return compressedFile;
   } catch (error) {
-    console.error("Błąd kompresji obrazu:", error);
     return file;
   }
 };

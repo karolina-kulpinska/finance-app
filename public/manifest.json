@@ -1,7 +1,7 @@
 {
-  "short_name": "Panel Finansowy",
-  "name": "Moja Aplikacja Finansowa",
-  "description": "Panel finansowy – płatności, listy zakupów, pliki, rodzina",
+  "short_name": "Smart Budget",
+  "name": "Smart Budget",
+  "description": "Budżet domowy, płatności, listy zakupów i rodzina – smartbudget.pl",
   "icons": [
     {
       "src": "favicon.ico",

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../api/firebase";
+import { toLogin, toRegistration, toLanding } from "../../routes";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import * as S from "./styled";
 
@@ -41,7 +42,6 @@ const Invite = () => {
       
       setLoading(false);
     } catch (err) {
-      console.error("Błąd ładowania zaproszenia:", err);
       setError("Wystąpił błąd podczas ładowania zaproszenia");
       setLoading(false);
     }
@@ -52,11 +52,11 @@ const Invite = () => {
   }, [loadFamilyByToken]);
 
   const handleAccept = () => {
-    navigate("/registration");
+    navigate(toRegistration());
   };
 
   const handleLogin = () => {
-    navigate("/login");
+    navigate(toLogin());
   };
 
   if (loading) {
@@ -77,7 +77,7 @@ const Invite = () => {
           <S.ErrorIcon>❌</S.ErrorIcon>
           <S.ErrorTitle>Błąd</S.ErrorTitle>
           <S.ErrorText>{error}</S.ErrorText>
-          <S.BackButton onClick={() => navigate("/")}>
+          <S.BackButton onClick={() => navigate(toLanding())}>
             Wróć do strony głównej
           </S.BackButton>
         </S.ErrorCard>

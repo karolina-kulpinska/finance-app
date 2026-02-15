@@ -23,7 +23,6 @@ const RegistrationPage = () => {
       try {
         setPendingInvite(JSON.parse(invite));
       } catch (error) {
-        console.error("Błąd parsowania zaproszenia:", error);
       }
     }
   }, []);

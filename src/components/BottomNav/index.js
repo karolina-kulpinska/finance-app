@@ -27,7 +27,6 @@ const BottomNav = ({ activeTab, onTabChange }) => {
       dispatch(logout());
       navigate(toLanding());
     } catch (error) {
-      console.error("Błąd wylogowania:", error);
     }
   };
 

@@ -21,6 +21,20 @@ export const Hero = styled.div`
   }
 `;
 
+export const Logo = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
+  }
+`;
+
 export const Title = styled.h1`
   font-size: 64px;
   font-weight: 900;

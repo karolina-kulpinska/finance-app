@@ -32,6 +32,20 @@ export const TitleRow = styled.div`
   gap: 12px;
 `;
 
+export const Brand = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+`;
+
+export const Logo = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+`;
+
 export const Title = styled.h1`
   font-size: 24px;
   font-weight: 900;

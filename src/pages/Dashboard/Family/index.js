@@ -55,8 +55,8 @@ const Family = () => {
 
   const getInviteLink = () => {
     if (!family?.inviteToken) return "";
-    const base = window.location.origin + (window.location.pathname || "/");
-    return `${base}#${toInvite(family.inviteToken)}`;
+    const baseUrl = (process.env.REACT_APP_SITE_URL || window.location.origin).replace(/\/$/, "");
+    return `${baseUrl}#${toInvite(family.inviteToken)}`;
   };
 
   const handleCreateFamily = async () => {

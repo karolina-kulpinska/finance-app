@@ -14,10 +14,12 @@ const Filters = ({
   maxDate,
   minAmount,
   maxAmount,
+  searchName,
   setMinDate,
   setMaxDate,
   setMinAmount,
   setMaxAmount,
+  setSearchName,
 }) => {
   const dispatch = useDispatch();
   const activeFilter = useSelector(selectFilter);
@@ -54,6 +56,7 @@ const Filters = ({
     setMaxAmount("");
     setMinDate("");
     setMaxDate("");
+    setSearchName("");
   };
 
   return (
@@ -91,6 +94,20 @@ const Filters = ({
                 </S.FilterChip>
               ))}
             </S.FilterButtons>
+            <S.SearchInputWrapper>
+              <S.SearchIcon>🔍</S.SearchIcon>
+              <S.SearchInput
+                type="text"
+                placeholder="Wpisz nazwę płatności..."
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+              />
+              {searchName && (
+                <S.ClearSearchButton onClick={() => setSearchName("")}>
+                  ✕
+                </S.ClearSearchButton>
+              )}
+            </S.SearchInputWrapper>
           </S.FilterGroup>
 
           <S.FilterGroup>

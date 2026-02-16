@@ -21,6 +21,7 @@ const PaymentsList = ({
   maxDate,
   minAmount,
   maxAmount,
+  searchName = "",
   sharedOnly = false,
 }) => {
   const dispatch = useDispatch();
@@ -85,6 +86,13 @@ const PaymentsList = ({
       filtered = filtered.filter((p) => Number(p.amount) <= Number(maxAmount));
     }
 
+    if (searchName && searchName.trim()) {
+      const searchLower = searchName.toLowerCase().trim();
+      filtered = filtered.filter((p) =>
+        p.name?.toLowerCase().includes(searchLower)
+      );
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const overdue = filtered.filter((p) => !p.paid && new Date(p.date) < today);
@@ -104,6 +112,7 @@ const PaymentsList = ({
     maxDate,
     minAmount,
     maxAmount,
+    searchName,
     sharedOnly,
   ]);
 

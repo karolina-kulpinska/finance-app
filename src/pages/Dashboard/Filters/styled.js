@@ -184,6 +184,73 @@ export const AmountInput = styled.input`
   }
 `;
 
+export const SearchInputWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+
+export const SearchIcon = styled.span`
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 1;
+`;
+
+export const SearchInput = styled.input`
+  width: 100%;
+  padding: 10px 14px 10px 36px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background: white;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.secondary};
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    padding: 8px 12px 8px 32px;
+    font-size: 12px;
+  }
+`;
+
+export const ClearSearchButton = styled.button`
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.secondary};
+  cursor: pointer;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    font-size: 14px;
+    padding: 3px 6px;
+  }
+`;
+
 export const AmountSeparator = styled.span`
   color: ${({ theme }) => theme.colors.secondary};
   font-weight: 700;

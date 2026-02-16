@@ -44,6 +44,7 @@ const Dashboard = () => {
   const [maxDate, setMaxDate] = useState("");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
+  const [searchName, setSearchName] = useState("");
 
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
@@ -143,6 +144,7 @@ const Dashboard = () => {
               maxDate={maxDate}
               minAmount={minAmount}
               maxAmount={maxAmount}
+              searchName={searchName}
             />
             {categoryFilter === "all" && (
               <Charts
@@ -199,10 +201,12 @@ const Dashboard = () => {
                 maxDate={maxDate}
                 minAmount={minAmount}
                 maxAmount={maxAmount}
+                searchName={searchName}
                 setMinDate={setMinDate}
                 setMaxDate={setMaxDate}
                 setMinAmount={setMinAmount}
                 setMaxAmount={setMaxAmount}
+                setSearchName={setSearchName}
               />
             </S.FiltersBox>
           )}

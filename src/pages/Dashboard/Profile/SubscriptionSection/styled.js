@@ -4,6 +4,10 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    gap: 16px;
+  }
 `;
 
 export const StatusCard = styled.div`
@@ -18,11 +22,21 @@ export const StatusCard = styled.div`
   gap: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: ${({ $isPro }) => ($isPro ? "none" : "1px solid #e8e8ea")};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 16px;
+    gap: 12px;
+    border-radius: 10px;
+  }
 `;
 
 export const StatusIcon = styled.div`
   font-size: 48px;
   flex-shrink: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: 36px;
+  }
 `;
 
 export const StatusInfo = styled.div`
@@ -35,6 +49,10 @@ export const StatusTitle = styled.h3`
   color: ${({ theme, $isPro }) =>
     $isPro ? theme.colors?.white || "#fff" : theme.colors?.text || "#333"};
   margin: 0 0 4px 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: 18px;
+  }
 `;
 
 export const StatusDesc = styled.p`
@@ -45,6 +63,10 @@ export const StatusDesc = styled.p`
       : theme.colors?.secondary || "#666"};
   opacity: ${({ $isPro }) => ($isPro ? 0.9 : 1)};
   margin: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: 12px;
+  }
 `;
 
 export const InfoSection = styled.div`
@@ -53,6 +75,11 @@ export const InfoSection = styled.div`
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   border: 1px solid ${({ theme }) => theme.colors?.border || "#e8e8ea"};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 16px;
+    border-radius: 10px;
+  }
 `;
 
 export const InfoTitle = styled.h4`
@@ -60,12 +87,21 @@ export const InfoTitle = styled.h4`
   font-weight: 700;
   color: ${({ theme }) => theme.colors?.text || "#333"};
   margin: 0 0 16px 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: 14px;
+    margin: 0 0 12px 0;
+  }
 `;
 
 export const InfoGrid = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    gap: 10px;
+  }
 `;
 
 export const InfoRow = styled.div`
@@ -79,12 +115,22 @@ export const InfoRow = styled.div`
     border-bottom: none;
     padding-bottom: 0;
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
 `;
 
 export const InfoLabel = styled.span`
   font-size: 14px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors?.secondary || "#666"};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: 12px;
+  }
 `;
 
 export const InfoValue = styled.span`
@@ -97,6 +143,10 @@ export const InfoValue = styled.span`
         ? "#c62828"
         : theme.colors?.text || "#333"};
   ${({ $small }) => $small && "font-size: 12px; font-family: monospace;"}
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: ${({ $small }) => ($small ? "10px" : "12px")};
+  }
 `;
 
 export const ActionsSection = styled.div`
@@ -106,6 +156,11 @@ export const ActionsSection = styled.div`
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   border: 1px solid ${({ theme }) => theme.colors?.border || "#e8e8ea"};
   text-align: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 16px;
+    border-radius: 10px;
+  }
 `;
 
 export const ActionButton = styled.button`
@@ -120,6 +175,13 @@ export const ActionButton = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   margin-bottom: 12px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
 
   &:hover {
     background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
@@ -137,6 +199,11 @@ export const ActionHint = styled.p`
   color: ${({ theme }) => theme.colors?.secondary || "#666"};
   margin: 0;
   line-height: 1.5;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: 11px;
+    line-height: 1.4;
+  }
 `;
 
 export const UpgradeSection = styled.div`
@@ -146,6 +213,11 @@ export const UpgradeSection = styled.div`
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   border: 1px solid ${({ theme }) => theme.colors?.border || "#e8e8ea"};
   text-align: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 16px;
+    border-radius: 10px;
+  }
 `;
 
 export const UpgradeTitle = styled.h3`
@@ -153,6 +225,11 @@ export const UpgradeTitle = styled.h3`
   font-weight: 700;
   color: ${({ theme }) => theme.colors?.text || "#333"};
   margin: 0 0 16px 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: 16px;
+    margin: 0 0 12px 0;
+  }
 `;
 
 export const UpgradeFeatures = styled.div`
@@ -161,12 +238,22 @@ export const UpgradeFeatures = styled.div`
   gap: 8px;
   margin-bottom: 20px;
   text-align: left;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    gap: 6px;
+    margin-bottom: 16px;
+  }
 `;
 
 export const FeatureItem = styled.div`
   font-size: 14px;
   color: ${({ theme }) => theme.colors?.text || "#333"};
   padding: 4px 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    font-size: 12px;
+    padding: 3px 0;
+  }
 `;
 
 export const UpgradeButton = styled.button`
@@ -180,6 +267,12 @@ export const UpgradeButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
 
   &:hover {
     background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);

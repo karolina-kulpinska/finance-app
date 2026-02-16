@@ -50,7 +50,6 @@ const Dashboard = () => {
     dispatch(fetchPaymentsRequest());
   }, [dispatch]);
 
-  // Dodane: odświeżanie planu użytkownika po wejściu na Dashboard
   useEffect(() => {
     if (user?.uid) {
       dispatch(fetchSubscriptionRequest({ uid: user.uid }));

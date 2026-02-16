@@ -54,6 +54,10 @@ export const SubscriptionSection = ({ onManageSubscription }) => {
           <S.InfoSection>
             <S.InfoTitle>📅 Informacje o subskrypcji</S.InfoTitle>
             <S.InfoGrid>
+              <S.InfoRow>
+                <S.InfoLabel>Plan:</S.InfoLabel>
+                <S.InfoValue $status="active">Pro (aktywny)</S.InfoValue>
+              </S.InfoRow>
               {renewalDateDisplay && (
                 <S.InfoRow>
                   <S.InfoLabel>Data odnowienia:</S.InfoLabel>
@@ -62,7 +66,7 @@ export const SubscriptionSection = ({ onManageSubscription }) => {
               )}
               {statusDisplay && (
                 <S.InfoRow>
-                  <S.InfoLabel>Status:</S.InfoLabel>
+                  <S.InfoLabel>Status w Stripe:</S.InfoLabel>
                   <S.InfoValue $status={subscriptionStatus}>
                     {statusDisplay}
                   </S.InfoValue>

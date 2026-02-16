@@ -5,7 +5,6 @@ import {
   setCategoryFilter,
   setDateFilter,
   selectFilter,
-  selectCategoryFilter,
   selectDateFilter,
 } from "../../../features/payments/paymentSlice";
 import * as S from "./styled";
@@ -22,7 +21,6 @@ const Filters = ({
 }) => {
   const dispatch = useDispatch();
   const activeFilter = useSelector(selectFilter);
-  const activeCategoryFilter = useSelector(selectCategoryFilter);
   const activeDateFilter = useSelector(selectDateFilter);
   const [showAdvanced, setShowAdvanced] = useState(false);
   useEffect(() => {

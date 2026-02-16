@@ -32,6 +32,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Ensure CNAME exists
+        run: |
+          if [ ! -f build/CNAME ]; then
+            echo "smartbudget.pl" > build/CNAME
+          fi
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -17,7 +17,6 @@ import {
 } from "../../../api/firebase";
 import {
   selectIsPro,
-  fetchSubscriptionRequest,
 } from "../../../features/subscription/subscriptionSlice";
 import { generatePaymentsPDF } from "./generatePaymentsPDF";
 import { ProfileMain } from "./ProfileMain";

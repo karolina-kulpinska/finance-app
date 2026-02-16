@@ -58,14 +58,6 @@ const Filters = ({
     setMaxDate("");
   };
 
-  const hasActiveFilters =
-    activeFilter !== "all" ||
-    activeCategoryFilter !== "all" ||
-    activeDateFilter !== "all" ||
-    minAmount !== "" ||
-    maxAmount !== "" ||
-    minDate !== "" ||
-    maxDate !== "";
   return (
     <S.FiltersContainer>
       <S.FilterRow>

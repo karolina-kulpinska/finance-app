@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import {
   selectIsPro,
   selectRenewalDate,
-  selectSubscriptionStatus,
 } from "../../../../features/subscription/subscriptionSlice";
 import * as S from "./styled";
 
@@ -17,7 +16,6 @@ export const ProfileMain = ({
 }) => {
   const isPro = useSelector(selectIsPro);
   const renewalDate = useSelector(selectRenewalDate);
-  const subscriptionStatus = useSelector(selectSubscriptionStatus);
 
   const renewalDateDisplay = renewalDate
     ? new Date(renewalDate).toLocaleDateString("pl-PL", {

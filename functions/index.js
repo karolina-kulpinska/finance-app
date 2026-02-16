@@ -135,6 +135,118 @@ exports.createCheckoutSession = onCall(
   },
 );
 
+exports.createCustomerPortalSession = onCall(
+  { secrets: [stripeSecretKey] },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Musisz być zalogowany.");
+    }
+
+    const { returnUrl } = request.data || {};
+    if (!returnUrl) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Podaj returnUrl (adres powrotu po zamknięciu Customer Portal).",
+      );
+    }
+
+    const stripe = new Stripe(stripeSecretKey.value(), {
+      apiVersion: "2024-11-20.acacia",
+    });
+    const uid = request.auth.uid;
+
+    try {
+      // Najpierw próbujemy znaleźć customer ID z sesji checkout
+      let customerId = null;
+
+      // Sprawdzamy czy użytkownik ma customer ID w Firestore (jeśli używasz rozszerzenia Stripe)
+      try {
+        const customerRef = db.collection("customers").doc(uid);
+        const customerSnap = await customerRef.get();
+        if (customerSnap.exists) {
+          const customerData = customerSnap.data();
+          if (customerData.stripeCustomerId) {
+            customerId = customerData.stripeCustomerId;
+          }
+        }
+      } catch (e) {
+        // Ignoruj błąd jeśli kolekcja nie istnieje
+      }
+
+      // Jeśli nie znaleźliśmy customer ID, szukamy w sesjach checkout
+      if (!customerId) {
+        const sessions = await stripe.checkout.sessions.list({
+          limit: 100,
+        });
+        const userSession = sessions.data.find(
+          (s) =>
+            (s.client_reference_id === uid ||
+              s.metadata?.firebaseUid === uid) &&
+            s.customer,
+        );
+        if (userSession && userSession.customer) {
+          customerId =
+            typeof userSession.customer === "string"
+              ? userSession.customer
+              : userSession.customer.id;
+        }
+      }
+
+      // Jeśli nadal nie mamy customer ID, szukamy w subskrypcjach
+      if (!customerId) {
+        const subscriptions = await stripe.subscriptions.list({
+          limit: 100,
+        });
+        const userSubscription = subscriptions.data.find(
+          (sub) => sub.metadata?.firebaseUid === uid,
+        );
+        if (userSubscription && userSubscription.customer) {
+          customerId =
+            typeof userSubscription.customer === "string"
+              ? userSubscription.customer
+              : userSubscription.customer.id;
+        }
+      }
+
+      // Jeśli nadal nie mamy customer ID, tworzymy nowego customera
+      if (!customerId) {
+        const userDoc = await db.collection("users").doc(uid).get();
+        const userData = userDoc.exists ? userDoc.data() : {};
+        const userEmail = request.auth.token.email || userData.email;
+
+        const customer = await stripe.customers.create({
+          email: userEmail,
+          metadata: { firebaseUid: uid },
+        });
+        customerId = customer.id;
+
+        // Zapisujemy customer ID w Firestore dla przyszłych użyć
+        try {
+          await db
+            .collection("customers")
+            .doc(uid)
+            .set({ stripeCustomerId: customerId }, { merge: true });
+        } catch (e) {
+          // Ignoruj błąd zapisu
+        }
+      }
+
+      // Tworzymy sesję Customer Portal
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: returnUrl,
+      });
+
+      return { url: portalSession.url };
+    } catch (err) {
+      throw new HttpsError(
+        "internal",
+        err.message || "Błąd tworzenia sesji Customer Portal.",
+      );
+    }
+  },
+);
+
 const stripeWebhookApp = express();
 stripeWebhookApp.use(express.raw({ type: "application/json" }));
 

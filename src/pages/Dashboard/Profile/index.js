@@ -11,6 +11,14 @@ import {
 } from "firebase/auth";
 import { auth } from "../../../api/firebase";
 import { showNotification } from "../../../features/notification/notificationSlice";
+import {
+  getCreateCheckoutSession,
+  getCreateCustomerPortalSession,
+} from "../../../api/firebase";
+import {
+  selectIsPro,
+  fetchSubscriptionRequest,
+} from "../../../features/subscription/subscriptionSlice";
 import { generatePaymentsPDF } from "./generatePaymentsPDF";
 import { ProfileMain } from "./ProfileMain";
 import { SectionLayout } from "./SectionLayout";
@@ -18,12 +26,14 @@ import { PersonalForm } from "./PersonalForm";
 import { SecurityForm } from "./SecurityForm";
 import { ExportSection } from "./ExportSection";
 import { DeleteSection } from "./DeleteSection";
+import { SubscriptionSection } from "./SubscriptionSection";
 import * as S from "./styled";
 
 const Profile = () => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
+  const isPro = useSelector(selectIsPro);
 
   const [activeSection, setActiveSection] = useState(null);
   const [editName, setEditName] = useState(user?.displayName || "");
@@ -211,6 +221,68 @@ const Profile = () => {
     }
   };
 
+  const handleManageSubscription = async () => {
+    try {
+      if (isPro) {
+        // Otwórz Customer Portal dla użytkowników Pro
+        const base =
+          window.location.origin +
+          window.location.pathname +
+          (window.location.hash || "");
+        const returnUrl = base + "#/dashboard/profile";
+        
+        const createPortalSession = getCreateCustomerPortalSession();
+        const { data } = await createPortalSession({
+          returnUrl,
+        });
+        
+        if (data?.url) {
+          window.location.assign(data.url);
+        } else {
+          dispatch(
+            showNotification({
+              message: "❌ Nie udało się otworzyć panelu zarządzania subskrypcją",
+              type: "error",
+            })
+          );
+        }
+      } else {
+        // Otwórz Checkout Session dla użytkowników Free
+        const base =
+          window.location.origin +
+          window.location.pathname +
+          (window.location.hash || "");
+        const sep = base.includes("?") ? "&" : "?";
+        const successUrl = base + sep + "payment=success";
+        const cancelUrl = base + sep + "payment=cancel";
+        
+        const createCheckout = getCreateCheckoutSession();
+        const { data } = await createCheckout({
+          successUrl,
+          cancelUrl,
+        });
+        
+        if (data?.url) {
+          window.location.assign(data.url);
+        } else {
+          dispatch(
+            showNotification({
+              message: "❌ Nie udało się otworzyć strony płatności",
+              type: "error",
+            })
+          );
+        }
+      }
+    } catch (error) {
+      dispatch(
+        showNotification({
+          message: "❌ Błąd: " + (error.message || String(error)),
+          type: "error",
+        })
+      );
+    }
+  };
+
   if (activeSection === "personal") {
     return (
       <S.Container>
@@ -268,6 +340,19 @@ const Profile = () => {
       <S.Container>
         <SectionLayout title="Usuń konto" onBack={() => setActiveSection(null)}>
           <DeleteSection onDelete={handleDeleteAccount} />
+        </SectionLayout>
+      </S.Container>
+    );
+  }
+
+  if (activeSection === "subscription") {
+    return (
+      <S.Container>
+        <SectionLayout
+          title="Subskrypcja"
+          onBack={() => setActiveSection(null)}
+        >
+          <SubscriptionSection onManageSubscription={handleManageSubscription} />
         </SectionLayout>
       </S.Container>
     );

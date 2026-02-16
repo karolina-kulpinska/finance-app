@@ -32,5 +32,6 @@ export const getCreateCheckoutSession = () => httpsCallable(functions, "createCh
 export const getSyncProPlanAfterPayment = () => httpsCallable(functions, "syncProPlanAfterPayment");
 export const getVerifyAndSetProFromStripe = () => httpsCallable(functions, "verifyAndSetProFromStripe");
 export const getSetCurrentUserPro = () => httpsCallable(functions, "setCurrentUserPro");
+export const getCreateCustomerPortalSession = () => httpsCallable(functions, "createCustomerPortalSession");
 
 export default app;

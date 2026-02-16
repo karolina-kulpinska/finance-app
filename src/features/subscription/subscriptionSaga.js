@@ -6,6 +6,7 @@ import stripePayments from "../../api/stripePayments";
 import {
   fetchSubscriptionRequest,
   setPlan,
+  setSubscriptionDetails,
   fetchSubscriptionError,
 } from "./subscriptionSlice";
 
@@ -20,7 +21,11 @@ function* fetchSubscriptionHandler({ payload }) {
     try {
       const subs = yield call(getCurrentUserSubscriptions, stripePayments, { status: "active" });
       const payments = yield call(getCurrentUserPayments, stripePayments, { status: "succeeded" });
-      if ((subs && subs.length > 0) || (payments && payments.length > 0)) {
+      if (subs && subs.length > 0) {
+        yield put(setSubscriptionDetails(subs[0]));
+        return;
+      }
+      if (payments && payments.length > 0) {
         yield put(setPlan("pro"));
         return;
       }

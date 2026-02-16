@@ -1,4 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import {
+  selectIsPro,
+  selectRenewalDate,
+  selectSubscriptionStatus,
+} from "../../../../features/subscription/subscriptionSlice";
 import * as S from "./styled";
 
 export const ProfileMain = ({
@@ -8,13 +14,48 @@ export const ProfileMain = ({
   onSectionSelect,
   onContact,
   onAbout,
-}) => (
+}) => {
+  const isPro = useSelector(selectIsPro);
+  const renewalDate = useSelector(selectRenewalDate);
+  const subscriptionStatus = useSelector(selectSubscriptionStatus);
+
+  const renewalDateDisplay = renewalDate
+    ? new Date(renewalDate).toLocaleDateString("pl-PL", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : null;
+
+  return (
   <>
     <S.ProfileCard>
       <S.Avatar>{userInitials}</S.Avatar>
       <S.UserName>{userName}</S.UserName>
       <S.UserEmail>{userEmail}</S.UserEmail>
     </S.ProfileCard>
+
+    <S.SettingsSection>
+      <S.SectionTitle>💳 Subskrypcja</S.SectionTitle>
+      <S.SettingsList>
+        <S.SettingItem onClick={() => onSectionSelect("subscription")}>
+          <S.SettingIcon>{isPro ? "⭐" : "📦"}</S.SettingIcon>
+          <S.SettingInfo>
+            <S.SettingLabel>
+              {isPro ? "Plan Pro" : "Plan Bezpłatny"}
+            </S.SettingLabel>
+            <S.SettingDesc>
+              {isPro && renewalDateDisplay
+                ? `Odnowienie: ${renewalDateDisplay}`
+                : isPro
+                  ? "Aktywna subskrypcja"
+                  : "Ulepsz do Pro"}
+            </S.SettingDesc>
+          </S.SettingInfo>
+          <S.SettingArrow>›</S.SettingArrow>
+        </S.SettingItem>
+      </S.SettingsList>
+    </S.SettingsSection>
 
     <S.SettingsSection>
       <S.SectionTitle>⚙️ Ustawienia konta</S.SectionTitle>
@@ -82,4 +123,5 @@ export const ProfileMain = ({
 
     <S.AppVersion>Wersja 1.0.0</S.AppVersion>
   </>
-);
+  );
+};

@@ -15,6 +15,7 @@ export const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
+  align-items: stretch;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     grid-template-columns: repeat(3, 1fr);
@@ -38,7 +39,7 @@ export const StatCard = styled.div`
     }
   }};
   border-radius: 16px;
-  padding: 16px 12px;
+  padding: 20px 16px;
   box-shadow: ${({ theme }) => theme.shadows.tile};
   transition: all 0.3s ease;
   animation: ${fadeIn} 0.5s ease-out;
@@ -46,61 +47,48 @@ export const StatCard = styled.div`
   animation-fill-mode: both;
   position: relative;
   overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    transform: translate(30%, -30%);
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-`;
-
-export const StatIcon = styled.div`
-  font-size: 24px;
-  margin-bottom: 8px;
-  position: relative;
-  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 130px;
 `;
 
 export const StatLabel = styled.div`
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: ${({ $variant }) =>
-    $variant ? "rgba(255, 255, 255, 0.9)" : "#7c8db5"};
-  margin-bottom: 6px;
+    $variant ? "rgba(255, 255, 255, 0.95)" : "#7c8db5"};
+  margin-bottom: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 `;
 
 export const StatValue = styled.div`
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 900;
   color: ${({ $variant }) => ($variant ? "white" : "#2d3748")};
   position: relative;
   z-index: 1;
   line-height: 1.2;
+  margin-bottom: auto;
+  flex-shrink: 0;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    font-size: 16px;
+    font-size: 18px;
   }
 `;
 
 export const StatSubtext = styled.div`
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 600;
   color: ${({ $variant }) =>
-    $variant ? "rgba(255, 255, 255, 0.8)" : "#a0aec0"};
-  margin-top: 4px;
+    $variant ? "rgba(255, 255, 255, 0.95)" : "#a0aec0"};
+  margin-top: 12px;
   position: relative;
   z-index: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
 `;

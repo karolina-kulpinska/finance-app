@@ -53,7 +53,7 @@ const Stats = () => {
     {
       id: 1,
       icon: "💰",
-      label: "Łączne wydatki",
+      label: "Wszystkie",
       value: `${totalAmount.toFixed(2)} zł`,
       subtext: `${paymentsCount} płatności`,
       variant: "total",
@@ -83,10 +83,9 @@ const Stats = () => {
     <S.StatsGrid>
       {stats.map((stat) => (
         <S.StatCard key={stat.id} $variant={stat.variant} $delay={stat.delay}>
-          <S.StatIcon>{stat.icon}</S.StatIcon>
           <S.StatLabel $variant={stat.variant}>{stat.label}</S.StatLabel>
           <S.StatValue $variant={stat.variant}>{stat.value}</S.StatValue>
-          <S.StatSubtext>{stat.subtext}</S.StatSubtext>
+          <S.StatSubtext $variant={stat.variant}>{stat.subtext}</S.StatSubtext>
         </S.StatCard>
       ))}
     </S.StatsGrid>

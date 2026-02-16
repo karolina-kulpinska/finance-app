@@ -12,6 +12,7 @@ import {
 import { showConfirm } from "../../../features/notification/confirmSlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import { PaymentCard } from "./PaymentCard";
+import { PaymentDetailModal } from "./PaymentDetailModal";
 import * as S from "./styled";
 
 const PaymentsList = ({
@@ -31,6 +32,7 @@ const PaymentsList = ({
   const [collapsed, setCollapsed] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState([]);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = React.useState(false);
+  const [selectedPayment, setSelectedPayment] = React.useState(null);
 
   React.useEffect(() => {
     if (collapseAll) {
@@ -107,11 +109,30 @@ const PaymentsList = ({
 
   const handleCardClick = (paymentId) => {
     if (!collapsed) {
-      setExpandedPayment(expandedPayment === paymentId ? null : paymentId);
+      const payment = filteredPayments.find((p) => p.id === paymentId);
+      if (payment) {
+        setSelectedPayment(payment);
+      }
     }
   };
 
+  const handleEdit = (payment) => {
+    setSelectedPayment(null);
+    dispatch(openEditModal(payment));
+  };
+
+  const handleDelete = (paymentId) => {
+    setSelectedPayment(null);
+    dispatch(
+      showConfirm({
+        message: "Czy na pewno chcesz usunąć tę płatność?",
+        paymentId,
+      })
+    );
+  };
+
   const handleStatusToggle = (payment) => {
+    setSelectedPayment(null);
     dispatch(
       updatePaymentStatusRequest({
         id: payment.id,
@@ -120,17 +141,8 @@ const PaymentsList = ({
     );
   };
 
-  const handleEdit = (payment) => {
-    dispatch(openEditModal(payment));
-  };
-
-  const handleDelete = (paymentId) => {
-    dispatch(
-      showConfirm({
-        message: "Czy na pewno chcesz usunąć tę płatność?",
-        paymentId,
-      })
-    );
+  const handleCloseModal = () => {
+    setSelectedPayment(null);
   };
 
   const allFilteredSelected =
@@ -158,7 +170,7 @@ const PaymentsList = ({
     setShowBulkDeleteConfirm(false);
   };
 
-  const handleDownload = (url) => {
+  const handleDownload = (url, filename) => {
     window.open(url, "_blank");
   };
 
@@ -251,6 +263,16 @@ const PaymentsList = ({
             />
           ))}
       </S.PaymentGrid>
+      {selectedPayment && (
+        <PaymentDetailModal
+          payment={selectedPayment}
+          onClose={handleCloseModal}
+          onStatusToggle={handleStatusToggle}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onDownload={handleDownload}
+        />
+      )}
     </S.ListContainer>
   );
 };

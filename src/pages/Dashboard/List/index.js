@@ -53,18 +53,28 @@ const PaymentsList = ({
       filtered = filtered.filter((p) => p.category === categoryFilter);
     }
 
-    if (dateFilter !== "all") {
+    if (minDate || maxDate) {
+      if (minDate) {
+        const minDateStr = minDate.split("T")[0];
+        filtered = filtered.filter((p) => {
+          if (!p.date) return false;
+          const paymentDateStr = p.date.split("T")[0];
+          return paymentDateStr >= minDateStr;
+        });
+      }
+      if (maxDate) {
+        const maxDateStr = maxDate.split("T")[0];
+        filtered = filtered.filter((p) => {
+          if (!p.date) return false;
+          const paymentDateStr = p.date.split("T")[0];
+          return paymentDateStr <= maxDateStr;
+        });
+      }
+    } else if (dateFilter !== "all") {
       const dateRange = getDateRange(dateFilter);
       if (dateRange) {
         filtered = filtered.filter((p) => isDateInRange(p.date, dateRange));
       }
-    }
-
-    if (minDate) {
-      filtered = filtered.filter((p) => new Date(p.date) >= new Date(minDate));
-    }
-    if (maxDate) {
-      filtered = filtered.filter((p) => new Date(p.date) <= new Date(maxDate));
     }
     if (minAmount) {
       filtered = filtered.filter((p) => Number(p.amount) >= Number(minAmount));

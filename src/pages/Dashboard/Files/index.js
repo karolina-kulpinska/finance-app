@@ -14,17 +14,21 @@ function getShoppingListReceipts(sharedOnly) {
     const lists = raw ? JSON.parse(raw) : [];
     return lists
       .filter((l) => l.receipt && (!sharedOnly || l.sharedWithFamily === true))
-      .map((l) => ({
-        id: `receipt-${l.id}`,
-        name: l.name,
-        attachmentName: l.receipt.name,
-        date: l.createdAt
-          ? new Date(l.createdAt).toLocaleDateString("pl-PL")
-          : "",
-        category: "shopping",
-        attachmentUrl: l.receipt.url || null,
-        fromShoppingList: true,
-      }));
+      .map((l) => {
+        const createdAt = l.createdAt ? new Date(l.createdAt) : null;
+        const dateISO = createdAt ? createdAt.toISOString().split("T")[0] : "";
+        const dateDisplay = createdAt ? createdAt.toLocaleDateString("pl-PL") : "";
+        return {
+          id: `receipt-${l.id}`,
+          name: l.name,
+          attachmentName: l.receipt.name,
+          date: dateISO,
+          dateDisplay: dateDisplay,
+          category: "shopping",
+          attachmentUrl: l.receipt.url || null,
+          fromShoppingList: true,
+        };
+      });
   } catch {
     return [];
   }
@@ -38,6 +42,8 @@ const Files = ({ sharedOnly = false }) => {
   const [fileToDelete, setFileToDelete] = useState(null);
   const [minDate, setMinDate] = useState("");
   const [maxDate, setMaxDate] = useState("");
+  const [activeMinDate, setActiveMinDate] = useState("");
+  const [activeMaxDate, setActiveMaxDate] = useState("");
   const [selected, setSelected] = useState([]);
 
   const filters = [
@@ -47,29 +53,52 @@ const Files = ({ sharedOnly = false }) => {
     { id: "other", label: "Inne", icon: "📌" },
   ];
 
-  const filesFromPayments = payments.filter(
-    (p) => p.attachmentUrl && (!sharedOnly || p.sharedWithFamily === true)
-  );
+  const filesFromPayments = payments
+    .filter((p) => p.attachmentUrl && (!sharedOnly || p.sharedWithFamily === true))
+    .map((p) => {
+      let dateISO = "";
+      let dateDisplay = "";
+      if (p.date) {
+        if (typeof p.date === "string" && p.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          dateISO = p.date;
+          const d = new Date(p.date + "T00:00:00");
+          dateDisplay = d.toLocaleDateString("pl-PL");
+        } else {
+          const paymentDate = new Date(p.date);
+          if (!isNaN(paymentDate.getTime())) {
+            dateISO = paymentDate.toISOString().split("T")[0];
+            dateDisplay = paymentDate.toLocaleDateString("pl-PL");
+          }
+        }
+      }
+      return {
+        ...p,
+        date: dateISO,
+        dateDisplay: dateDisplay,
+        fromShoppingList: false,
+      };
+    });
   const filesFromLists = getShoppingListReceipts(sharedOnly);
-  const allFiles = [
-    ...filesFromPayments.map((p) => ({ ...p, fromShoppingList: false })),
-    ...filesFromLists,
-  ];
+  const allFiles = [...filesFromPayments, ...filesFromLists];
 
   let filteredFiles =
     activeFilter === "all"
       ? allFiles
       : allFiles.filter((f) => f.category === activeFilter);
 
-  if (minDate) {
-    filteredFiles = filteredFiles.filter(
-      (f) => new Date(f.date) >= new Date(minDate),
-    );
+  if (activeMinDate) {
+    filteredFiles = filteredFiles.filter((f) => {
+      if (!f.date) return false;
+      const fileDate = f.date.split("T")[0];
+      return fileDate >= activeMinDate;
+    });
   }
-  if (maxDate) {
-    filteredFiles = filteredFiles.filter(
-      (f) => new Date(f.date) <= new Date(maxDate),
-    );
+  if (activeMaxDate) {
+    filteredFiles = filteredFiles.filter((f) => {
+      if (!f.date) return false;
+      const fileDate = f.date.split("T")[0];
+      return fileDate <= activeMaxDate;
+    });
   }
 
   const handleDownload = (url, name) => {
@@ -121,6 +150,20 @@ const Files = ({ sharedOnly = false }) => {
     if (files.length > 0) {
       generateFilesPDF(files);
     }
+  };
+
+  const handleSearch = () => {
+    setActiveMinDate(minDate);
+    setActiveMaxDate(maxDate);
+  };
+
+  const handleClearFilters = () => {
+    setMinDate("");
+    setMaxDate("");
+    setActiveMinDate("");
+    setActiveMaxDate("");
+    setActiveFilter("all");
+    setSelected([]);
   };
 
   const handleDeleteFile = async (file) => {
@@ -222,6 +265,14 @@ const Files = ({ sharedOnly = false }) => {
             onChange={(e) => setMaxDate(e.target.value)}
             placeholder="Do"
           />
+          <S.SearchButton onClick={handleSearch} type="button">
+            🔍 Szukaj
+          </S.SearchButton>
+          {(activeMinDate || activeMaxDate || activeFilter !== "all") && (
+            <S.ClearButton onClick={handleClearFilters} type="button">
+              ✕ Wyczyść
+            </S.ClearButton>
+          )}
         </S.DateInputs>
       </S.FiltersWrapper>
 
@@ -279,7 +330,7 @@ const Files = ({ sharedOnly = false }) => {
                     {file.fromShoppingList ? `🛒 ${file.name}` : file.name}
                   </S.FileName>
                   <S.FileDetails>{file.attachmentName}</S.FileDetails>
-                  <S.FileDate>{file.date}</S.FileDate>
+                  <S.FileDate>{file.dateDisplay || file.date}</S.FileDate>
                 </S.FileInfo>
                 <S.FileActions>
                   {file.attachmentUrl ? (

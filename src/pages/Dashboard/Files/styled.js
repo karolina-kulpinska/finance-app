@@ -76,6 +76,57 @@ export const DateSeparator = styled.span`
     font-size: 12px;
   }
 `;
+
+export const SearchButton = styled.button`
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+
+  &:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+`;
+
+export const ClearButton = styled.button`
+  padding: 6px 14px;
+  background: #fff5f5;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+
+  &:hover {
+    background: #ffebee;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+`;
 export const FilesActions = styled.div`
   display: flex;
   align-items: center;

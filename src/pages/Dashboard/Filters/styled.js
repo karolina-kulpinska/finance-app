@@ -189,6 +189,35 @@ export const AmountSeparator = styled.span`
   font-weight: 700;
 `;
 
+export const SearchButton = styled.button`
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+`;
+
 export const ClearButton = styled.button`
   padding: 8px 12px;
   border-radius: 8px;

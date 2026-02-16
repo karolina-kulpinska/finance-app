@@ -26,8 +26,14 @@ const Filters = ({
   const activeDateFilter = useSelector(selectDateFilter);
   const [showAdvanced, setShowAdvanced] = useState(false);
   useEffect(() => {
-    dispatch(setDateFilter("month"));
+    dispatch(setDateFilter("all"));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (minDate || maxDate) {
+      dispatch(setDateFilter("all"));
+    }
+  }, [minDate, maxDate, dispatch]);
 
   const statusFilters = [
     { id: "all", label: "Wszystkie" },
@@ -45,22 +51,21 @@ const Filters = ({
   const handleClearFilters = () => {
     dispatch(setFilter("all"));
     dispatch(setCategoryFilter("all"));
-    dispatch(setDateFilter("month"));
+    dispatch(setDateFilter("all"));
     setMinAmount("");
     setMaxAmount("");
     setMinDate("");
     setMaxDate("");
-    setShowAdvanced(false);
   };
 
   const hasActiveFilters =
     activeFilter !== "all" ||
     activeCategoryFilter !== "all" ||
-    (activeDateFilter !== "month" && activeDateFilter !== "all") ||
+    activeDateFilter !== "all" ||
     minAmount !== "" ||
-    maxAmount !== "";
-
-  // minDate !== "" || maxDate !== "";
+    maxAmount !== "" ||
+    minDate !== "" ||
+    maxDate !== "";
   return (
     <S.FiltersContainer>
       <S.FilterRow>
@@ -116,6 +121,9 @@ const Filters = ({
                 onChange={(e) => setMaxDate(e.target.value)}
                 style={{ minWidth: 0 }}
               />
+              <S.SearchButton onClick={() => {}} type="button">
+                🔍 Szukaj
+              </S.SearchButton>
             </S.AmountInputs>
           </S.FilterGroup>
 
@@ -138,11 +146,9 @@ const Filters = ({
             </S.AmountInputs>
           </S.FilterGroup>
 
-          {hasActiveFilters && (
-            <S.ClearButton onClick={handleClearFilters}>
-              ✕ Wyczyść filtry
-            </S.ClearButton>
-          )}
+          <S.ClearButton onClick={handleClearFilters}>
+            ✕ Wyczyść filtry
+          </S.ClearButton>
         </S.AdvancedSection>
       )}
     </S.FiltersContainer>

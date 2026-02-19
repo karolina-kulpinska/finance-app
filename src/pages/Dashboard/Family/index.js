@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import { db, getSendFamilyInviteEmail } from "../../../api/firebase";
@@ -31,39 +31,42 @@ const Family = ({ isDemo = false }) => {
   const [familyName, setFamilyName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
 
-  // Przykładowa rodzina dla demo
-  const demoFamily = {
-    id: "demo_family",
-    name: "Rodzina Kowalskich",
-    ownerId: "demo_user",
-    inviteToken: "demo_token_12345",
-    members: [
-      {
-        userId: "demo_user",
-        email: "demo@example.com",
-        displayName: "Demo Użytkownik",
-        role: "owner",
-        addedAt: new Date().toISOString(),
-        status: "active",
-      },
-      {
-        userId: "demo_member_1",
-        email: "anna.kowalska@example.com",
-        displayName: "Anna Kowalska",
-        role: "member",
-        addedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        status: "active",
-      },
-      {
-        userId: "demo_member_2",
-        email: "jan.kowalski@example.com",
-        displayName: "Jan Kowalski",
-        role: "member",
-        addedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        status: "active",
-      },
-    ],
-  };
+  // Przykładowa rodzina dla demo (useMemo żeby referencja była stabilna dla useCallback)
+  const demoFamily = useMemo(
+    () => ({
+      id: "demo_family",
+      name: "Rodzina Kowalskich",
+      ownerId: "demo_user",
+      inviteToken: "demo_token_12345",
+      members: [
+        {
+          userId: "demo_user",
+          email: "demo@example.com",
+          displayName: "Demo Użytkownik",
+          role: "owner",
+          addedAt: new Date().toISOString(),
+          status: "active",
+        },
+        {
+          userId: "demo_member_1",
+          email: "anna.kowalska@example.com",
+          displayName: "Anna Kowalska",
+          role: "member",
+          addedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          status: "active",
+        },
+        {
+          userId: "demo_member_2",
+          email: "jan.kowalski@example.com",
+          displayName: "Jan Kowalski",
+          role: "member",
+          addedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+          status: "active",
+        },
+      ],
+    }),
+    []
+  );
 
   const loadFamily = useCallback(async () => {
     if (isDemo) {
@@ -86,7 +89,7 @@ const Family = ({ isDemo = false }) => {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid, isDemo]);
+  }, [user?.uid, isDemo, demoFamily]);
 
   useEffect(() => {
     if (isDemo) {

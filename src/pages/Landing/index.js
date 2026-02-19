@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../features/auth/authSlice";
-import { toDashboard, toLogin, toRegistration, toRegulamin, toDemo } from "../../routes";
+import { toDashboard, toLogin, toRegistration, toDemo } from "../../routes";
 import Hero from "./Hero";
 import Features from "./Features";
 import Benefits from "./Benefits";

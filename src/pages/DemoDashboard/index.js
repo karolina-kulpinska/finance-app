@@ -10,10 +10,6 @@ import {
 import {
   selectDemoPayments,
   selectHasUnsavedData,
-  addDemoPayment,
-  updateDemoPayment,
-  deleteDemoPayment,
-  toggleDemoPaymentStatus,
 } from "../../features/demo/demoSlice";
 import { toLanding } from "../../routes";
 import Header from "../Dashboard/Header";

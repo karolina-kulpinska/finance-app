@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../api/firebase";
@@ -50,17 +50,12 @@ const Dashboard = () => {
   const [searchName, setSearchName] = useState("");
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [termsRequired, setTermsRequired] = useState(false);
-  const [termsChecked, setTermsChecked] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
   }, [dispatch]);
 
-  useEffect(() => {
-    checkTermsAcceptance();
-  }, [user?.uid]);
-
-  const checkTermsAcceptance = async () => {
+  const checkTermsAcceptance = useCallback(async () => {
     if (!user?.uid) return;
     
     try {
@@ -79,12 +74,15 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Błąd podczas sprawdzania akceptacji regulaminu:", error);
     }
-  };
+  }, [user?.uid]);
+
+  useEffect(() => {
+    checkTermsAcceptance();
+  }, [checkTermsAcceptance]);
 
   const handleTermsAccept = () => {
     setShowTermsModal(false);
     setTermsRequired(false);
-    setTermsChecked(true);
   };
 
   useEffect(() => {

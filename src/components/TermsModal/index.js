@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../api/firebase";
@@ -16,11 +16,26 @@ const TermsModal = ({ onAccept, required = false, showAcceptedDate = false }) =>
   const [scrolledToBottom, setScrolledToBottom] = useState(false);
   const contentRef = useRef(null);
 
+  const loadAcceptedDate = useCallback(async () => {
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        if (data.termsAcceptedAt) {
+          const date = data.termsAcceptedAt.toDate();
+          setAcceptedDate(date);
+        }
+      }
+    } catch (error) {
+      console.error("Błąd podczas ładowania daty akceptacji:", error);
+    }
+  }, [user?.uid]);
+
   useEffect(() => {
     if (showAcceptedDate && user?.uid) {
       loadAcceptedDate();
     }
-  }, [showAcceptedDate, user?.uid]);
+  }, [showAcceptedDate, user?.uid, loadAcceptedDate]);
 
   useEffect(() => {
     if (!required) return; // Tylko dla wymaganego akceptacji
@@ -43,21 +58,6 @@ const TermsModal = ({ onAccept, required = false, showAcceptedDate = false }) =>
       contentElement.removeEventListener("scroll", handleScroll);
     };
   }, [required]);
-
-  const loadAcceptedDate = async () => {
-    try {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        if (data.termsAcceptedAt) {
-          const date = data.termsAcceptedAt.toDate();
-          setAcceptedDate(date);
-        }
-      }
-    } catch (error) {
-      console.error("Błąd podczas ładowania daty akceptacji:", error);
-    }
-  };
 
   const handleAccept = async () => {
     if (!accepted && required) {

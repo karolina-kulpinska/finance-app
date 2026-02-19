@@ -31,8 +31,47 @@ const Family = ({ isDemo = false }) => {
   const [familyName, setFamilyName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
 
+  // Przykładowa rodzina dla demo
+  const demoFamily = {
+    id: "demo_family",
+    name: "Rodzina Kowalskich",
+    ownerId: "demo_user",
+    inviteToken: "demo_token_12345",
+    members: [
+      {
+        userId: "demo_user",
+        email: "demo@example.com",
+        displayName: "Demo Użytkownik",
+        role: "owner",
+        addedAt: new Date().toISOString(),
+        status: "active",
+      },
+      {
+        userId: "demo_member_1",
+        email: "anna.kowalska@example.com",
+        displayName: "Anna Kowalska",
+        role: "member",
+        addedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "active",
+      },
+      {
+        userId: "demo_member_2",
+        email: "jan.kowalski@example.com",
+        displayName: "Jan Kowalski",
+        role: "member",
+        addedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "active",
+      },
+    ],
+  };
+
   const loadFamily = useCallback(async () => {
-    if (isDemo || !user?.uid) return;
+    if (isDemo) {
+      setFamily(demoFamily);
+      setLoading(false);
+      return;
+    }
+    if (!user?.uid) return;
     try {
       setLoading(true);
       const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -64,6 +103,7 @@ const Family = ({ isDemo = false }) => {
   };
 
   const handleCreateFamily = async () => {
+    if (isDemo) return;
     if (!familyName.trim() || !user) return;
     try {
       const familyId = `family_${user.uid}_${Date.now()}`;
@@ -99,11 +139,16 @@ const Family = ({ isDemo = false }) => {
   };
 
   const handleCopyInviteLink = () => {
+    if (isDemo) {
+      dispatch(showNotification({ message: "W trybie demo nie możesz kopiować linków zaproszeniowych.", type: "info" }));
+      return;
+    }
     navigator.clipboard.writeText(getInviteLink());
     dispatch(showNotification({ message: "📋 Link skopiowany! Wyślij go członkom rodziny.", type: "success" }));
   };
 
   const handleInviteMember = async () => {
+    if (isDemo) return;
     if (!inviteEmail.trim() || !family) return;
     try {
       const newMember = {
@@ -133,6 +178,10 @@ const Family = ({ isDemo = false }) => {
   };
 
   const handleRemoveMember = async (memberEmail) => {
+    if (isDemo) {
+      dispatch(showNotification({ message: "W trybie demo nie możesz usuwać członków rodziny.", type: "info" }));
+      return;
+    }
     if (!family || !window.confirm(`Usunąć ${memberEmail} z rodziny?`)) return;
     try {
       const updatedMembers = family.members.filter((m) => m.email !== memberEmail);
@@ -144,6 +193,10 @@ const Family = ({ isDemo = false }) => {
   };
 
   const handleDeleteFamily = async () => {
+    if (isDemo) {
+      dispatch(showNotification({ message: "W trybie demo nie możesz usuwać rodziny.", type: "info" }));
+      return;
+    }
     if (!window.confirm("⚠️ CZY NA PEWNO CHCESZ USUNĄĆ RODZINĘ?\n\nTa operacja usunie rodzinę na zawsze. Czy jesteś pewien?")) return;
     if (!window.confirm("🔴 OSTATNIE OSTRZEŻENIE! Naprawdę chcesz usunąć rodzinę?")) return;
     try {
@@ -170,6 +223,10 @@ const Family = ({ isDemo = false }) => {
   }
 
   if (activeView === "create") {
+    if (isDemo) {
+      setActiveView("main");
+      return null;
+    }
     return (
       <CreateForm
         familyName={familyName}
@@ -181,6 +238,10 @@ const Family = ({ isDemo = false }) => {
   }
 
   if (activeView === "invite") {
+    if (isDemo) {
+      setActiveView("main");
+      return null;
+    }
     return (
       <InviteForm
         inviteEmail={inviteEmail}
@@ -200,7 +261,7 @@ const Family = ({ isDemo = false }) => {
     );
   }
 
-  const isOwner = family.ownerId === user?.uid;
+  const isOwner = isDemo ? true : family.ownerId === user?.uid;
   const activeMembers = family.members?.filter((m) => m.status === "active") || [];
   const pendingMembers = family.members?.filter((m) => m.status === "pending") || [];
 
@@ -210,11 +271,12 @@ const Family = ({ isDemo = false }) => {
       activeMembers={activeMembers}
       pendingMembers={pendingMembers}
       isOwner={isOwner}
-      onAddMember={() => setActiveView("invite")}
+      onAddMember={isDemo ? undefined : () => setActiveView("invite")}
       onCopyInviteLink={handleCopyInviteLink}
       getInviteLink={getInviteLink}
       onRemoveMember={handleRemoveMember}
       onDeleteFamily={handleDeleteFamily}
+      isDemo={isDemo}
     />
   );
 };

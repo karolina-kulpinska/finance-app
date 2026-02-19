@@ -183,6 +183,48 @@ const DemoDashboard = () => {
         );
       case "shopping":
         return <ShoppingLists />;
+      case "family":
+        return (
+          <S.DemoInfoBox>
+            <S.DemoInfoIcon>👨‍👩‍👧‍👦</S.DemoInfoIcon>
+            <S.DemoInfoTitle>Rodzina</S.DemoInfoTitle>
+            <S.DemoInfoText>
+              W trybie demo możesz zobaczyć jak działa funkcja udostępniania danych rodzinie, ale nie możesz tworzyć rodzin ani dodawać członków.
+            </S.DemoInfoText>
+            <S.DemoInfoText>
+              <strong>Zarejestruj się</strong>, aby móc tworzyć rodziny i udostępniać płatności oraz listy zakupów członkom rodziny.
+            </S.DemoInfoText>
+          </S.DemoInfoBox>
+        );
+      case "files":
+        return (
+          <S.DemoInfoBox>
+            <S.DemoInfoIcon>📎</S.DemoInfoIcon>
+            <S.DemoInfoTitle>Pliki</S.DemoInfoTitle>
+            <S.DemoInfoText>
+              W trybie demo nie możesz dodawać załączników do płatności (skany rachunków, faktur, paragonów).
+            </S.DemoInfoText>
+            <S.DemoInfoText>
+              <strong>Zarejestruj się</strong>, aby móc przesyłać i przechowywać pliki związane z płatnościami.
+            </S.DemoInfoText>
+          </S.DemoInfoBox>
+        );
+      case "profile":
+        return (
+          <S.DemoInfoBox>
+            <S.DemoInfoIcon>👤</S.DemoInfoIcon>
+            <S.DemoInfoTitle>Profil</S.DemoInfoTitle>
+            <S.DemoInfoText>
+              W trybie demo możesz przeglądać funkcje profilu, ale nie możesz edytować danych osobowych ani zarządzać kontem.
+            </S.DemoInfoText>
+            <S.DemoInfoText>
+              <strong>Zarejestruj się</strong>, aby móc edytować profil, zmieniać hasło, zarządzać subskrypcją i usuwać konto.
+            </S.DemoInfoText>
+            <S.DemoInfoButton onClick={() => setShowSaveModal(true)}>
+              Zarejestruj się teraz
+            </S.DemoInfoButton>
+          </S.DemoInfoBox>
+        );
       default:
         return null;
     }

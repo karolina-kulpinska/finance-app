@@ -214,3 +214,87 @@ export const DemoBannerClose = styled.button`
     transform: scale(0.95);
   }
 `;
+
+export const DemoInfoBox = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 40px 24px;
+  box-shadow: ${({ theme }) => theme.shadows.tile};
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-height: 400px;
+  justify-content: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    padding: 32px 20px;
+    min-height: 350px;
+  }
+`;
+
+export const DemoInfoIcon = styled.div`
+  font-size: 64px;
+  margin-bottom: 8px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    font-size: 56px;
+  }
+`;
+
+export const DemoInfoTitle = styled.h2`
+  font-size: 24px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    font-size: 20px;
+  }
+`;
+
+export const DemoInfoText = styled.p`
+  font-size: 15px;
+  color: ${({ theme }) => theme.colors.secondary};
+  line-height: 1.6;
+  margin: 0;
+  max-width: 500px;
+
+  strong {
+    color: ${({ theme }) => theme.colors.primary || "#667eea"};
+    font-weight: 700;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    font-size: 14px;
+  }
+`;
+
+export const DemoInfoButton = styled.button`
+  margin-top: 8px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+`;

@@ -64,18 +64,23 @@ export const SettingItem = styled.button`
   background: transparent;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   transition: all 0.2s ease;
   text-align: left;
   width: 100%;
   font-family: inherit;
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: #f8f9fa;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.99);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
   }
 `;
 

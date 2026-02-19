@@ -250,6 +250,7 @@ const DemoDashboard = () => {
                     })
                   )
                 }
+                isDemo
               />
             </ProfileContainer>
           </>

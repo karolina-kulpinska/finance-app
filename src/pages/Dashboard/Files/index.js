@@ -5,6 +5,7 @@ import { storage } from "../../../api/firebase";
 import { openStorageDownloadUrl } from "../../../utils/firebaseStorageDownload";
 import { selectPayments } from "../../../features/payments/paymentSlice";
 import { updatePaymentRequest } from "../../../features/payments/paymentSlice";
+import { showNotification } from "../../../features/notification/notificationSlice";
 import * as S from "./styled";
 import { generateFilesPDF } from "./generatePDF";
 
@@ -80,7 +81,52 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
       };
     });
   const filesFromLists = getShoppingListReceipts(sharedOnly);
-  const allFiles = [...filesFromPayments, ...filesFromLists];
+  
+  // Przykładowe pliki dla demo
+  const demoFiles = isDemo ? [
+    {
+      id: "demo_file_1",
+      name: "Rachunek za prąd",
+      attachmentName: "rachunek_prad_2024_01.pdf",
+      date: "2024-01-15",
+      dateDisplay: "15 stycznia 2024",
+      category: "bills",
+      attachmentUrl: null, // Brak URL - nie można pobrać
+      fromShoppingList: false,
+    },
+    {
+      id: "demo_file_2",
+      name: "Rachunek za gaz",
+      attachmentName: "rachunek_gaz_2024_01.pdf",
+      date: "2024-01-20",
+      dateDisplay: "20 stycznia 2024",
+      category: "bills",
+      attachmentUrl: null,
+      fromShoppingList: false,
+    },
+    {
+      id: "demo_file_3",
+      name: "Paragon - Zakupy spożywcze",
+      attachmentName: "paragon_zakupy_2024_01.jpg",
+      date: "2024-01-25",
+      dateDisplay: "25 stycznia 2024",
+      category: "shopping",
+      attachmentUrl: null,
+      fromShoppingList: false,
+    },
+    {
+      id: "demo_file_4",
+      name: "Faktura - Internet",
+      attachmentName: "faktura_internet_2024_02.pdf",
+      date: "2024-02-01",
+      dateDisplay: "1 lutego 2024",
+      category: "other",
+      attachmentUrl: null,
+      fromShoppingList: false,
+    },
+  ] : [];
+  
+  const allFiles = isDemo ? demoFiles : [...filesFromPayments, ...filesFromLists];
 
   let filteredFiles =
     activeFilter === "all"
@@ -103,6 +149,10 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
   }
 
   const handleDownload = (url, name) => {
+    if (isDemo) {
+      dispatch(showNotification({ message: "W trybie demo nie możesz pobierać plików.", type: "info" }));
+      return;
+    }
     const fileName = name || "plik";
     if (url && url.includes("firebasestorage.googleapis.com")) {
       openStorageDownloadUrl(url);
@@ -322,11 +372,13 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
           <S.FilesGrid>
             {filteredFiles.map((file) => (
               <S.FileCard key={file.id}>
-                <S.FileCheckbox
-                  type="checkbox"
-                  checked={selected.includes(file.id)}
-                  onChange={() => handleSelect(file.id)}
-                />
+                {!isDemo && (
+                  <S.FileCheckbox
+                    type="checkbox"
+                    checked={selected.includes(file.id)}
+                    onChange={() => handleSelect(file.id)}
+                  />
+                )}
                 <S.FileIcon>
                   {file.attachmentName?.endsWith(".pdf") ? "📄" : "🖼️"}
                 </S.FileIcon>
@@ -338,7 +390,7 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
                   <S.FileDate>{file.dateDisplay || file.date}</S.FileDate>
                 </S.FileInfo>
                 <S.FileActions>
-                  {file.attachmentUrl ? (
+                  {file.attachmentUrl && !isDemo ? (
                     <S.DownloadIcon
                       onClick={(e) => {
                         e.stopPropagation();
@@ -348,6 +400,18 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
                     >
                       ⬇️
                     </S.DownloadIcon>
+                  ) : isDemo ? (
+                    <span
+                      style={{
+                        fontSize: 20,
+                        flexShrink: 0,
+                        opacity: 0.5,
+                        cursor: "not-allowed",
+                      }}
+                      title="W trybie demo nie można pobierać plików"
+                    >
+                      ⬇️
+                    </span>
                   ) : (
                     <span
                       style={{

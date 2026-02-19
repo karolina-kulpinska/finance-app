@@ -129,19 +129,24 @@ export const AddMemberButton = styled.button`
   font-size: 13px;
   font-weight: 600;
   color: #667eea;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   transition: all 0.2s ease;
   font-family: inherit;
   margin-bottom: 12px;
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: #667eea;
     color: white;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.99);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
   }
 `;
 
@@ -191,17 +196,22 @@ export const DeleteFamilyButton = styled.button`
   font-size: 12px;
   font-weight: 600;
   color: #9e9e9e;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   transition: all 0.2s ease;
   font-family: inherit;
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 
-  &:hover {
+  &:hover:not(:disabled) {
     border-color: #f44336;
     color: #f44336;
     background: #fff5f5;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
   }
 `;

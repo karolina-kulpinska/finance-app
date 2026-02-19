@@ -24,6 +24,7 @@ export const MainView = ({
   getInviteLink,
   onRemoveMember,
   onDeleteFamily,
+  isDemo = false,
 }) => {
   const [activePanel, setActivePanel] = useState(null);
 
@@ -49,14 +50,17 @@ export const MainView = ({
         <S.PanelContent>
           {activePanel === "members" && (
             <>
-              {isOwner && (
-                <S.AddMemberButton onClick={onAddMember}>Zaproś członka</S.AddMemberButton>
+              {isOwner && onAddMember && (
+                <S.AddMemberButton onClick={onAddMember} disabled={isDemo}>
+                  Zaproś członka
+                </S.AddMemberButton>
               )}
               <MembersSection
                 activeMembers={activeMembers}
                 pendingMembers={pendingMembers}
                 isOwner={isOwner}
                 onRemoveMember={onRemoveMember}
+                isDemo={isDemo}
               />
             </>
           )}
@@ -64,15 +68,17 @@ export const MainView = ({
           {activePanel === "shopping" && <ShoppingLists sharedOnly />}
           {activePanel === "files" && <Files sharedOnly />}
           {activePanel === "link" && (
-            <S.LinkBox onClick={onCopyInviteLink}>
+            <S.LinkBox onClick={isDemo ? undefined : onCopyInviteLink} style={{ opacity: isDemo ? 0.6 : 1, cursor: isDemo ? "not-allowed" : "pointer" }}>
               <S.LinkContent>
-                <S.LinkLabel>Kliknij, aby skopiować link</S.LinkLabel>
+                <S.LinkLabel>{isDemo ? "W trybie demo nie możesz kopiować linków" : "Kliknij, aby skopiować link"}</S.LinkLabel>
                 <S.LinkUrl>{getInviteLink()}</S.LinkUrl>
               </S.LinkContent>
             </S.LinkBox>
           )}
           {activePanel === "danger" && (
-            <S.DeleteFamilyButton onClick={onDeleteFamily}>Usuń rodzinę</S.DeleteFamilyButton>
+            <S.DeleteFamilyButton onClick={onDeleteFamily} disabled={isDemo}>
+              Usuń rodzinę
+            </S.DeleteFamilyButton>
           )}
         </S.PanelContent>
       </S.Container>

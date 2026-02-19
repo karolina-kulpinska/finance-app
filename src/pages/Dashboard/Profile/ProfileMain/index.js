@@ -15,6 +15,7 @@ export const ProfileMain = ({
   onSectionSelect,
   onContact,
   onAbout,
+  isDemo = false,
 }) => {
   const isPro = useSelector(selectIsPro);
   const renewalDate = useSelector(selectRenewalDate);
@@ -40,7 +41,7 @@ export const ProfileMain = ({
     <S.SettingsSection>
       <S.SectionTitle>💳 Subskrypcja</S.SectionTitle>
       <S.SettingsList>
-        <S.SettingItem onClick={() => onSectionSelect("subscription")}>
+        <S.SettingItem onClick={() => onSectionSelect("subscription")} disabled={isDemo}>
           <S.SettingIcon>{isPro ? "⭐" : "📦"}</S.SettingIcon>
           <S.SettingInfo>
             <S.SettingLabel>
@@ -62,7 +63,7 @@ export const ProfileMain = ({
     <S.SettingsSection>
       <S.SectionTitle>⚙️ Ustawienia konta</S.SectionTitle>
       <S.SettingsList>
-        <S.SettingItem onClick={() => onSectionSelect("personal")}>
+        <S.SettingItem onClick={() => onSectionSelect("personal")} disabled={isDemo}>
           <S.SettingIcon>👤</S.SettingIcon>
           <S.SettingInfo>
             <S.SettingLabel>Dane osobowe</S.SettingLabel>
@@ -71,7 +72,7 @@ export const ProfileMain = ({
           <S.SettingArrow>›</S.SettingArrow>
         </S.SettingItem>
 
-        <S.SettingItem onClick={() => onSectionSelect("security")}>
+        <S.SettingItem onClick={() => onSectionSelect("security")} disabled={isDemo}>
           <S.SettingIcon>🔒</S.SettingIcon>
           <S.SettingInfo>
             <S.SettingLabel>Bezpieczeństwo</S.SettingLabel>
@@ -80,7 +81,7 @@ export const ProfileMain = ({
           <S.SettingArrow>›</S.SettingArrow>
         </S.SettingItem>
 
-        <S.SettingItem onClick={() => onSectionSelect("delete")}>
+        <S.SettingItem onClick={() => onSectionSelect("delete")} disabled={isDemo}>
           <S.SettingIcon>🗑️</S.SettingIcon>
           <S.SettingInfo>
             <S.SettingLabel>Usuń konto</S.SettingLabel>
@@ -112,23 +113,27 @@ export const ProfileMain = ({
           <S.SettingArrow>›</S.SettingArrow>
         </S.SettingItem>
 
-        <S.SettingItem onClick={() => setShowTermsModal(true)}>
-          <S.SettingIcon>📄</S.SettingIcon>
-          <S.SettingInfo>
-            <S.SettingLabel>Regulamin</S.SettingLabel>
-            <S.SettingDesc>Regulamin aplikacji</S.SettingDesc>
-          </S.SettingInfo>
-          <S.SettingArrow>›</S.SettingArrow>
-        </S.SettingItem>
+        {!isDemo && (
+          <>
+            <S.SettingItem onClick={() => setShowTermsModal(true)}>
+              <S.SettingIcon>📄</S.SettingIcon>
+              <S.SettingInfo>
+                <S.SettingLabel>Regulamin</S.SettingLabel>
+                <S.SettingDesc>Regulamin aplikacji</S.SettingDesc>
+              </S.SettingInfo>
+              <S.SettingArrow>›</S.SettingArrow>
+            </S.SettingItem>
 
-        <S.SettingItem onClick={() => setShowPrivacyModal(true)}>
-          <S.SettingIcon>🔒</S.SettingIcon>
-          <S.SettingInfo>
-            <S.SettingLabel>Polityka Prywatności</S.SettingLabel>
-            <S.SettingDesc>Ochrona danych osobowych</S.SettingDesc>
-          </S.SettingInfo>
-          <S.SettingArrow>›</S.SettingArrow>
-        </S.SettingItem>
+            <S.SettingItem onClick={() => setShowPrivacyModal(true)}>
+              <S.SettingIcon>🔒</S.SettingIcon>
+              <S.SettingInfo>
+                <S.SettingLabel>Polityka Prywatności</S.SettingLabel>
+                <S.SettingDesc>Ochrona danych osobowych</S.SettingDesc>
+              </S.SettingInfo>
+              <S.SettingArrow>›</S.SettingArrow>
+            </S.SettingItem>
+          </>
+        )}
       </S.SettingsList>
     </S.SettingsSection>
 

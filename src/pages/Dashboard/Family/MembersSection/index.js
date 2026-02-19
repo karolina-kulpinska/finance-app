@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styled";
 
-export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemoveMember }) => (
+export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemoveMember, isDemo = false }) => (
   <>
     <S.MembersList>
       {activeMembers.map((member) => (
@@ -27,7 +27,7 @@ export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemov
           <S.PendingCard key={member.email}>
             <S.PendingIcon />
             <S.PendingEmail>{member.email}</S.PendingEmail>
-            {isOwner && (
+            {isOwner && !isDemo && (
               <S.RemoveButton onClick={() => onRemoveMember(member.email)}>✕</S.RemoveButton>
             )}
           </S.PendingCard>

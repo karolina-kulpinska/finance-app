@@ -34,9 +34,10 @@ function getShoppingListReceipts(sharedOnly) {
   }
 }
 
-const Files = ({ sharedOnly = false }) => {
+const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = false }) => {
   const dispatch = useDispatch();
-  const payments = useSelector(selectPayments);
+  const paymentsFromStore = useSelector(selectPayments);
+  const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
   const [activeFilter, setActiveFilter] = useState("all");
   const [deletingId, setDeletingId] = useState(null);
   const [fileToDelete, setFileToDelete] = useState(null);
@@ -281,39 +282,43 @@ const Files = ({ sharedOnly = false }) => {
           <S.EmptyIcon>📂</S.EmptyIcon>
           <S.EmptyTitle>Brak plików</S.EmptyTitle>
           <S.EmptyText>
-            {sharedOnly
-              ? "Brak plików udostępnionych rodzinie. Zaznacz „Udostępnij rodzinie” przy płatności z załącznikiem."
-              : "Dodaj załączniki do płatności lub paragony do list zakupów, aby zobaczyć je tutaj."}
+            {isDemo
+              ? "W trybie demo nie możesz dodawać załączników do płatności. Zarejestruj się, aby przesyłać pliki."
+              : sharedOnly
+                ? "Brak plików udostępnionych rodzinie. Zaznacz „Udostępnij rodzinie” przy płatności z załącznikiem."
+                : "Dodaj załączniki do płatności lub paragony do list zakupów, aby zobaczyć je tutaj."}
           </S.EmptyText>
         </S.EmptyState>
       ) : (
         <>
-          <S.FilesActions>
-            <S.SelectAllCheckbox
-              type="checkbox"
-              checked={
-                selected.length === filteredFiles.length &&
-                filteredFiles.length > 0
-              }
-              onChange={handleSelectAll}
-            />
-            <S.SelectAllLabel>Zaznacz wszystkie</S.SelectAllLabel>
-            <S.DownloadSelectedButton
-              disabled={selected.length === 0}
-              onClick={handleDownloadSelected}
-              title="Pobierz wybrane"
-            >
-              Pobierz wybrane ({selected.length})
-            </S.DownloadSelectedButton>
-            <S.DownloadSelectedButton
-              disabled={selected.length === 0}
-              onClick={handleDownloadPDF}
-              $variant="pdf"
-              title="PDF zestawienie"
-            >
-              PDF zestawienie
-            </S.DownloadSelectedButton>
-          </S.FilesActions>
+          {!isDemo && (
+            <S.FilesActions>
+              <S.SelectAllCheckbox
+                type="checkbox"
+                checked={
+                  selected.length === filteredFiles.length &&
+                  filteredFiles.length > 0
+                }
+                onChange={handleSelectAll}
+              />
+              <S.SelectAllLabel>Zaznacz wszystkie</S.SelectAllLabel>
+              <S.DownloadSelectedButton
+                disabled={selected.length === 0}
+                onClick={handleDownloadSelected}
+                title="Pobierz wybrane"
+              >
+                Pobierz wybrane ({selected.length})
+              </S.DownloadSelectedButton>
+              <S.DownloadSelectedButton
+                disabled={selected.length === 0}
+                onClick={handleDownloadPDF}
+                $variant="pdf"
+                title="PDF zestawienie"
+              >
+                PDF zestawienie
+              </S.DownloadSelectedButton>
+            </S.FilesActions>
+          )}
           <S.FilesGrid>
             {filteredFiles.map((file) => (
               <S.FileCard key={file.id}>
@@ -355,16 +360,18 @@ const Files = ({ sharedOnly = false }) => {
                       📎
                     </span>
                   )}
-                  <S.DeleteIcon
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setFileToDelete(file);
-                    }}
-                    disabled={deletingId === file.id}
-                    title="Usuń plik"
-                  >
-                    {deletingId === file.id ? "⏳" : "🗑️"}
-                  </S.DeleteIcon>
+                  {!isDemo && (
+                    <S.DeleteIcon
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFileToDelete(file);
+                      }}
+                      disabled={deletingId === file.id}
+                      title="Usuń plik"
+                    >
+                      {deletingId === file.id ? "⏳" : "🗑️"}
+                    </S.DeleteIcon>
+                  )}
                 </S.FileActions>
               </S.FileCard>
             ))}

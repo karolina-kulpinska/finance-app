@@ -189,6 +189,22 @@ export const DemoBannerLink = styled.span`
   }
 `;
 
+export const DemoInfoBar = styled.div`
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #856404;
+  margin-bottom: 12px;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+`;
+
 export const DemoBannerClose = styled.button`
   background: rgba(255, 255, 255, 0.2);
   border: none;

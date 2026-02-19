@@ -63,12 +63,18 @@ export const CreateFamilyButton = styled.button`
   transition: all 0.2s ease;
   font-family: inherit;
 
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: translateY(0);
+  }
+
+  &:disabled,
+  &[data-demo="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;

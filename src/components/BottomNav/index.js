@@ -7,7 +7,7 @@ import { auth } from "../../api/firebase";
 import { toLanding } from "../../routes";
 import * as S from "./styled";
 
-const BottomNav = ({ activeTab, onTabChange }) => {
+const BottomNav = ({ activeTab, onTabChange, isDemo = false, onExitDemo }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -18,10 +18,18 @@ const BottomNav = ({ activeTab, onTabChange }) => {
     { id: "family", icon: "👨‍👩‍👧‍👦", label: "Rodzina" },
     { id: "files", icon: "📁", label: "Pliki" },
     { id: "profile", icon: "👤", label: "Profil" },
-    { id: "logout", icon: "🚪", label: "Wyloguj" },
+    {
+      id: "logout",
+      icon: "🚪",
+      label: isDemo ? "Wyjdź" : "Wyloguj",
+    },
   ];
 
   const handleLogout = async () => {
+    if (isDemo && onExitDemo) {
+      onExitDemo();
+      return;
+    }
     try {
       await signOut(auth);
       dispatch(logout());

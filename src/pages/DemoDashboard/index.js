@@ -10,7 +10,9 @@ import {
 import {
   selectDemoPayments,
   selectHasUnsavedData,
+  clearDemoData,
 } from "../../features/demo/demoSlice";
+import { showNotification } from "../../features/notification/notificationSlice";
 import { toLanding } from "../../routes";
 import Header from "../Dashboard/Header";
 import Stats from "../Dashboard/Stats";
@@ -21,6 +23,10 @@ import AddPaymentForm from "../Dashboard/Form";
 import PaymentTypeSelector from "../Dashboard/PaymentTypeSelector";
 import PaymentsList from "../Dashboard/List";
 import ShoppingLists from "../Dashboard/ShoppingLists";
+import Family from "../Dashboard/Family";
+import Files from "../Dashboard/Files";
+import { ProfileMain } from "../Dashboard/Profile/ProfileMain";
+import { Container as ProfileContainer } from "../Dashboard/Profile/styled";
 import BottomNav from "../../components/BottomNav";
 import SaveDataModal from "../../components/SaveDataModal";
 import * as S from "../Dashboard/styled";
@@ -51,6 +57,14 @@ const DemoDashboard = () => {
     ...payment,
     userId: "demo",
   }));
+
+  // Przy odświeżeniu strony w trybie demo – wyczyść wszystkie dane demo
+  useEffect(() => {
+    const nav = performance.getEntriesByType?.("navigation")?.[0];
+    if (nav?.type === "reload") {
+      dispatch(clearDemoData());
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     // Sprawdź czy użytkownik próbuje opuścić stronę
@@ -185,45 +199,60 @@ const DemoDashboard = () => {
         return <ShoppingLists />;
       case "family":
         return (
-          <S.DemoInfoBox>
-            <S.DemoInfoIcon>👨‍👩‍👧‍👦</S.DemoInfoIcon>
-            <S.DemoInfoTitle>Rodzina</S.DemoInfoTitle>
-            <S.DemoInfoText>
-              W trybie demo możesz zobaczyć jak działa funkcja udostępniania danych rodzinie, ale nie możesz tworzyć rodzin ani dodawać członków.
-            </S.DemoInfoText>
-            <S.DemoInfoText>
-              <strong>Zarejestruj się</strong>, aby móc tworzyć rodziny i udostępniać płatności oraz listy zakupów członkom rodziny.
-            </S.DemoInfoText>
-          </S.DemoInfoBox>
+          <>
+            <S.DemoInfoBar>
+              W trybie demo widzisz podgląd. Nie możesz tworzyć rodzin ani dodawać członków.
+            </S.DemoInfoBar>
+            <Family isDemo />
+          </>
         );
       case "files":
         return (
-          <S.DemoInfoBox>
-            <S.DemoInfoIcon>📎</S.DemoInfoIcon>
-            <S.DemoInfoTitle>Pliki</S.DemoInfoTitle>
-            <S.DemoInfoText>
-              W trybie demo nie możesz dodawać załączników do płatności (skany rachunków, faktur, paragonów).
-            </S.DemoInfoText>
-            <S.DemoInfoText>
-              <strong>Zarejestruj się</strong>, aby móc przesyłać i przechowywać pliki związane z płatnościami.
-            </S.DemoInfoText>
-          </S.DemoInfoBox>
+          <>
+            <S.DemoInfoBar>
+              W trybie demo nie możesz dodawać załączników do płatności.
+            </S.DemoInfoBar>
+            <Files payments={transformedPayments} isDemo />
+          </>
         );
       case "profile":
         return (
-          <S.DemoInfoBox>
-            <S.DemoInfoIcon>👤</S.DemoInfoIcon>
-            <S.DemoInfoTitle>Profil</S.DemoInfoTitle>
-            <S.DemoInfoText>
-              W trybie demo możesz przeglądać funkcje profilu, ale nie możesz edytować danych osobowych ani zarządzać kontem.
-            </S.DemoInfoText>
-            <S.DemoInfoText>
-              <strong>Zarejestruj się</strong>, aby móc edytować profil, zmieniać hasło, zarządzać subskrypcją i usuwać konto.
-            </S.DemoInfoText>
-            <S.DemoInfoButton onClick={() => setShowSaveModal(true)}>
-              Zarejestruj się teraz
-            </S.DemoInfoButton>
-          </S.DemoInfoBox>
+          <>
+            <S.DemoInfoBar>
+              W trybie demo nie możesz edytować profilu ani zarządzać kontem.
+            </S.DemoInfoBar>
+            <ProfileContainer>
+              <ProfileMain
+                userInitials="DU"
+                userName="Demo Użytkownik"
+                userEmail="demo@example.com"
+                onSectionSelect={() =>
+                  dispatch(
+                    showNotification({
+                      message: "Zarejestruj się, aby edytować profil i korzystać z tych funkcji.",
+                      type: "info",
+                    })
+                  )
+                }
+                onContact={() =>
+                  dispatch(
+                    showNotification({
+                      message: "Zarejestruj się, aby skontaktować się z nami.",
+                      type: "info",
+                    })
+                  )
+                }
+                onAbout={() =>
+                  dispatch(
+                    showNotification({
+                      message: "Wersja aplikacji: 1.0.0",
+                      type: "success",
+                    })
+                  )
+                }
+              />
+            </ProfileContainer>
+          </>
         );
       default:
         return null;
@@ -275,7 +304,12 @@ const DemoDashboard = () => {
           )}
         {renderContent()}
       </S.Container>
-      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+      <BottomNav
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        isDemo
+        onExitDemo={handleBackToLanding}
+      />
       {showTypeSelector && (
         <PaymentTypeSelector
           onSelectType={handleSelectType}

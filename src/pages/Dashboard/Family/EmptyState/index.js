@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styled";
 
-export const EmptyState = ({ onCreateFamily }) => (
+export const EmptyState = ({ onCreateFamily, isDemo = false }) => (
   <S.Container>
     <S.EmptyState>
       <S.EmptyIcon>
@@ -15,9 +15,16 @@ export const EmptyState = ({ onCreateFamily }) => (
       </S.EmptyIcon>
       <S.EmptyTitle>Nie należysz do rodziny</S.EmptyTitle>
       <S.EmptyText>
-        Utwórz rodzinę, aby udostępniać płatności, dokumenty i listy zakupów z najbliższymi
+        {isDemo
+          ? "W trybie demo nie możesz tworzyć rodzin ani dodawać członków. Zarejestruj się, aby udostępniać płatności i listy zakupów rodzinie."
+          : "Utwórz rodzinę, aby udostępniać płatności, dokumenty i listy zakupów z najbliższymi"}
       </S.EmptyText>
-      <S.CreateFamilyButton onClick={onCreateFamily}>Utwórz rodzinę</S.CreateFamilyButton>
+      <S.CreateFamilyButton
+        onClick={isDemo ? undefined : onCreateFamily}
+        disabled={isDemo}
+      >
+        {isDemo ? "Dostępne po rejestracji" : "Utwórz rodzinę"}
+      </S.CreateFamilyButton>
     </S.EmptyState>
   </S.Container>
 );

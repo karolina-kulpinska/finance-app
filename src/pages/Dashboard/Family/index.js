@@ -22,17 +22,17 @@ import * as S from "./styled";
 const generateInviteToken = () =>
   Math.random().toString(36).substring(2) + Date.now().toString(36);
 
-const Family = () => {
+const Family = ({ isDemo = false }) => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const [family, setFamily] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isDemo);
   const [activeView, setActiveView] = useState("main");
   const [familyName, setFamilyName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
 
   const loadFamily = useCallback(async () => {
-    if (!user?.uid) return;
+    if (isDemo || !user?.uid) return;
     try {
       setLoading(true);
       const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -47,11 +47,15 @@ const Family = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, isDemo]);
 
   useEffect(() => {
+    if (isDemo) {
+      setLoading(false);
+      return;
+    }
     loadFamily();
-  }, [loadFamily]);
+  }, [loadFamily, isDemo]);
 
   const getInviteLink = () => {
     if (!family?.inviteToken) return "";
@@ -188,7 +192,12 @@ const Family = () => {
   }
 
   if (!family) {
-    return <EmptyState onCreateFamily={() => setActiveView("create")} />;
+    return (
+      <EmptyState
+        onCreateFamily={isDemo ? undefined : () => setActiveView("create")}
+        isDemo={isDemo}
+      />
+    );
   }
 
   const isOwner = family.ownerId === user?.uid;

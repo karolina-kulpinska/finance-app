@@ -10,9 +10,10 @@ import {
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
-const Charts = ({ onBeforeCategorySelect }) => {
+const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
   const dispatch = useDispatch();
-  const payments = useSelector(selectPayments);
+  const paymentsFromStore = useSelector(selectPayments);
+  const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
   const statusFilter = useSelector(selectFilter);
   const categoryFilter = useSelector(selectCategoryFilter);
   const dateFilter = useSelector(selectDateFilter);

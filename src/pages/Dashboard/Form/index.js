@@ -7,6 +7,10 @@ import {
   toggleModal,
   selectEditingPayment,
 } from "../../../features/payments/paymentSlice";
+import {
+  addDemoPayment,
+  updateDemoPayment,
+} from "../../../features/demo/demoSlice";
 import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
 import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
@@ -16,7 +20,7 @@ import { TypeSpecificFields } from "./TypeSpecificFields";
 import { AttachmentField } from "./AttachmentField";
 import * as S from "./styled";
 
-const AddPaymentForm = ({ paymentType, onClose }) => {
+const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
   const dispatch = useDispatch();
   const editingPayment = useSelector(selectEditingPayment);
   const isPro = useSelector(selectIsPro);
@@ -128,18 +132,113 @@ const AddPaymentForm = ({ paymentType, onClose }) => {
   };
 
   const onSubmit = async (data) => {
-    if (!isPro) delete data.attachment;
-    if (data.attachment?.[0] && data.attachment[0].type.startsWith("image/")) {
-      setIsCompressing(true);
-      try {
-        const compressed = await compressImage(data.attachment[0]);
-        data.attachment = [compressed];
-      } catch (error) {
-      } finally {
-        setIsCompressing(false);
+    // W trybie demo nie obsługujemy załączników
+    if (isDemo) {
+      delete data.attachment;
+    } else {
+      if (!isPro) delete data.attachment;
+      if (data.attachment?.[0] && data.attachment[0].type.startsWith("image/")) {
+        setIsCompressing(true);
+        try {
+          const compressed = await compressImage(data.attachment[0]);
+          data.attachment = [compressed];
+        } catch (error) {
+        } finally {
+          setIsCompressing(false);
+        }
       }
     }
 
+    if (isDemo) {
+      // Tryb demo - zapisz do localStorage
+      if (editingPayment) {
+        dispatch(
+          updateDemoPayment({
+            id: editingPayment.id,
+            ...data,
+            sharedWithFamily: Boolean(data.sharedWithFamily),
+          }),
+        );
+        dispatch(
+          showNotification({
+            message: "Płatność została zaktualizowana!",
+            type: "success",
+          }),
+        );
+      } else {
+        if (paymentType === "installments") {
+          const installments = parseInt(data.installments) || 0;
+          const installmentAmount = parseFloat(data.installmentAmount) || 0;
+          const startDate = new Date(data.date);
+
+          for (let i = 0; i < installments; i++) {
+            const installmentDate = new Date(startDate);
+            installmentDate.setMonth(startDate.getMonth() + i);
+
+            const installmentData = {
+              ...data,
+              name: `${data.name} (Rata ${i + 1}/${installments})`,
+              amount: installmentAmount,
+              date: installmentDate.toISOString().split("T")[0],
+              paymentType: "installments",
+              isInstallment: true,
+              sharedWithFamily: Boolean(data.sharedWithFamily),
+              installmentInfo: {
+                current: i + 1,
+                total: installments,
+                originalName: data.name,
+              },
+            };
+            delete installmentData.category;
+            delete installmentData.installments;
+            delete installmentData.installmentAmount;
+
+            dispatch(addDemoPayment(installmentData));
+          }
+        } else if (paymentType === "insurance") {
+          const duration = parseInt(data.duration) || 12;
+          const startDate = new Date(data.date);
+
+          for (let i = 0; i < duration; i++) {
+            const paymentDate = new Date(startDate);
+            paymentDate.setMonth(startDate.getMonth() + i);
+
+            const insuranceData = {
+              ...data,
+              name: `${data.name} (${i + 1}/${duration})`,
+              date: paymentDate.toISOString().split("T")[0],
+              paymentType: "insurance",
+              isRecurring: true,
+              sharedWithFamily: Boolean(data.sharedWithFamily),
+            };
+            delete insuranceData.category;
+            delete insuranceData.duration;
+
+            dispatch(addDemoPayment(insuranceData));
+          }
+        } else {
+          const paymentData = {
+            ...data,
+            paymentType: paymentType || "other",
+            sharedWithFamily: Boolean(data.sharedWithFamily),
+          };
+          if (paymentType && paymentType !== "other") {
+            delete paymentData.category;
+          }
+          dispatch(addDemoPayment(paymentData));
+        }
+        dispatch(
+          showNotification({
+            message: "Płatność została dodana pomyślnie!",
+            type: "success",
+          }),
+        );
+      }
+      dispatch(toggleModal());
+      return;
+    }
+
+    // Normalny tryb - zapisz do Firebase
     if (editingPayment) {
       dispatch(
         updatePaymentRequest({

@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import {
   selectIsPro,
   selectRenewalDate,
 } from "../../../../features/subscription/subscriptionSlice";
+import TermsModal from "../../../../components/TermsModal";
+import PrivacyModal from "../../../../components/PrivacyModal";
 import * as S from "./styled";
 
 export const ProfileMain = ({
@@ -16,6 +18,8 @@ export const ProfileMain = ({
 }) => {
   const isPro = useSelector(selectIsPro);
   const renewalDate = useSelector(selectRenewalDate);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const renewalDateDisplay = renewalDate
     ? new Date(renewalDate).toLocaleDateString("pl-PL", {
@@ -76,15 +80,6 @@ export const ProfileMain = ({
           <S.SettingArrow>›</S.SettingArrow>
         </S.SettingItem>
 
-        <S.SettingItem onClick={() => onSectionSelect("export")}>
-          <S.SettingIcon>💾</S.SettingIcon>
-          <S.SettingInfo>
-            <S.SettingLabel>Eksport danych</S.SettingLabel>
-            <S.SettingDesc>Pobierz wszystkie swoje dane</S.SettingDesc>
-          </S.SettingInfo>
-          <S.SettingArrow>›</S.SettingArrow>
-        </S.SettingItem>
-
         <S.SettingItem onClick={() => onSectionSelect("delete")}>
           <S.SettingIcon>🗑️</S.SettingIcon>
           <S.SettingInfo>
@@ -116,10 +111,40 @@ export const ProfileMain = ({
           </S.SettingInfo>
           <S.SettingArrow>›</S.SettingArrow>
         </S.SettingItem>
+
+        <S.SettingItem onClick={() => setShowTermsModal(true)}>
+          <S.SettingIcon>📄</S.SettingIcon>
+          <S.SettingInfo>
+            <S.SettingLabel>Regulamin</S.SettingLabel>
+            <S.SettingDesc>Regulamin aplikacji</S.SettingDesc>
+          </S.SettingInfo>
+          <S.SettingArrow>›</S.SettingArrow>
+        </S.SettingItem>
+
+        <S.SettingItem onClick={() => setShowPrivacyModal(true)}>
+          <S.SettingIcon>🔒</S.SettingIcon>
+          <S.SettingInfo>
+            <S.SettingLabel>Polityka Prywatności</S.SettingLabel>
+            <S.SettingDesc>Ochrona danych osobowych</S.SettingDesc>
+          </S.SettingInfo>
+          <S.SettingArrow>›</S.SettingArrow>
+        </S.SettingItem>
       </S.SettingsList>
     </S.SettingsSection>
 
     <S.AppVersion>Wersja 1.0.0</S.AppVersion>
+
+    {showTermsModal && (
+      <TermsModal
+        required={false}
+        showAcceptedDate={true}
+        onAccept={() => setShowTermsModal(false)}
+      />
+    )}
+
+    {showPrivacyModal && (
+      <PrivacyModal onClose={() => setShowPrivacyModal(false)} />
+    )}
   </>
   );
 };

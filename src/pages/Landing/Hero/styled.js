@@ -159,3 +159,32 @@ export const SecondaryButton = styled.button`
     padding: 16px 32px;
   }
 `;
+
+export const DemoButton = styled.button`
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #333;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.3);
+  margin-top: 12px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(255, 215, 0, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    width: 100%;
+    padding: 14px 28px;
+    font-size: 15px;
+  }
+`;

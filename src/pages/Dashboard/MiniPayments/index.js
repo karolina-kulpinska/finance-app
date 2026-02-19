@@ -9,8 +9,9 @@ import {
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
-const MiniPayments = ({ onPaymentClick }) => {
-  const payments = useSelector(selectPayments);
+const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
+  const paymentsFromStore = useSelector(selectPayments);
+  const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
   const statusFilter = useSelector(selectFilter);
   const categoryFilter = useSelector(selectCategoryFilter);
   const dateFilter = useSelector(selectDateFilter);

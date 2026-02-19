@@ -1,4 +1,5 @@
 import styled, { keyframes } from "styled-components";
+import { Link } from "react-router-dom";
 
 const gradient = keyframes`
   0% {
@@ -312,5 +313,52 @@ export const InviteInfo = styled.div`
   strong {
     color: #1b5e20;
     font-weight: 900;
+  }
+`;
+
+export const CheckboxWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+  margin-top: 4px;
+`;
+
+export const Checkbox = styled.input`
+  margin-top: 4px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #667eea;
+  flex-shrink: 0;
+`;
+
+export const CheckboxLabel = styled.label`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.secondary};
+  line-height: 1.6;
+  cursor: pointer;
+  user-select: none;
+  display: block;
+  flex: 1;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 380px) {
+    font-size: 10px;
+  }
+`;
+
+export const TermsLink = styled(Link)`
+  color: #667eea;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #764ba2;
   }
 `;

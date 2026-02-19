@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../../api/firebase";
 import { GoogleIcon } from "../../../components/Icons";
-import { toRegistration } from "../../../routes";
+import { toRegistration, toRegulamin, toPrivacy } from "../../../routes";
 import * as S from "./styled";
 import * as R from "./RememberMe.styled";
 
@@ -183,6 +183,12 @@ const LoginForm = ({ onSubmit, onGoogleLogin, isLoading }) => {
         <S.LinkContainer>
           Nie masz konta?<Link to={toRegistration()}>Zarejestruj się</Link>
         </S.LinkContainer>
+
+        <S.LegalLinks>
+          <Link to={toRegulamin()}>Regulamin</Link>
+          <span> • </span>
+          <Link to={toPrivacy()}>Polityka Prywatności</Link>
+        </S.LegalLinks>
       </S.Form>
     </S.Wrapper>
   );

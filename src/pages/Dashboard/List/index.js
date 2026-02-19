@@ -23,9 +23,11 @@ const PaymentsList = ({
   maxAmount,
   searchName = "",
   sharedOnly = false,
+  payments: paymentsProp = null,
 }) => {
   const dispatch = useDispatch();
-  const payments = useSelector(selectPayments);
+  const paymentsFromStore = useSelector(selectPayments);
+  const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
   const statusFilter = useSelector(selectFilter);
   const categoryFilter = useSelector(selectCategoryFilter);
   const dateFilter = useSelector(selectDateFilter);

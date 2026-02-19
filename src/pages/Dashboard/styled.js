@@ -149,3 +149,68 @@ export const FiltersBox = styled.div`
   border: 1px solid #e8e8ea;
   margin-bottom: 10px;
 `;
+
+export const DemoBanner = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  margin-bottom: 8px;
+
+  @media (max-width: 480px) {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+  }
+`;
+
+export const DemoBannerText = styled.div`
+  font-size: 14px;
+  line-height: 1.5;
+  flex: 1;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+export const DemoBannerLink = styled.span`
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: 4px;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+export const DemoBannerClose = styled.button`
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;

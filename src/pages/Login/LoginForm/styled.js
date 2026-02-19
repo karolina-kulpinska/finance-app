@@ -333,3 +333,32 @@ export const SuccessMessage = styled.p`
   border-radius: 10px;
   text-align: center;
 `;
+
+export const LegalLinks = styled.div`
+  margin-top: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.secondary};
+  padding-top: 16px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border || "#e0e0e0"};
+
+  a {
+    color: #667eea;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      text-decoration: underline;
+      color: #764ba2;
+    }
+  }
+
+  span {
+    color: ${({ theme }) => theme.colors.secondary};
+    margin: 0 4px;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    font-size: 11px;
+  }
+`;

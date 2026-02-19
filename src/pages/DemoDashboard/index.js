@@ -1,41 +1,41 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../api/firebase";
+import { useNavigate } from "react-router-dom";
 import {
   toggleModal,
   selectIsModalOpen,
-  selectPayments,
   selectCategoryFilter,
   setCategoryFilter,
-  fetchPaymentsRequest,
 } from "../../features/payments/paymentSlice";
-
-import { fetchSubscriptionRequest } from "../../features/subscription/subscriptionSlice";
-import { selectUser } from "../../features/auth/authSlice";
-import Header from "./Header";
-import Stats from "./Stats";
-import Charts from "./Charts";
-import Filters from "./Filters";
-import MiniPayments from "./MiniPayments";
-import AddPaymentForm from "./Form";
-import PaymentTypeSelector from "./PaymentTypeSelector";
-import PaymentsList from "./List";
-import ShoppingLists from "./ShoppingLists";
-import Profile from "./Profile";
-import Files from "./Files";
-import Family from "./Family";
+import {
+  selectDemoPayments,
+  selectHasUnsavedData,
+  addDemoPayment,
+  updateDemoPayment,
+  deleteDemoPayment,
+  toggleDemoPaymentStatus,
+} from "../../features/demo/demoSlice";
+import { toLanding } from "../../routes";
+import Header from "../Dashboard/Header";
+import Stats from "../Dashboard/Stats";
+import Charts from "../Dashboard/Charts";
+import Filters from "../Dashboard/Filters";
+import MiniPayments from "../Dashboard/MiniPayments";
+import AddPaymentForm from "../Dashboard/Form";
+import PaymentTypeSelector from "../Dashboard/PaymentTypeSelector";
+import PaymentsList from "../Dashboard/List";
+import ShoppingLists from "../Dashboard/ShoppingLists";
 import BottomNav from "../../components/BottomNav";
-import AdBanner from "../../components/AdBanner";
-import TermsModal from "../../components/TermsModal";
-import * as S from "./styled";
+import SaveDataModal from "../../components/SaveDataModal";
+import * as S from "../Dashboard/styled";
 
-const Dashboard = () => {
+const DemoDashboard = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectUser);
+  const navigate = useNavigate();
   const isModalOpen = useSelector(selectIsModalOpen);
-  const payments = useSelector(selectPayments);
+  const payments = useSelector(selectDemoPayments);
   const categoryFilter = useSelector(selectCategoryFilter);
+  const hasUnsavedData = useSelector(selectHasUnsavedData);
   const scrollBeforeCategoryRef = useRef(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const scrollPositions = useRef({});
@@ -48,50 +48,30 @@ const Dashboard = () => {
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
   const [searchName, setSearchName] = useState("");
-  const [showTermsModal, setShowTermsModal] = useState(false);
-  const [termsRequired, setTermsRequired] = useState(false);
-  const [termsChecked, setTermsChecked] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+
+  // Przekształć dane demo na format zgodny z komponentami
+  const transformedPayments = payments.map((payment) => ({
+    ...payment,
+    userId: "demo",
+  }));
 
   useEffect(() => {
-    dispatch(fetchPaymentsRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
-    checkTermsAcceptance();
-  }, [user?.uid]);
-
-  const checkTermsAcceptance = async () => {
-    if (!user?.uid) return;
-    
-    try {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        if (!data.termsAccepted || !data.termsAcceptedAt) {
-          setTermsRequired(true);
-          setShowTermsModal(true);
-        }
-      } else {
-        // Nowy użytkownik - wymagamy akceptacji
-        setTermsRequired(true);
-        setShowTermsModal(true);
+    // Sprawdź czy użytkownik próbuje opuścić stronę
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedData) {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
       }
-    } catch (error) {
-      console.error("Błąd podczas sprawdzania akceptacji regulaminu:", error);
-    }
-  };
+    };
 
-  const handleTermsAccept = () => {
-    setShowTermsModal(false);
-    setTermsRequired(false);
-    setTermsChecked(true);
-  };
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
-  useEffect(() => {
-    if (user?.uid) {
-      dispatch(fetchSubscriptionRequest({ uid: user.uid }));
-    }
-  }, [dispatch, user?.uid]);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [hasUnsavedData]);
 
   const handleTabChange = (newTab) => {
     scrollPositions.current[activeTab] = window.scrollY ?? document.documentElement.scrollTop;
@@ -129,7 +109,6 @@ const Dashboard = () => {
 
   const handlePaymentClick = (paymentId) => {
     handleTabChange("payments");
-    // Scroll do płatności po małym opóźnieniu
     setTimeout(() => {
       const element = document.getElementById(`payment-${paymentId}`);
       if (element) {
@@ -139,14 +118,26 @@ const Dashboard = () => {
     }, 100);
   };
 
+  const handleBackToLanding = () => {
+    if (hasUnsavedData) {
+      setShowSaveModal(true);
+    } else {
+      navigate(toLanding());
+    }
+  };
+
+  const handleContinueDemo = () => {
+    setShowSaveModal(false);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
         return (
           <>
-            <Stats payments={payments} />
+            <Stats payments={transformedPayments} />
             <MiniPayments
-              payments={payments}
+              payments={transformedPayments}
               onPaymentClick={handlePaymentClick}
             />
           </>
@@ -175,6 +166,7 @@ const Dashboard = () => {
               </S.CategoryBackBar>
             )}
             <PaymentsList
+              payments={transformedPayments}
               collapseAll={collapseAllPayments}
               minDate={minDate}
               maxDate={maxDate}
@@ -184,7 +176,7 @@ const Dashboard = () => {
             />
             {categoryFilter === "all" && (
               <Charts
-                payments={payments}
+                payments={transformedPayments}
                 onBeforeCategorySelect={() => {
                   scrollBeforeCategoryRef.current =
                     window.scrollY ?? document.documentElement.scrollTop;
@@ -195,12 +187,6 @@ const Dashboard = () => {
         );
       case "shopping":
         return <ShoppingLists />;
-      case "family":
-        return <Family />;
-      case "files":
-        return <Files />;
-      case "profile":
-        return <Profile />;
       default:
         return null;
     }
@@ -209,21 +195,24 @@ const Dashboard = () => {
   return (
     <S.Wrapper>
       <S.Container>
+        <S.DemoBanner>
+          <S.DemoBannerText>
+            🎯 Tryb demo - dane są przechowywane tylko lokalnie.{" "}
+            <S.DemoBannerLink onClick={() => setShowSaveModal(true)}>
+              Zarejestruj się, aby zachować dane
+            </S.DemoBannerLink>
+          </S.DemoBannerText>
+          <S.DemoBannerClose onClick={handleBackToLanding}>✕</S.DemoBannerClose>
+        </S.DemoBanner>
         <Header
           onAddPayment={handleAddPayment}
           onToggleFilters={() => setShowFilters(!showFilters)}
           showFilters={showFilters}
           hideFilters={
-            activeTab === "shopping" ||
-            activeTab === "family" ||
-            activeTab === "files" ||
-            activeTab === "profile"
+            activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"
           }
           hideAddPayment={
-            activeTab === "shopping" ||
-            activeTab === "family" ||
-            activeTab === "files" ||
-            activeTab === "profile"
+            activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"
           }
         />
         {(showFilters || window.innerWidth >= 768) &&
@@ -247,7 +236,6 @@ const Dashboard = () => {
             </S.FiltersBox>
           )}
         {renderContent()}
-        <AdBanner />
       </S.Container>
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       {showTypeSelector && (
@@ -260,17 +248,17 @@ const Dashboard = () => {
         <AddPaymentForm
           paymentType={selectedPaymentType}
           onClose={handleCloseForm}
+          isDemo={true}
         />
       )}
-      {showTermsModal && (
-        <TermsModal
-          required={termsRequired}
-          showAcceptedDate={!termsRequired}
-          onAccept={handleTermsAccept}
+      {showSaveModal && (
+        <SaveDataModal
+          onClose={() => setShowSaveModal(false)}
+          onContinue={handleContinueDemo}
         />
       )}
     </S.Wrapper>
   );
 };
 
-export default Dashboard;
+export default DemoDashboard;

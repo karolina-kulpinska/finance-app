@@ -2,29 +2,40 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // STARE REGUŁY - dla kompatybilności wstecznej (używane rzadko)
     match /payments/{paymentId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow read: if request.auth != null 
+                  && resource.data.keys().hasAll(['userId'])
+                  && request.auth.uid == resource.data.userId;
       
       allow create: if request.auth != null 
+                    && request.resource.data.keys().hasAll(['userId'])
                     && request.auth.uid == request.resource.data.userId;
       
       allow update: if request.auth != null 
+                    && resource.data.keys().hasAll(['userId'])
                     && request.auth.uid == resource.data.userId;
       
       allow delete: if request.auth != null 
+                    && resource.data.keys().hasAll(['userId'])
                     && request.auth.uid == resource.data.userId;
     }
 
     match /shopping/{shoppingId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow read: if request.auth != null 
+                  && resource.data.keys().hasAll(['userId'])
+                  && request.auth.uid == resource.data.userId;
       
       allow create: if request.auth != null 
+                    && request.resource.data.keys().hasAll(['userId'])
                     && request.auth.uid == request.resource.data.userId;
       
       allow update: if request.auth != null 
+                    && resource.data.keys().hasAll(['userId'])
                     && request.auth.uid == resource.data.userId;
       
       allow delete: if request.auth != null 
+                    && resource.data.keys().hasAll(['userId'])
                     && request.auth.uid == resource.data.userId;
     }
     
@@ -32,9 +43,19 @@ service cloud.firestore {
     // NOWE REGUŁY (dla nowej struktury + rodziny)
     // ========================================
     
-    // RODZINY
+    // RODZINY - bezpieczne reguły
     match /families/{familyId} {
-      allow read, create: if request.auth != null;
+      // Czytanie: właściciel LUB członkowie rodziny (sprawdzamy przez familyId w users/{userId})
+      allow read: if request.auth != null 
+                  && (request.auth.uid == resource.data.ownerId
+                      || (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+                          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get("familyId", "") == familyId));
+      
+      // Tworzenie: tylko zalogowani użytkownicy (właściciel ustawiany w kodzie)
+      allow create: if request.auth != null 
+                    && request.auth.uid == request.resource.data.ownerId;
+      
+      // Aktualizacja/usuwanie: tylko właściciel
       allow update, delete: if request.auth != null 
                              && request.auth.uid == resource.data.ownerId;
     }

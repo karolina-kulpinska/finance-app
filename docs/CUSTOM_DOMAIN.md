@@ -15,6 +15,16 @@ Konfiguracja domeny w **GitHub Pages**, **DNS** i **Firebase**.
 
 U swojego dostawcy domeny (np. home.pl, OVH, Cloudflare, domeny.pl) dodaj wpisy DNS.
 
+### SEOHOST – ważne
+
+Jeśli rekordy DNS dodajesz w **Panelu Klienta SEOHOST** (Strefa DNS), domena musi być zdelegowana na serwery **Microhost**, a nie na ns1.seohost.pl / ns2.seohost.pl:
+
+- **Delegacja na serwery DNS** (w ustawieniach domeny):
+  - **Server DNS 1:** `dns1.microhost.pl`
+  - **Server DNS 2:** `dns2.microhost.pl`
+
+Dopiero wtedy strefa DNS ustawiona w panelu (rekordy A, CNAME) będzie używana. Po zmianie NS poczekaj 15–30 min na propagację.
+
 ### Wariant A: Rekordy A (bez www)
 
 Dodaj **4 rekordy A** wskazujące na serwery GitHub Pages:

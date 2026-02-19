@@ -9,10 +9,13 @@ import LandingPage from "./pages/Landing";
 import LoginPage from "./pages/Login";
 import RegistrationPage from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
+import DemoDashboard from "./pages/DemoDashboard";
 import Invite from "./pages/Invite";
+import Regulamin from "./pages/Regulamin";
+import Privacy from "./pages/Privacy";
 import NotificationModal from "./components/NotificationModal";
 import ConfirmModal from "./components/ConfirmModal";
-import { toLanding, toLogin, toDashboard, toRegistration, toInvite } from "./routes";
+import { toLanding, toLogin, toDashboard, toRegistration, toInvite, toRegulamin, toPrivacy, toDemo } from "./routes";
 import styled from "styled-components";
 
 const LoadingScreen = styled.div`
@@ -78,6 +81,9 @@ function App() {
           <Route path={toLogin()} element={<LoginPage />} />
           <Route path={toRegistration()} element={<RegistrationPage />} />
           <Route path={toInvite(":token")} element={<Invite />} />
+          <Route path={toRegulamin()} element={<Regulamin />} />
+          <Route path={toPrivacy()} element={<Privacy />} />
+          <Route path={toDemo()} element={<DemoDashboard />} />
           <Route 
             path={toDashboard()} 
             element={

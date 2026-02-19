@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { GoogleIcon } from "../../../components/Icons";
-import { toLogin } from "../../../routes";
+import { toLogin, toRegulamin } from "../../../routes";
 import * as S from "./styled";
 
 const RegistrationForm = ({ onSubmit, onGoogleLogin, isLoading, pendingInvite }) => {
@@ -64,6 +64,25 @@ const RegistrationForm = ({ onSubmit, onGoogleLogin, isLoading, pendingInvite })
             <S.ErrorMessage>{errors.confirmPassword.message}</S.ErrorMessage>
           )}
         </S.InputWrapper>
+
+        <S.CheckboxWrapper>
+          <S.Checkbox
+            type="checkbox"
+            {...register("acceptTerms", {
+              required: "Musisz zaakceptować regulamin",
+            })}
+          />
+          <S.CheckboxLabel>
+            Oświadczam, że zapoznałem się z{" "}
+            <S.TermsLink to={toRegulamin()} target="_blank">
+              Regulaminem aplikacji Smart Budget
+            </S.TermsLink>{" "}
+            i akceptuję wszystkie jego postanowienia, w szczególności te dotyczące wyłączenia odpowiedzialności Administratora za terminowość moich płatności.
+          </S.CheckboxLabel>
+        </S.CheckboxWrapper>
+        {errors.acceptTerms && (
+          <S.ErrorMessage>{errors.acceptTerms.message}</S.ErrorMessage>
+        )}
 
         <S.StyledButton type="submit" disabled={isLoading}>
           {isLoading ? "Tworzenie konta..." : "Zarejestruj się"}

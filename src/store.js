@@ -11,6 +11,7 @@ import paymentReducer from "./features/payments/paymentSlice";
 import { paymentSaga } from "./features/payments/paymentSaga";
 import notificationReducer from "./features/notification/notificationSlice";
 import confirmReducer from "./features/notification/confirmSlice";
+import demoReducer from "./features/demo/demoSlice";
 
 const sagaMiddleware = createSagaMiddleware({
   onError: (error) => {
@@ -32,6 +33,7 @@ export const store = configureStore({
     payments: paymentReducer,
     notification: notificationReducer,
     confirm: confirmReducer,
+    demo: demoReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

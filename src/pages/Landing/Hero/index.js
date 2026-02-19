@@ -1,7 +1,7 @@
 import React from "react";
 import * as S from "./styled";
 
-const Hero = ({ onLogin, onRegistration }) => {
+const Hero = ({ onLogin, onRegistration, onDemo }) => {
   return (
     <S.Hero>
       <S.Logo src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`} alt="Smart Budget" />
@@ -18,6 +18,9 @@ const Hero = ({ onLogin, onRegistration }) => {
           Zaloguj się
         </S.SecondaryButton>
       </S.ButtonGroup>
+      <S.DemoButton onClick={onDemo}>
+        🎯 Wypróbuj demo bez rejestracji
+      </S.DemoButton>
     </S.Hero>
   );
 };

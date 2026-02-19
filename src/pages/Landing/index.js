@@ -2,10 +2,11 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../features/auth/authSlice";
-import { toDashboard, toLogin, toRegistration } from "../../routes";
+import { toDashboard, toLogin, toRegistration, toRegulamin, toDemo } from "../../routes";
 import Hero from "./Hero";
 import Features from "./Features";
 import Benefits from "./Benefits";
+import Footer from "./Footer";
 import * as S from "./styled";
 
 const LandingPage = () => {
@@ -26,12 +27,17 @@ const LandingPage = () => {
     navigate(toRegistration());
   };
 
+  const handleDemo = () => {
+    navigate(toDemo());
+  };
+
   return (
     <S.Wrapper>
       <S.Container>
-        <Hero onLogin={handleLogin} onRegistration={handleRegistration} />
+        <Hero onLogin={handleLogin} onRegistration={handleRegistration} onDemo={handleDemo} />
         <Features />
         <Benefits />
+        <Footer />
       </S.Container>
     </S.Wrapper>
   );

@@ -14,9 +14,12 @@ import { showNotification } from "../../../features/notification/notificationSli
 import {
   getCreateCheckoutSession,
   getCreateCustomerPortalSession,
+  getSetCurrentUserPro,
+  getVerifyAndSetProFromStripe,
 } from "../../../api/firebase";
 import {
   selectIsPro,
+  fetchSubscriptionRequest,
 } from "../../../features/subscription/subscriptionSlice";
 import { generatePaymentsPDF } from "./generatePaymentsPDF";
 import { ProfileMain } from "./ProfileMain";
@@ -282,6 +285,60 @@ const Profile = () => {
     }
   };
 
+  const handleGrantProForOwner = async () => {
+    try {
+      const setPro = getSetCurrentUserPro();
+      const { data } = await setPro();
+      if (data?.ok) {
+        dispatch(
+          showNotification({
+            message: "✅ Plan Pro został przyznany!",
+            type: "success",
+          })
+        );
+        dispatch(fetchSubscriptionRequest({ uid: user?.uid }));
+      } else {
+        dispatch(
+          showNotification({
+            message: data?.message || "Nie udało się przyznać Pro.",
+            type: "error",
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        showNotification({
+          message: "❌ Błąd: " + (error.message || String(error)),
+          type: "error",
+        })
+      );
+    }
+  };
+
+  const adminEmail = process.env.REACT_APP_ADMIN_EMAIL?.trim?.();
+  const isAdmin = adminEmail && user?.email && user.email.toLowerCase() === adminEmail.toLowerCase();
+
+  const handleSyncAfterPayment = async () => {
+    try {
+      const verify = getVerifyAndSetProFromStripe();
+      const { data } = await verify();
+      dispatch(
+        showNotification({
+          message: data?.planSet ? "✅ Plan Pro został aktywowany!" : "Nie znaleziono płatności. Spróbuj odświeżyć stronę.",
+          type: data?.planSet ? "success" : "info",
+        })
+      );
+      if (data?.planSet) dispatch(fetchSubscriptionRequest({ uid: user?.uid }));
+    } catch (error) {
+      dispatch(
+        showNotification({
+          message: "❌ Błąd: " + (error.message || String(error)),
+          type: "error",
+        })
+      );
+    }
+  };
+
   if (activeSection === "personal") {
     return (
       <S.Container>
@@ -351,7 +408,11 @@ const Profile = () => {
           title="Subskrypcja"
           onBack={() => setActiveSection(null)}
         >
-          <SubscriptionSection onManageSubscription={handleManageSubscription} />
+          <SubscriptionSection
+            onManageSubscription={handleManageSubscription}
+            onGrantProForOwner={isAdmin ? handleGrantProForOwner : null}
+            onSyncAfterPayment={handleSyncAfterPayment}
+          />
         </SectionLayout>
       </S.Container>
     );

@@ -284,3 +284,20 @@ export const UpgradeButton = styled.button`
     transform: translateY(0);
   }
 `;
+
+export const OwnerLink = styled.button`
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors?.secondary || "#666"};
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors?.text || "#333"};
+  }
+`;

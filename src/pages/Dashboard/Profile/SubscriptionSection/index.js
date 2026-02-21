@@ -8,7 +8,7 @@ import {
 } from "../../../../features/subscription/subscriptionSlice";
 import * as S from "./styled";
 
-export const SubscriptionSection = ({ onManageSubscription }) => {
+export const SubscriptionSection = ({ onManageSubscription, onGrantProForOwner, onSyncAfterPayment }) => {
   const isPro = useSelector(selectIsPro);
   const renewalDate = useSelector(selectRenewalDate);
   const subscriptionStatus = useSelector(selectSubscriptionStatus);
@@ -106,6 +106,16 @@ export const SubscriptionSection = ({ onManageSubscription }) => {
           <S.UpgradeButton onClick={onManageSubscription}>
             💳 Ulepsz teraz
           </S.UpgradeButton>
+          {onGrantProForOwner && (
+            <S.OwnerLink type="button" onClick={onGrantProForOwner}>
+              Jestem właścicielem – przyznaj mi Pro (bez płatności)
+            </S.OwnerLink>
+          )}
+          {onSyncAfterPayment && (
+            <S.OwnerLink type="button" onClick={onSyncAfterPayment} style={{ marginTop: 8 }}>
+              Zapłaciłeś, ale nadal nie masz Pro? Kliknij tutaj
+            </S.OwnerLink>
+          )}
         </S.UpgradeSection>
       )}
     </S.Container>

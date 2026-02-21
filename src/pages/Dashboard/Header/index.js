@@ -27,12 +27,12 @@ const Header = ({
 
   useEffect(() => {
     if (typeof window === "undefined" || !user?.uid) return;
-    if (!window.location.search.includes("payment=success")) return;
-    window.history.replaceState(
-      {},
-      "",
-      window.location.pathname + (window.location.hash || ""),
-    );
+    const search = window.location.search || "";
+    const hash = window.location.hash || "";
+    const hasPaymentSuccess = search.includes("payment=success") || hash.includes("payment=success");
+    if (!hasPaymentSuccess) return;
+    const cleanHash = hash.split("?")[0] || "#/dashboard";
+    window.history.replaceState({}, "", window.location.pathname + cleanHash);
     const uid = user.uid;
     let attempts = 0;
     let maxAttempts = 15;

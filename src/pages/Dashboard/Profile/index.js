@@ -226,12 +226,9 @@ const Profile = () => {
   const handleManageSubscription = async () => {
     try {
       if (isPro) {
-        // Otwórz Customer Portal dla użytkowników Pro
-        const base =
-          window.location.origin +
-          window.location.pathname +
-          (window.location.hash || "");
-        const returnUrl = base + "#/dashboard/profile";
+        // Otwórz Customer Portal dla użytkowników Pro (bez obecnego hasha – Stripe wymaga poprawnego return_url)
+        const returnUrl =
+          window.location.origin + window.location.pathname + "#/dashboard/profile";
         
         const createPortalSession = getCreateCustomerPortalSession();
         const { data } = await createPortalSession({

@@ -4,14 +4,16 @@ import { getStorage } from "firebase/storage";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
+const trim = (v) => (typeof v === "string" ? v.trim() : v);
+
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  apiKey: trim(process.env.REACT_APP_FIREBASE_API_KEY),
+  authDomain: trim(process.env.REACT_APP_FIREBASE_AUTH_DOMAIN),
+  projectId: trim(process.env.REACT_APP_FIREBASE_PROJECT_ID),
+  storageBucket: trim(process.env.REACT_APP_FIREBASE_STORAGE_BUCKET),
+  messagingSenderId: trim(process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID),
+  appId: trim(process.env.REACT_APP_FIREBASE_APP_ID),
+  measurementId: trim(process.env.REACT_APP_FIREBASE_MEASUREMENT_ID),
 };
 
 if (!firebaseConfig.apiKey) {

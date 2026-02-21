@@ -278,6 +278,18 @@ stripeWebhookApp.post("/", async (req, res) => {
         .collection("users")
         .doc(uid)
         .set({ plan: "pro" }, { merge: true });
+
+      // Zapisujemy Stripe customer ID – wymagane do Customer Portal
+      const customerId =
+        typeof session.customer === "string"
+          ? session.customer
+          : session.customer?.id;
+      if (customerId) {
+        await db
+          .collection("customers")
+          .doc(uid)
+          .set({ stripeCustomerId: customerId }, { merge: true });
+      }
     } catch (e) {
     }
   }

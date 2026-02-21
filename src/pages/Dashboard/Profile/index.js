@@ -255,7 +255,8 @@ const Profile = () => {
           window.location.pathname +
           (window.location.hash || "");
         const sep = base.includes("?") ? "&" : "?";
-        const successUrl = base + sep + "payment=success";
+        const successUrl =
+          base + sep + "payment=success&session_id={CHECKOUT_SESSION_ID}";
         const cancelUrl = base + sep + "payment=cancel";
         
         const createCheckout = getCreateCheckoutSession();

@@ -90,9 +90,12 @@ function* loginWithGoogleHandler() {
       );
     }
   } catch (error) {
+    const code = error?.code || "";
+    console.error("[Google Login] Błąd:", code, error?.message || error);
+
     if (
-      error.code === "auth/popup-closed-by-user" ||
-      error.code === "auth/cancelled-popup-request"
+      code === "auth/popup-closed-by-user" ||
+      code === "auth/cancelled-popup-request"
     ) {
       return;
     }
@@ -102,11 +105,20 @@ function* loginWithGoogleHandler() {
     let errorMessage =
       "Nie udało się zalogować przez Google. Spróbuj ponownie.";
 
-    if (error.code === "auth/popup-blocked") {
+    if (code === "auth/popup-blocked") {
       errorMessage =
         "Okno logowania zostało zablokowane. Zezwól na wyskakujące okna.";
-    } else if (error.code === "auth/network-request-failed") {
+    } else if (code === "auth/network-request-failed") {
       errorMessage = "Brak połączenia z internetem. Sprawdź swoje połączenie.";
+    } else if (code === "auth/unauthorized-domain") {
+      errorMessage =
+        "Domena nie jest autoryzowana. Dodaj smartbudget.pl w Firebase (Authentication → Settings → Authorized domains) i w Google Cloud (OAuth → Authorized JavaScript origins).";
+    } else if (code === "auth/operation-not-allowed") {
+      errorMessage =
+        "Logowanie przez Google nie jest włączone. Włącz w Firebase Console → Authentication → Sign-in method.";
+    } else if (code === "auth/internal-error") {
+      errorMessage =
+        "Błąd po stronie Firebase. Sprawdź OAuth w Google Cloud Console (Authorized JavaScript origins i redirect URIs).";
     }
 
     yield put(

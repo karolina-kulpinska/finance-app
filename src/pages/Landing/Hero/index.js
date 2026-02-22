@@ -4,7 +4,7 @@ import * as S from "./styled";
 const Hero = ({ onLogin, onRegistration, onDemo }) => {
   return (
     <S.Hero>
-      <S.Logo src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`} alt="Smart Budget" />
+      <S.Logo src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`} alt="Mój Smart Budget" />
       <S.Title>Twoje finanse pod kontrolą</S.Title>
       <S.Subtitle>
         Mobilna aplikacja do zarządzania budżetem. Śledź wydatki i oszczędzaj więcej.

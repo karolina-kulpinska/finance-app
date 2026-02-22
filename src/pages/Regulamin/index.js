@@ -11,7 +11,7 @@ const Regulamin = () => {
         <S.Header>
           <S.BackButton onClick={() => navigate(-1)}>← Powrót</S.BackButton>
           <S.Title>REGULAMIN SERWISU I APLIKACJI SMART BUDGET</S.Title>
-          <S.Subtitle>Smart Budget - Aplikacja do zarządzania finansami</S.Subtitle>
+          <S.Subtitle>Mój Smart Budget - Aplikacja do zarządzania finansami</S.Subtitle>
           <S.Date>Ostatnia aktualizacja: 19.02.2026 r.</S.Date>
         </S.Header>
 
@@ -19,7 +19,7 @@ const Regulamin = () => {
           <S.Section>
             <S.SectionTitle>1. POSTANOWIENIA OGÓLNE</S.SectionTitle>
             <S.Paragraph>
-              1.1. Niniejszy regulamin (zwany dalej „Regulaminem”) określa szczegółowe zasady, warunki oraz zakres korzystania z aplikacji internetowej Smart Budget (zwanej dalej „Aplikacją”), dostępnej pod adresem smartbudget.pl oraz jej subdomenami.
+              1.1. Niniejszy regulamin (zwany dalej „Regulaminem”) określa szczegółowe zasady, warunki oraz zakres korzystania z aplikacji internetowej Mój Smart Budget (zwanej dalej „Aplikacją”), dostępnej pod adresem smartbudget.pl oraz jej subdomenami.
             </S.Paragraph>
             <S.Paragraph>
               1.2. Właścicielem oraz Administratorem Aplikacji jest osoba fizyczna, której pełne dane identyfikacyjne wskazano w Punkcie 11 niniejszego Regulaminu (sekcja „Dane Kontaktowe i Identyfikacyjne”).
@@ -164,7 +164,7 @@ const Regulamin = () => {
           <S.Section>
             <S.SectionTitle>10. WŁASNOŚĆ INTELEKTUALNA</S.SectionTitle>
             <S.Paragraph>
-              10.1. Całość kodu źródłowego, grafiki oraz logotyp Smart Budget stanowią własność intelektualną Administratora.
+              10.1. Całość kodu źródłowego, grafiki oraz logotyp Mój Smart Budget stanowią własność intelektualną Administratora.
             </S.Paragraph>
             <S.Paragraph>
               10.2. Zabrania się kopiowania, dekompilacji, inżynierii wstecznej lub wykorzystywania fragmentów kodu Aplikacji bez pisemnej zgody Administratora pod rygorem odpowiedzialności karnej i cywilnej.

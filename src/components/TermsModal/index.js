@@ -154,7 +154,7 @@ const TermsModal = ({ onAccept, required = false, showAcceptedDate = false }) =>
                   disabled={!scrolledToBottom}
                 />
                 <S.CheckboxLabel htmlFor="accept-terms" $disabled={!scrolledToBottom}>
-                  Oświadczam, że zapoznałem się z Regulaminem aplikacji Smart Budget i akceptuję wszystkie jego postanowienia, w szczególności te dotyczące wyłączenia odpowiedzialności Administratora za terminowość moich płatności.
+                  Oświadczam, że zapoznałem się z Regulaminem aplikacji Mój Smart Budget i akceptuję wszystkie jego postanowienia, w szczególności te dotyczące wyłączenia odpowiedzialności Administratora za terminowość moich płatności.
                 </S.CheckboxLabel>
               </S.CheckboxWrapper>
             </>

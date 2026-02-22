@@ -110,8 +110,8 @@ const Header = ({
         <S.TitleSection>
           <S.TitleRow>
             <S.Brand>
-              <S.Logo src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`} alt="Smart Budget" />
-              <S.Title>Smart Budget</S.Title>
+              <S.Logo src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`} alt="Mój Smart Budget" />
+              <S.Title>Mój Smart Budget</S.Title>
             </S.Brand>
             <S.ProCorner>{proOrUpgrade}</S.ProCorner>
           </S.TitleRow>

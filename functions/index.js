@@ -42,7 +42,7 @@ exports.sendFamilyInviteEmail = onCall(
     }
 
     const resend = new Resend(apiKey);
-    const from = "Smart Budget <onboarding@resend.dev>";
+    const from = "Mój Smart Budget <onboarding@resend.dev>";
     const appName = familyName ? `Rodzina „${familyName}”` : "Rodzina";
 
     const html = `
@@ -51,12 +51,12 @@ exports.sendFamilyInviteEmail = onCall(
 <head><meta charset="utf-8"></head>
 <body style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 20px;">
   <h2 style="color: #333;">Zaproszenie do ${appName}</h2>
-  <p>Otrzymujesz zaproszenie do dołączenia do grupy rodzinnej w Smart Budget.</p>
+  <p>Otrzymujesz zaproszenie do dołączenia do grupy rodzinnej w Mój Smart Budget.</p>
   <p><strong>Kliknij w link poniżej, aby dołączyć:</strong></p>
   <p style="margin: 24px 0;"><a href="${inviteLink}" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Dołącz do rodziny</a></p>
   <p style="color: #666; font-size: 14px;">Jeśli przycisk nie działa, skopiuj i wklej ten adres w przeglądarce:</p>
   <p style="word-break: break-all; font-size: 13px; color: #667eea;">${inviteLink}</p>
-  <p style="color: #999; font-size: 12px; margin-top: 32px;">Smart Budget – smartbudget.pl</p>
+  <p style="color: #999; font-size: 12px; margin-top: 32px;">Mój Smart Budget – smartbudget.pl</p>
 </body>
 </html>
 `.trim();

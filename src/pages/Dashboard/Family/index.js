@@ -140,7 +140,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
       );
       await setDoc(doc(db, "families", familyId), familyData);
       setFamily({ id: familyId, ...familyData });
-      if (useHistory) onNavigate({ familyView: "main" }); else setLocalView("main");
+      setActiveView("main");
       setFamilyName("");
       dispatch(showNotification({ message: "✅ Rodzina utworzona pomyślnie!", type: "success" }));
     } catch (error) {
@@ -174,7 +174,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
       });
       setFamily({ ...family, members: [...family.members, newMember] });
       setInviteEmail("");
-      if (useHistory) onNavigate({ familyView: "main" }); else setLocalView("main");
+      setActiveView("main");
       try {
         const sendEmail = getSendFamilyInviteEmail();
         await sendEmail({ email: inviteEmail.trim(), inviteLink: getInviteLink(), familyName: family.name || "" });
@@ -233,7 +233,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
       await deleteDoc(doc(db, "families", family.id));
       dispatch(showNotification({ message: "✅ Rodzina została usunięta", type: "success" }));
       setFamily(null);
-      if (useHistory && onNavigate) onNavigate({ familyView: "main" }); else setLocalView("main");
+      setActiveView("main");
     } catch (error) {
       dispatch(showNotification({ message: `❌ Nie udało się usunąć rodziny: ${error.message}`, type: "error" }));
     }
@@ -249,7 +249,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
 
   if (activeView === "create") {
     if (isDemo) {
-      if (useHistory && onNavigate) onNavigate({ familyView: "main" }); else setLocalView("main");
+      setActiveView("main");
       return null;
     }
     return (
@@ -264,7 +264,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
 
   if (activeView === "invite") {
     if (isDemo) {
-      if (useHistory && onNavigate) onNavigate({ familyView: "main" }); else setLocalView("main");
+      setActiveView("main");
       return null;
     }
     return (
@@ -280,7 +280,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
   if (!family) {
     return (
       <EmptyState
-        onCreateFamily={isDemo ? undefined : () => (useHistory ? onNavigate({ familyView: "create" }) : setLocalView("create"))}
+        onCreateFamily={isDemo ? undefined : () => setActiveView("create")}
         isDemo={isDemo}
       />
     );
@@ -299,7 +299,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
       activePanel={activePanel}
       onOpenPanel={setActivePanel}
       onBack={handleBack}
-      onAddMember={isDemo ? undefined : () => (useHistory ? onNavigate({ familyView: "invite" }) : setLocalView("invite"))}
+      onAddMember={isDemo ? undefined : () => setActiveView("invite")}
       onCopyInviteLink={handleCopyInviteLink}
       getInviteLink={getInviteLink}
       onRemoveMember={handleRemoveMember}

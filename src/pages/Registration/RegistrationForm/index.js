@@ -75,7 +75,7 @@ const RegistrationForm = ({ onSubmit, onGoogleLogin, isLoading, pendingInvite })
           <S.CheckboxLabel>
             Oświadczam, że zapoznałem się z{" "}
             <S.TermsLink to={toRegulamin()} target="_blank">
-              Regulaminem aplikacji Smart Budget
+              Regulaminem aplikacji Mój Smart Budget
             </S.TermsLink>{" "}
             i akceptuję wszystkie jego postanowienia, w szczególności te dotyczące wyłączenia odpowiedzialności Administratora za terminowość moich płatności.
           </S.CheckboxLabel>

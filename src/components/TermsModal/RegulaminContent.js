@@ -7,7 +7,7 @@ const RegulaminContent = () => {
       <S.Section>
         <S.SectionTitle>1. POSTANOWIENIA OGÓLNE</S.SectionTitle>
         <S.Paragraph>
-          1.1. Niniejszy regulamin (zwany dalej „Regulaminem") określa szczegółowe zasady, warunki oraz zakres korzystania z aplikacji internetowej Smart Budget (zwanej dalej „Aplikacją"), dostępnej pod adresem smartbudget.pl oraz jej subdomenami.
+          1.1. Niniejszy regulamin (zwany dalej „Regulaminem") określa szczegółowe zasady, warunki oraz zakres korzystania z aplikacji internetowej Mój Smart Budget (zwanej dalej „Aplikacją"), dostępnej pod adresem smartbudget.pl oraz jej subdomenami.
         </S.Paragraph>
         <S.Paragraph>
           1.2. Właścicielem oraz Administratorem Aplikacji jest osoba fizyczna, której pełne dane identyfikacyjne wskazano w Punkcie 7 niniejszego Regulaminu (sekcja „Dane Kontaktowe i Identyfikacyjne").
@@ -150,7 +150,7 @@ const RegulaminContent = () => {
       <S.Section>
         <S.SectionTitle>10. WŁASNOŚĆ INTELEKTUALNA</S.SectionTitle>
         <S.Paragraph>
-          10.1. Całość kodu źródłowego, grafiki oraz logotyp Smart Budget stanowią własność intelektualną Administratora.
+          10.1. Całość kodu źródłowego, grafiki oraz logotyp Mój Smart Budget stanowią własność intelektualną Administratora.
         </S.Paragraph>
         <S.Paragraph>
           10.2. Zabrania się kopiowania, dekompilacji, inżynierii wstecznej lub wykorzystywania fragmentów kodu Aplikacji bez pisemnej zgody Administratora pod rygorem odpowiedzialności karnej i cywilnej.

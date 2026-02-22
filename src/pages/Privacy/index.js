@@ -11,7 +11,7 @@ const Privacy = () => {
         <S.Header>
           <S.BackButton onClick={() => navigate(-1)}>← Powrót</S.BackButton>
           <S.Title>POLITYKA PRYWATNOŚCI APLIKACJI SMART BUDGET</S.Title>
-          <S.Subtitle>Smart Budget - Aplikacja do zarządzania finansami</S.Subtitle>
+          <S.Subtitle>Mój Smart Budget - Aplikacja do zarządzania finansami</S.Subtitle>
           <S.Date>Ostatnia aktualizacja: 19.02.2026 r.</S.Date>
         </S.Header>
 
@@ -19,7 +19,7 @@ const Privacy = () => {
           <S.Section>
             <S.SectionTitle>1. INFORMACJE OGÓLNE</S.SectionTitle>
             <S.Paragraph>
-              1.1. Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych Użytkowników korzystających z aplikacji Smart Budget (zwanej dalej "Aplikacją"), dostępnej pod adresem smartbudget.pl.
+              1.1. Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych Użytkowników korzystających z aplikacji Mój Smart Budget (zwanej dalej "Aplikacją"), dostępnej pod adresem smartbudget.pl.
             </S.Paragraph>
             <S.Paragraph>
               1.2. Administratorem danych osobowych jest Karolina Kulpińska, zamieszkała w Goworowicach 63/6, 48-388 Kamiennik (zgodnie z danymi wskazanymi w Regulaminie, Punkcie 7).
@@ -62,7 +62,7 @@ const Privacy = () => {
           <S.Section>
             <S.SectionTitle>3. PODSTAWA PRAWNA PRZETWARZANIA</S.SectionTitle>
             <S.Paragraph>
-              3.1. Przetwarzanie danych osobowych odbywa się na podstawie Art. 6 ust. 1 lit. b RODO (niezbędność do wykonania umowy o świadczenie usługi drogą elektroniczną, tj. Regulaminu aplikacji Smart Budget).
+              3.1. Przetwarzanie danych osobowych odbywa się na podstawie Art. 6 ust. 1 lit. b RODO (niezbędność do wykonania umowy o świadczenie usługi drogą elektroniczną, tj. Regulaminu aplikacji Mój Smart Budget).
             </S.Paragraph>
             <S.Paragraph>
               3.2. W zakresie plików przesyłanych dobrowolnie przez Użytkownika (skany faktur, paragonów, rachunków), podstawą prawną jest zgoda wyrażona poprzez aktywne działanie (przesłanie pliku do systemu) – Art. 6 ust. 1 lit. a RODO.

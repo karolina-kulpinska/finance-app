@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { toLanding } from "../../routes";
 import * as S from "./styled";
 
 const Privacy = () => {
@@ -10,7 +9,7 @@ const Privacy = () => {
     <S.Wrapper>
       <S.Container>
         <S.Header>
-          <S.BackButton onClick={() => navigate(toLanding())}>← Powrót</S.BackButton>
+          <S.BackButton onClick={() => navigate(-1)}>← Powrót</S.BackButton>
           <S.Title>POLITYKA PRYWATNOŚCI APLIKACJI SMART BUDGET</S.Title>
           <S.Subtitle>Smart Budget - Aplikacja do zarządzania finansami</S.Subtitle>
           <S.Date>Ostatnia aktualizacja: 19.02.2026 r.</S.Date>

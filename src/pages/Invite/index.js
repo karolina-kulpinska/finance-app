@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../api/firebase";
-import { toLogin, toRegistration, toLanding } from "../../routes";
+import { toLogin, toRegistration } from "../../routes";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import * as S from "./styled";
 
@@ -77,8 +77,8 @@ const Invite = () => {
           <S.ErrorIcon>❌</S.ErrorIcon>
           <S.ErrorTitle>Błąd</S.ErrorTitle>
           <S.ErrorText>{error}</S.ErrorText>
-          <S.BackButton onClick={() => navigate(toLanding())}>
-            Wróć do strony głównej
+          <S.BackButton onClick={() => navigate(-1)}>
+            ← Wróć
           </S.BackButton>
         </S.ErrorCard>
       </S.Container>

@@ -383,13 +383,13 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
                   type="number"
                   step="0.01"
                   {...register("amount", {
-                    required: "Podaj kwotę",
+                    required: t("form.amountRequired"),
                     min: {
                       value: 0.01,
-                      message: "Kwota musi być większa niż 0",
+                      message: t("form.amountMin"),
                     },
                   })}
-                  placeholder="0.00"
+                  placeholder={t("form.amountPlaceholder")}
                 />
                 {errors.amount && (
                   <S.ErrorMessage>{errors.amount.message}</S.ErrorMessage>
@@ -427,11 +427,15 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
                   defaultValue={watch("bank") || "other"}
                   style={{ maxWidth: 320, width: "100%", fontSize: 14 }}
                 >
-                  {bankOptions.map((bank) => (
-                    <option key={bank.value} value={bank.value}>
-                      {bank.label}
-                    </option>
-                  ))}
+{bankOptions.map((bank) => (
+                  <option key={bank.value} value={bank.value}>
+                    {bank.value === "cash"
+                      ? t("form.bankCash")
+                      : bank.value === "other"
+                        ? t("form.bankOther")
+                        : bank.label}
+                  </option>
+                ))}
                 </S.Select>
               </S.FormGroup>
             )}

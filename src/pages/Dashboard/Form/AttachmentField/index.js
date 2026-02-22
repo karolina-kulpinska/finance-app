@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import * as S from "./styled";
 
 export const AttachmentField = ({
@@ -7,43 +8,50 @@ export const AttachmentField = ({
   fileInfo,
   onFileChange,
 }) => {
+  const { t } = useTranslation();
   const { onChange: formOnChange, ...attachmentRegister } = register("attachment");
   return (
-  <S.FormGroup $fullWidth>
-    <S.Label>Załącznik (PDF, zdjęcie)</S.Label>
-    {isPro ? (
-      <>
-        <S.Input
-          type="file"
-          accept=".pdf,.jpg,.jpeg,.png"
-          {...attachmentRegister}
-          onChange={(e) => {
-            formOnChange(e);
-            onFileChange(e);
-          }}
-        />
-        {fileInfo && (
-          <S.FileInfo>
-            📎 {fileInfo.name}
-            <br />
-            {fileInfo.compressing && "🔄 Kompresowanie..."}
-            {fileInfo.compressedSize && (
-              <S.CompressionInfo>
-                ✅ Skompresowano: {fileInfo.originalSize} → {fileInfo.compressedSize}
-                (oszczędność: {fileInfo.savings})
-              </S.CompressionInfo>
-            )}
-            {!fileInfo.compressing && !fileInfo.compressedSize && (
-              <span>📄 PDF - {fileInfo.originalSize}</span>
-            )}
-          </S.FileInfo>
-        )}
-      </>
-    ) : (
-      <S.ProUpsell>
-        🔒 Dodawanie załączników dostępne w planie Pro. Ulepsz, aby dodawać zdjęcia i PDF-y.
-      </S.ProUpsell>
-    )}
-  </S.FormGroup>
+    <S.FormGroup $fullWidth>
+      <S.Label>{t("form.attachment")}</S.Label>
+      {isPro ? (
+        <>
+          <S.FileInputWrapper>
+            <S.Input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              {...attachmentRegister}
+              onChange={(e) => {
+                formOnChange(e);
+                onFileChange(e);
+              }}
+            />
+            <S.FileInputLabel>
+              {fileInfo?.name || t("form.noFileChosen")}
+            </S.FileInputLabel>
+            <S.ChooseFileButton>{t("form.chooseFile")}</S.ChooseFileButton>
+          </S.FileInputWrapper>
+          {fileInfo && (
+            <S.FileInfo>
+              📎 {fileInfo.name}
+              <br />
+              {fileInfo.compressing && `🔄 ${t("form.compressing")}`}
+              {fileInfo.compressedSize && (
+                <S.CompressionInfo>
+                  ✅ {t("form.compressedFromTo", { from: fileInfo.originalSize, to: fileInfo.compressedSize })}
+                  ({t("form.savings")}: {fileInfo.savings})
+                </S.CompressionInfo>
+              )}
+              {!fileInfo.compressing && !fileInfo.compressedSize && (
+                <span>📄 PDF - {fileInfo.originalSize}</span>
+              )}
+            </S.FileInfo>
+          )}
+        </>
+      ) : (
+        <S.ProUpsell>
+          🔒 {t("form.proUpsell")}
+        </S.ProUpsell>
+      )}
+    </S.FormGroup>
   );
 };

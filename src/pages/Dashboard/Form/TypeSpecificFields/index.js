@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { InstallmentFields } from "../InstallmentFields";
 import { InsuranceFields } from "../InsuranceFields";
 import * as S from "./styled";
@@ -10,6 +11,7 @@ export const TypeSpecificFields = ({
   totalInstallmentAmount,
   totalInsuranceAmount,
 }) => {
+  const { t } = useTranslation();
   switch (paymentType) {
     case "installments":
       return (
@@ -30,10 +32,10 @@ export const TypeSpecificFields = ({
     case "bills":
       return (
         <S.FormGroup>
-          <S.Label>Numer konta/umowy</S.Label>
+          <S.Label>{t("form.accountNumber")}</S.Label>
           <S.Input
             {...register("accountNumber")}
-            placeholder="np. 12 3456 7890..."
+            placeholder={t("form.accountPlaceholder")}
           />
         </S.FormGroup>
       );

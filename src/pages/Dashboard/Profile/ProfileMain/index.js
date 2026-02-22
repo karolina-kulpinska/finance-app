@@ -28,6 +28,7 @@ export const ProfileMain = ({
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [currencyExpanded, setCurrencyExpanded] = useState(false);
+  const [languageExpanded, setLanguageExpanded] = useState(false);
 
   const currentLang = i18nInstance.language?.split("-")[0] || "pl";
   const renewalDateDisplay = renewalDate
@@ -107,7 +108,7 @@ export const ProfileMain = ({
           <S.SettingIcon>📧</S.SettingIcon>
           <S.SettingInfo>
             <S.SettingLabel>{t("profile.contact")}</S.SettingLabel>
-            <S.SettingDesc>pomoc@finanseapp.pl</S.SettingDesc>
+            <S.SettingDesc>{t("profile.contactEmail")}</S.SettingDesc>
           </S.SettingInfo>
           <S.SettingArrow>›</S.SettingArrow>
         </S.SettingItem>
@@ -146,19 +147,29 @@ export const ProfileMain = ({
     </S.SettingsSection>
 
     <S.SettingsSection>
-      <S.SectionTitle>🌐 {t("profile.language")}</S.SectionTitle>
-      <S.SettingsList>
-        {LANGUAGES.map((lang) => (
-          <S.LanguageOption
-            key={lang.code}
-            $active={currentLang === lang.code}
-            onClick={() => i18nInstance.changeLanguage(lang.code)}
-          >
-            {lang.name}
-            {currentLang === lang.code && " ✓"}
-          </S.LanguageOption>
-        ))}
-      </S.SettingsList>
+      <S.CollapsibleHeader
+        type="button"
+        onClick={() => setLanguageExpanded((v) => !v)}
+        aria-expanded={languageExpanded}
+        aria-controls="language-list"
+      >
+        🌐 {t("profile.language")}
+        <S.CollapsibleArrow $open={languageExpanded} aria-hidden>▼</S.CollapsibleArrow>
+      </S.CollapsibleHeader>
+      {languageExpanded && (
+        <S.SettingsList id="language-list">
+          {LANGUAGES.map((lang) => (
+            <S.LanguageOption
+              key={lang.code}
+              $active={currentLang === lang.code}
+              onClick={() => i18nInstance.changeLanguage(lang.code)}
+            >
+              {lang.name}
+              {currentLang === lang.code && " ✓"}
+            </S.LanguageOption>
+          ))}
+        </S.SettingsList>
+      )}
     </S.SettingsSection>
 
     <S.SettingsSection>

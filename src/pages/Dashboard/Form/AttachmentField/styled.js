@@ -30,10 +30,53 @@ export const Input = styled.input`
   }
 
   &[type="file"] {
-    padding: 8px;
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
     cursor: pointer;
-    font-size: 12px;
   }
+`;
+
+export const FileInputWrapper = styled.label`
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #3182ce;
+    background: rgba(49, 130, 206, 0.04);
+  }
+`;
+
+export const FileInputLabel = styled.span`
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: ${({ theme }) => theme.colors.secondary};
+  font-size: 12px;
+`;
+
+export const ChooseFileButton = styled.span`
+  flex-shrink: 0;
+  padding: 4px 10px;
+  background: #3182ce;
+  color: white;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
 `;
 
 export const FileInfo = styled.div`

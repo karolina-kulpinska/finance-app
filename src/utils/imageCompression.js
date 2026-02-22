@@ -1,4 +1,5 @@
 import imageCompression from "browser-image-compression";
+import i18n from "../i18n";
 
 export const compressImage = async (file) => {
   const isImage = file.type.startsWith("image/");
@@ -29,14 +30,14 @@ export const validateFile = (file) => {
   if (file.size > maxSize) {
     return {
       valid: false,
-      error: "Plik jest za duży. Maksymalny rozmiar to 3 MB.",
+      error: i18n.t("form.fileTooBig"),
     };
   }
 
   if (!allowedTypes.includes(file.type)) {
     return {
       valid: false,
-      error: "Nieprawidłowy format. Dozwolone: JPG, PNG, PDF.",
+      error: i18n.t("form.invalidFileFormat"),
     };
   }
 

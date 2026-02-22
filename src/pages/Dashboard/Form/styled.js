@@ -62,7 +62,7 @@ export const FormTitle = styled.h2`
   font-weight: 900;
   color: ${({ theme }) => theme.colors.text};
   margin: 0 0 16px 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -106,7 +106,7 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3182ce;
     box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 
@@ -135,7 +135,7 @@ export const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3182ce;
     box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 `;
@@ -154,7 +154,7 @@ export const TextArea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3182ce;
     box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 
@@ -185,7 +185,7 @@ export const ButtonGroup = styled.div`
 export const SubmitButton = styled.button`
   flex: 1;
   padding: 10px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   color: white;
   border: none;
   border-radius: 8px;

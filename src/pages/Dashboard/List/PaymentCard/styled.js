@@ -9,9 +9,9 @@ export const Card = styled.div`
   border: 2px solid
     ${({ $priority, $paid, $overdue, theme }) => {
       if ($paid) return "#66bb6a";
-      if ($overdue) return "#ffcdd2";
-      if ($priority === "high") return "#f5576c";
-      if ($priority === "low") return "#43e97b";
+      if ($overdue) return "#e8c4c8";
+      if ($priority === "high") return "#c53030";
+      if ($priority === "low") return "#38a169";
       return theme.colors.border;
     }};
   border-radius: 16px;
@@ -85,8 +85,8 @@ export const CompactName = styled.div`
 export const InstallmentBadge = styled.span`
   font-size: 8px;
   font-weight: 700;
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.1);
+  color: #3182ce;
+  background: rgba(44, 82, 130, 0.1);
   padding: 2px 6px;
   border-radius: 8px;
   white-space: nowrap;
@@ -101,7 +101,7 @@ export const FamilyBadge = styled.span`
 export const CompactAmount = styled.div`
   font-size: 14px;
   font-weight: 900;
-  color: ${({ $paid }) => ($paid ? "#66bb6a" : "#667eea")};
+  color: ${({ $paid }) => ($paid ? "#66bb6a" : "#3182ce")};
 `;
 
 export const CompactDate = styled.div`
@@ -181,13 +181,13 @@ export const ActionButton = styled.button`
   background: ${({ $variant }) => {
     switch ($variant) {
       case "status":
-        return "#4facfe";
+        return "#3182ce";
       case "edit":
-        return "#667eea";
+        return "#3182ce";
       case "delete":
-        return "#f5576c";
+        return "#c53030";
       case "download":
-        return "#43e97b";
+        return "#38a169";
       default:
         return "#e0e0e0";
     }

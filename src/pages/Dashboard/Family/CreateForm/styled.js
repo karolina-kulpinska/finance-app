@@ -77,14 +77,14 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #2c5282;
+    box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
   }
 `;
 
 export const CreateButton = styled.button`
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2c5282 0%, #2c5282 100%);
   border: none;
   border-radius: 10px;
   padding: 12px;
@@ -97,7 +97,7 @@ export const CreateButton = styled.button`
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 16px rgba(44, 82, 130, 0.4);
   }
 
   &:active:not(:disabled) {

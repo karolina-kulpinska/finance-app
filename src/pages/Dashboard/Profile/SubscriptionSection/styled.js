@@ -13,7 +13,7 @@ export const Container = styled.div`
 export const StatusCard = styled.div`
   background: ${({ $isPro }) =>
     $isPro
-      ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      ? "linear-gradient(135deg, #3182ce 0%, #2c5282 100%)"
       : "#f8f9fa"};
   border-radius: 12px;
   padding: 20px;
@@ -166,7 +166,7 @@ export const ActionsSection = styled.div`
 export const ActionButton = styled.button`
   width: 100%;
   padding: 14px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -184,9 +184,9 @@ export const ActionButton = styled.button`
   }
 
   &:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e4976 0%, #2c5282 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(44, 82, 130, 0.3);
   }
 
   &:active {
@@ -259,7 +259,7 @@ export const FeatureItem = styled.div`
 export const UpgradeButton = styled.button`
   width: 100%;
   padding: 14px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -275,9 +275,9 @@ export const UpgradeButton = styled.button`
   }
 
   &:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e4976 0%, #2c5282 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(44, 82, 130, 0.3);
   }
 
   &:active {

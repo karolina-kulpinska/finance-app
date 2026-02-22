@@ -31,10 +31,10 @@ export const Button = styled.button`
   width: 100%;
   padding: 12px 20px;
   background: ${({ $secondary }) =>
-    $secondary ? "transparent" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"};
-  color: ${({ $secondary }) => ($secondary ? "#667eea" : "white")};
+    $secondary ? "transparent" : "linear-gradient(135deg, #3182ce 0%, #2c5282 100%)"};
+  color: ${({ $secondary }) => ($secondary ? "#3182ce" : "white")};
   border: ${({ $secondary }) =>
-    $secondary ? "2px solid #667eea" : "none"};
+    $secondary ? "2px solid #3182ce" : "none"};
   border-radius: 8px;
   font-size: 14px;
   font-weight: 700;
@@ -45,7 +45,7 @@ export const Button = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(44, 82, 130, 0.4);
   }
 
   &:active {

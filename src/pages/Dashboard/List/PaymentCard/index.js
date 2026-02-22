@@ -62,7 +62,7 @@ export const PaymentCard = ({
           {overdue && (
             <>
               ⚠️{" "}
-              <b style={{ color: "#f5576c" }}>
+              <b style={{ color: "#c53030" }}>
                 Po terminie: {overdueDays} dni
               </b>{" "}
               <br />

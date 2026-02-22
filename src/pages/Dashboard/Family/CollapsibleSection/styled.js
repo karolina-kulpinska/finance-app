@@ -18,7 +18,7 @@ export const CollapsibleHeader = styled.button`
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  background: ${({ $open }) => ($open ? "rgba(102, 126, 234, 0.06)" : "white")};
+  background: ${({ $open }) => ($open ? "rgba(44, 82, 130, 0.06)" : "white")};
   border: none;
   cursor: pointer;
   font-family: inherit;
@@ -30,13 +30,13 @@ export const CollapsibleHeader = styled.button`
   }
 
   &:hover {
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba(44, 82, 130, 0.05);
   }
 
   @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
     cursor: default;
     &:hover {
-      background: ${({ $open }) => ($open ? "rgba(102, 126, 234, 0.06)" : "white")};
+      background: ${({ $open }) => ($open ? "rgba(44, 82, 130, 0.06)" : "white")};
     }
   }
 `;

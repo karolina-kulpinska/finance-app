@@ -1,14 +1,15 @@
 export const theme = {
   colors: {
-    primary: "#007bff",
-    secondary: "#6c757d",
-    background: "#f4f7f6",
+    primary: "#3182ce",
+    primaryDark: "#2c5282",
+    secondary: "#718096",
+    background: "#f7fafc",
     white: "#ffffff",
-    text: "#1a1a1a",
-    error: "#d9534f",
-    success: "#28a745",
-    warning: "#f0ad4e",
-    border: "#f0f0f0",
+    text: "#2d3748",
+    error: "#c53030",
+    success: "#2f855a",
+    warning: "#c05621",
+    border: "#e2e8f0",
   },
   breakpoints: {
     mobileS: "320px",

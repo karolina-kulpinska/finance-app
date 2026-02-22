@@ -67,7 +67,7 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
         {upcomingPayments.length > 0 ? (
           <S.PaymentsList>
             {upcomingPayments.map((payment) => (
-              <S.MiniPaymentCard key={payment.id} onClick={() => onPaymentClick(payment.id)}>
+              <S.MiniPaymentCard key={payment.id} $paid={payment.paid} onClick={() => onPaymentClick(payment.id)}>
                 <S.PaymentIcon>{getCategoryIcon(payment.category)}</S.PaymentIcon>
                 <S.PaymentInfo>
                   <S.PaymentName>
@@ -76,7 +76,7 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
                   </S.PaymentName>
                   <S.PaymentDate>{payment.date}</S.PaymentDate>
                 </S.PaymentInfo>
-                <S.PaymentAmount>{payment.amount.toFixed(2)} zł</S.PaymentAmount>
+                <S.PaymentAmount $paid={payment.paid}>{payment.amount.toFixed(2)} zł</S.PaymentAmount>
               </S.MiniPaymentCard>
             ))}
           </S.PaymentsList>
@@ -90,7 +90,7 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
         {recentPaidPayments.length > 0 ? (
           <S.PaymentsList>
             {recentPaidPayments.map((payment) => (
-              <S.MiniPaymentCard key={payment.id} onClick={() => onPaymentClick(payment.id)}>
+              <S.MiniPaymentCard key={payment.id} $paid={payment.paid} onClick={() => onPaymentClick(payment.id)}>
                 <S.PaymentIcon>{getCategoryIcon(payment.category)}</S.PaymentIcon>
                 <S.PaymentInfo>
                   <S.PaymentName>
@@ -99,7 +99,7 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
                   </S.PaymentName>
                   <S.PaymentDate>{payment.date}</S.PaymentDate>
                 </S.PaymentInfo>
-                <S.PaymentAmount>{payment.amount.toFixed(2)} zł</S.PaymentAmount>
+                <S.PaymentAmount $paid={payment.paid}>{payment.amount.toFixed(2)} zł</S.PaymentAmount>
               </S.MiniPaymentCard>
             ))}
           </S.PaymentsList>

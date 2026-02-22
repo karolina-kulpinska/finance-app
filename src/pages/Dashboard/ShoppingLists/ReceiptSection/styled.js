@@ -53,7 +53,7 @@ export const FileInput = styled.div`
 export const FileLabel = styled.label`
   display: inline-block;
   padding: 10px 16px;
-  background: #667eea;
+  background: #3182ce;
   color: white;
   border-radius: 8px;
   font-size: 13px;

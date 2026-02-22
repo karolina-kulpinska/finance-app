@@ -273,8 +273,8 @@ export const OverdueWarning = styled.div`
 export const InstallmentBadge = styled.span`
   display: inline-block;
   padding: 4px 10px;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
+  background: rgba(44, 82, 130, 0.1);
+  color: #2c5282;
   border-radius: 8px;
   font-size: 11px;
   font-weight: 700;
@@ -301,7 +301,7 @@ export const NotesText = styled.div`
   padding: 12px;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #2c5282;
 
   @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
     font-size: 12px;
@@ -348,12 +348,12 @@ export const ActionButton = styled.button`
     switch ($variant) {
       case "status":
         return `
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #2c5282 0%, #2c5282 100%);
           color: white;
           &:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #5568d3 0%, #2c5282 100%);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(44, 82, 130, 0.3);
           }
         `;
       case "edit":

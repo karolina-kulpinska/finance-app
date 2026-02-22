@@ -27,20 +27,22 @@ export const StatCard = styled.div`
   background: ${({ $variant, theme }) => {
     switch ($variant) {
       case "total":
-        return "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        return "linear-gradient(160deg, #5b8fc4 0%, #4293d4 50%, #3182ce 100%)";
       case "unpaid":
-        return "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)";
+        return "linear-gradient(160deg, #7188a0 0%, #5f7589 60%, #4a5568 100%)";
       case "paid":
-        return "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)";
+        return "linear-gradient(160deg, #68d391 0%, #48bb78 50%, #38a169 100%)";
       case "count":
-        return "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)";
+        return "linear-gradient(160deg, #38a169 0%, #2f855a 100%)";
       default:
         return theme.colors.white;
     }
   }};
   border-radius: 16px;
   padding: 20px 16px;
-  box-shadow: ${({ theme }) => theme.shadows.tile};
+  box-shadow:
+    ${({ theme }) => theme.shadows.tile},
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: all 0.3s ease;
   animation: ${fadeIn} 0.5s ease-out;
   animation-delay: ${({ $delay }) => $delay || "0s"};

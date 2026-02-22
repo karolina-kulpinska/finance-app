@@ -56,7 +56,7 @@ export const NavLabel = styled.span`
   font-size: 9px;
   font-weight: ${({ $active }) => ($active ? "700" : "500")};
   color: ${({ $active, $isLogout, theme }) =>
-    $isLogout ? "#f5576c" : $active ? "#667eea" : theme.colors.secondary};
+    $isLogout ? "#c53030" : $active ? "#3182ce" : theme.colors.secondary};
   transition: all 0.3s ease;
   white-space: nowrap;
 `;

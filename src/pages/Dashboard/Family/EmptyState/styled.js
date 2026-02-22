@@ -15,7 +15,7 @@ export const EmptyState = styled.div`
 `;
 
 export const EmptyIcon = styled.div`
-  color: #667eea;
+  color: #3182ce;
   margin-bottom: 16px;
   opacity: 0.9;
 
@@ -52,7 +52,7 @@ export const EmptyText = styled.p`
 `;
 
 export const CreateFamilyButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #764ba2 100%);
   border: none;
   border-radius: 10px;
   padding: 12px 24px;
@@ -65,7 +65,7 @@ export const CreateFamilyButton = styled.button`
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+    box-shadow: 0 4px 12px rgba(44, 82, 130, 0.35);
   }
 
   &:active:not(:disabled) {

@@ -44,9 +44,9 @@ const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
 
   const categoryStats = useMemo(() => {
     const stats = {
-      bills: { amount: 0, count: 0, icon: "🧾", name: "Rachunki", color: "#667eea" },
-      shopping: { amount: 0, count: 0, icon: "🛒", name: "Zakupy", color: "#43e97b" },
-      other: { amount: 0, count: 0, icon: "📌", name: "Inne", color: "#f093fb" },
+      bills: { amount: 0, count: 0, icon: "🧾", name: "Rachunki", color: "#3182ce" },
+      shopping: { amount: 0, count: 0, icon: "🛒", name: "Zakupy", color: "#38a169" },
+      other: { amount: 0, count: 0, icon: "📌", name: "Inne", color: "#718096" },
     };
 
     filteredPayments.forEach((payment) => {

@@ -37,7 +37,7 @@ export const MemberAvatar = styled.div`
   background: ${({ $isOwner }) =>
     $isOwner
       ? "linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)"
-      : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"};
+      : "linear-gradient(135deg, #3182ce 0%, #2c5282 100%)"};
   display: flex;
   align-items: center;
   justify-content: center;

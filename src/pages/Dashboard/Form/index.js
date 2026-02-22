@@ -59,7 +59,6 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
       setValue("amount", editingPayment.amount);
       setValue("date", editingPayment.date);
       setValue("category", editingPayment.category);
-      setValue("priority", editingPayment.priority);
       setValue("notes", editingPayment.notes || "");
       setValue("bank", editingPayment.bank || "other");
       setValue("sharedWithFamily", Boolean(editingPayment.sharedWithFamily));
@@ -419,15 +418,6 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
                 </S.Select>
               </S.FormGroup>
             )}
-
-            <S.FormGroup>
-              <S.Label>Priorytet</S.Label>
-              <S.Select {...register("priority")} defaultValue="normal">
-                <option value="high">🔴 Wysoki</option>
-                <option value="normal">🟡 Normalny</option>
-                <option value="low">🟢 Niski</option>
-              </S.Select>
-            </S.FormGroup>
 
             {paymentType !== "installments" && paymentType !== "insurance" && (
               <S.FormGroup $fullWidth>

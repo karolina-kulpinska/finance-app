@@ -55,7 +55,7 @@ export const DateInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3182ce;
     box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 
@@ -79,7 +79,7 @@ export const DateSeparator = styled.span`
 
 export const SearchButton = styled.button`
   padding: 6px 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -91,7 +91,7 @@ export const SearchButton = styled.button`
   white-space: nowrap;
 
   &:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #5568d3 0%, #2c5282 100%);
     transform: translateY(-1px);
   }
 
@@ -166,8 +166,8 @@ export const DownloadSelectedButton = styled.button`
   padding: 8px 16px;
   background: ${({ $variant }) =>
     $variant === "pdf"
-      ? "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
-      : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"};
+      ? "linear-gradient(135deg, #38a169 0%, #2f855a 100%)"
+      : "linear-gradient(135deg, #3182ce 0%, #2c5282 100%)"};
   color: white;
   border: none;
   border-radius: 8px;
@@ -203,7 +203,7 @@ export const Container = styled.div`
 
 export const FilterChip = styled.button`
   padding: 6px 12px;
-  background: ${({ $active }) => ($active ? "#667eea" : "#f8f8fa")};
+  background: ${({ $active }) => ($active ? "#3182ce" : "#f8f8fa")};
   color: ${({ $active }) => ($active ? "white" : "#8b8b8b")};
   border: none;
   border-radius: 12px;

@@ -14,7 +14,7 @@ const gradient = keyframes`
 
 export const Wrapper = styled.main`
   min-height: 100vh;
-  background: linear-gradient(-45deg, #f5f7fa, #c3cfe2, #e0c3fc, #8ec5fc);
+  background: linear-gradient(-35deg, #f7fafc 0%, #edf2f7 50%, #e2e8f0 100%);
   background-size: 400% 400%;
   animation: ${gradient} 15s ease infinite;
   padding: 20px 16px 80px 16px;
@@ -132,12 +132,12 @@ export const CategoryBackButton = styled.button`
   border: none;
   font-size: 14px;
   font-weight: 700;
-  color: #667eea;
+  color: #3182ce;
   cursor: pointer;
   font-family: inherit;
 
   &:hover {
-    color: #5568d3;
+    color: #1e4976;
   }
 `;
 
@@ -151,7 +151,7 @@ export const FiltersBox = styled.div`
 `;
 
 export const DemoBanner = styled.div`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #764ba2 100%);
   color: white;
   padding: 12px 16px;
   border-radius: 12px;
@@ -159,7 +159,7 @@ export const DemoBanner = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(44, 82, 130, 0.3);
   margin-bottom: 8px;
 
   @media (max-width: 480px) {
@@ -278,7 +278,7 @@ export const DemoInfoText = styled.p`
   max-width: 500px;
 
   strong {
-    color: ${({ theme }) => theme.colors.primary || "#667eea"};
+    color: ${({ theme }) => theme.colors.primary || "#3182ce"};
     font-weight: 700;
   }
 
@@ -290,7 +290,7 @@ export const DemoInfoText = styled.p`
 export const DemoInfoButton = styled.button`
   margin-top: 8px;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -298,11 +298,11 @@ export const DemoInfoButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(44, 82, 130, 0.3);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 16px rgba(44, 82, 130, 0.4);
   }
 
   &:active {

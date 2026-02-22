@@ -89,7 +89,7 @@ export const CheckboxLabel = styled.label`
 `;
 
 export const TotalCard = styled.div`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   border-radius: 12px;
   padding: 16px;
   display: flex;

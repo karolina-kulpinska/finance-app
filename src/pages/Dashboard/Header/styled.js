@@ -51,7 +51,7 @@ export const Title = styled.h1`
   font-weight: 900;
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -112,8 +112,8 @@ export const FilterToggleButton = styled.button`
 
   &:hover {
     background: #f8f9fa;
-    border-color: #667eea;
-    color: #667eea;
+    border-color: #3182ce;
+    color: #3182ce;
   }
 
   &:active {
@@ -127,7 +127,7 @@ export const FilterToggleButton = styled.button`
 
 export const AddButton = styled.button`
   padding: 10px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -136,11 +136,11 @@ export const AddButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 3px 10px rgba(44, 82, 130, 0.3);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 18px rgba(44, 82, 130, 0.4);
   }
 
   &:active {
@@ -154,7 +154,7 @@ export const AddButton = styled.button`
 
 export const ProBadge = styled.span`
   padding: 6px 12px;
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
   color: #1a1a1a;
   border-radius: 8px;
   font-size: 11px;
@@ -171,8 +171,8 @@ export const ProBadge = styled.span`
 export const UpgradeButton = styled.button`
   padding: 6px 12px;
   background: transparent;
-  color: #667eea;
-  border: 1.5px solid #667eea;
+  color: #3182ce;
+  border: 1.5px solid #3182ce;
   border-radius: 8px;
   font-size: 11px;
   font-weight: 700;
@@ -182,7 +182,7 @@ export const UpgradeButton = styled.button`
   white-space: nowrap;
 
   &:hover {
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba(44, 82, 130, 0.1);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
@@ -194,8 +194,8 @@ export const UpgradeButton = styled.button`
 export const UpgradeTip = styled.div`
   margin-top: 10px;
   padding: 10px 12px;
-  background: rgba(102, 126, 234, 0.08);
-  border: 1px dashed #667eea;
+  background: rgba(44, 82, 130, 0.08);
+  border: 1px dashed #3182ce;
   border-radius: 8px;
   font-size: 12px;
   color: ${({ theme }) => theme.colors.text};
@@ -208,14 +208,14 @@ export const ProGrantLink = styled.button`
   background: none;
   border: none;
   font-size: 12px;
-  color: #667eea;
+  color: #3182ce;
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
   display: block;
 
   &:hover {
-    color: #764ba2;
+    color: #3182ce;
   }
 
   &:disabled {

@@ -34,8 +34,8 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(44, 82, 130, 0.1);
   }
 
   &:disabled {
@@ -51,7 +51,7 @@ export const HelpText = styled.div`
 
 export const SaveButton = styled.button`
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -63,7 +63,7 @@ export const SaveButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(44, 82, 130, 0.4);
   }
 
   &:active {

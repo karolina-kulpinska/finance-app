@@ -90,7 +90,7 @@ export const ListTitle = styled.h2`
 export const CollapseButton = styled.button`
   margin: 0;
   padding: 8px 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -102,7 +102,7 @@ export const CollapseButton = styled.button`
   box-shadow: 0 2px 12px rgba(102, 126, 234, 0.4);
 
   &:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e4976 0%, #764ba2 100%);
   }
 `;
 

@@ -25,7 +25,7 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3182ce;
     box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 
@@ -48,7 +48,7 @@ export const FileInfo = styled.div`
 `;
 
 export const CompressionInfo = styled.span`
-  color: #43e97b;
+  color: #38a169;
   font-weight: 600;
   display: block;
   margin-top: 4px;

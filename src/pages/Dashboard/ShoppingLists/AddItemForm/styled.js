@@ -19,8 +19,8 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
   }
 `;
 
@@ -31,7 +31,7 @@ export const PriceInput = styled(Input)`
 
 export const SaveButton = styled.button`
   padding: 8px 12px;
-  background: #667eea;
+  background: #3182ce;
   color: white;
   border: none;
   border-radius: 8px;

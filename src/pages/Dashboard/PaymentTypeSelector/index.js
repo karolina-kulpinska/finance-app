@@ -8,7 +8,7 @@ const PaymentTypeSelector = ({ onSelectType, onClose }) => {
       icon: "📅",
       title: "Raty",
       description: "Płatności cykliczne co miesiąc",
-      color: "#667eea",
+      color: "#3182ce",
     },
     {
       id: "bills",
@@ -22,21 +22,21 @@ const PaymentTypeSelector = ({ onSelectType, onClose }) => {
       icon: "🛒",
       title: "Zakupy",
       description: "Zakupy spożywcze i inne",
-      color: "#43e97b",
+      color: "#38a169",
     },
     {
       id: "insurance",
       icon: "🛡️",
       title: "Ubezpieczenie",
       description: "Opłaty cykliczne co miesiąc",
-      color: "#4facfe",
+      color: "#3182ce",
     },
     {
       id: "other",
       icon: "📌",
       title: "Inne",
       description: "Pozostałe płatności",
-      color: "#f093fb",
+      color: "#718096",
     },
   ];
 

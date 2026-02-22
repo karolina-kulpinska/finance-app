@@ -46,13 +46,13 @@ export const ItemCount = styled.div`
 export const TotalPrice = styled.div`
   font-size: 16px;
   font-weight: 900;
-  color: #667eea;
+  color: #3182ce;
 `;
 
 export const SharedBadge = styled.span`
   display: inline-block;
   padding: 4px 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   color: white;
   border-radius: 6px;
   font-size: 10px;

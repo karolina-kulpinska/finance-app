@@ -34,14 +34,14 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3182ce;
     box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 `;
 
 export const SaveButton = styled.button`
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
   color: white;
   border: none;
   border-radius: 8px;

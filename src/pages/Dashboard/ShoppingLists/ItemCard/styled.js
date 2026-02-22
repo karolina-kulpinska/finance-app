@@ -40,7 +40,7 @@ export const Name = styled.div`
 export const Price = styled.div`
   font-size: 12px;
   font-weight: 700;
-  color: #667eea;
+  color: #3182ce;
   text-decoration: ${({ $purchased }) =>
     $purchased ? "line-through" : "none"};
   opacity: ${({ $purchased }) => ($purchased ? 0.6 : 1)};

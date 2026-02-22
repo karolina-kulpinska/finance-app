@@ -36,7 +36,7 @@ export const QuickChip = styled.button`
   border: none;
   border-right: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 0;
-  background: ${({ $active }) => ($active ? "#667eea" : "white")};
+  background: ${({ $active }) => ($active ? "#3182ce" : "white")};
   color: ${({ $active, theme }) => ($active ? "white" : theme.colors.text)};
   font-size: 11px;
   font-weight: 600;
@@ -52,7 +52,7 @@ export const QuickChip = styled.button`
   }
 
   &:hover {
-    background: ${({ $active }) => ($active ? "#5568d3" : "#f8f9fa")};
+    background: ${({ $active }) => ($active ? "#1e4976" : "#f8f9fa")};
   }
 
   &:active {
@@ -123,8 +123,8 @@ export const FilterChip = styled.button`
   padding: 6px 12px;
   border-radius: 8px;
   border: 1px solid
-    ${({ $active, theme }) => ($active ? "#667eea" : theme.colors.border)};
-  background: ${({ $active }) => ($active ? "#667eea" : "white")};
+    ${({ $active, theme }) => ($active ? "#3182ce" : theme.colors.border)};
+  background: ${({ $active }) => ($active ? "#3182ce" : "white")};
   color: ${({ $active, theme }) => ($active ? "white" : theme.colors.text)};
   font-size: 12px;
   font-weight: 600;
@@ -170,7 +170,7 @@ export const AmountInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3182ce;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   }
 
@@ -211,7 +211,7 @@ export const SearchInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3182ce;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   }
 
@@ -258,7 +258,7 @@ export const AmountSeparator = styled.span`
 
 export const SearchButton = styled.button`
   padding: 8px 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -271,7 +271,7 @@ export const SearchButton = styled.button`
   flex-shrink: 0;
 
   &:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e4976 0%, #764ba2 100%);
     transform: translateY(-1px);
   }
 

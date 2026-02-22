@@ -66,9 +66,9 @@ export const Card = styled.button`
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 
   &:hover {
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.04);
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+    border-color: #2c5282;
+    background: rgba(44, 82, 130, 0.04);
+    box-shadow: 0 2px 8px rgba(44, 82, 130, 0.15);
   }
 
   &:active {
@@ -88,11 +88,11 @@ export const CardChevron = styled.span`
 `;
 
 export const FamilyHeader = styled.div`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2c5282 0%, #2c5282 100%);
   border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.25);
+  box-shadow: 0 2px 12px rgba(44, 82, 130, 0.25);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     padding: 14px 16px;
@@ -124,11 +124,11 @@ export const AddMemberButton = styled.button`
   width: 100%;
   padding: 12px;
   background: white;
-  border: 1px solid #667eea;
+  border: 1px solid #2c5282;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #667eea;
+  color: #2c5282;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   transition: all 0.2s ease;
   font-family: inherit;
@@ -136,9 +136,9 @@ export const AddMemberButton = styled.button`
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 
   &:hover:not(:disabled) {
-    background: #667eea;
+    background: #2c5282;
     color: white;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+    box-shadow: 0 2px 8px rgba(44, 82, 130, 0.25);
   }
 
   &:active:not(:disabled) {
@@ -151,16 +151,16 @@ export const AddMemberButton = styled.button`
 `;
 
 export const LinkBox = styled.div`
-  background: rgba(102, 126, 234, 0.08);
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  background: rgba(44, 82, 130, 0.08);
+  border: 1px solid rgba(44, 82, 130, 0.3);
   border-radius: 10px;
   padding: 12px 14px;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(102, 126, 234, 0.12);
-    border-color: rgba(102, 126, 234, 0.4);
+    background: rgba(44, 82, 130, 0.12);
+    border-color: rgba(44, 82, 130, 0.4);
   }
 
   &:active {

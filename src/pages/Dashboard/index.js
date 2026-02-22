@@ -8,7 +8,6 @@ import {
   selectIsModalOpen,
   selectPayments,
   selectCategoryFilter,
-  setCategoryFilter,
   fetchPaymentsRequest,
 } from "../../features/payments/paymentSlice";
 

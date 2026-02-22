@@ -5,7 +5,6 @@ import {
   toggleModal,
   selectIsModalOpen,
   selectCategoryFilter,
-  setCategoryFilter,
 } from "../../features/payments/paymentSlice";
 import {
   selectDemoPayments,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,13 +16,16 @@ import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
 import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
 import { bankOptions } from "../../../utils/bankIcons";
+import { selectCurrency } from "../../../features/currency/currencySlice";
 import ReceiptScanner from "../../../components/ReceiptScanner";
 import { TypeSpecificFields } from "./TypeSpecificFields";
 import { AttachmentField } from "./AttachmentField";
 import * as S from "./styled";
 
 const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
+  const currency = useSelector(selectCurrency);
   const editingPayment = useSelector(selectEditingPayment);
   const isPro = useSelector(selectIsPro);
   const [isCompressing, setIsCompressing] = useState(false);
@@ -319,20 +323,17 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
   };
 
   const getFormTitle = () => {
-    if (editingPayment) return "Edytuj płatność";
+    if (editingPayment) return t("form.formTitleEdit");
 
-    switch (paymentType) {
-      case "installments":
-        return "📅 Nowa płatność ratalna";
-      case "bills":
-        return "🧾 Nowy rachunek";
-      case "shopping":
-        return "🛒 Nowe zakupy";
-      case "insurance":
-        return "🛡️ Nowe ubezpieczenie";
-      default:
-        return "📌 Nowa płatność";
-    }
+    const icons = { installments: "📅", bills: "🧾", shopping: "🛒", insurance: "🛡️", other: "📌" };
+    const keys = {
+      installments: "form.formTitleInstallments",
+      bills: "form.formTitleBills",
+      shopping: "form.formTitleShopping",
+      insurance: "form.formTitleInsurance",
+    };
+    const key = keys[paymentType] || "form.formTitleDefault";
+    return `${icons[paymentType] || icons.other} ${t(key)}`;
   };
 
   return (
@@ -351,24 +352,23 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
           <S.FormGrid>
             <S.FormGroup $fullWidth>
               <S.Label>
-                Nazwa płatności *
-                {paymentType === "installments" &&
-                  " (np. lodówka, pralka, TV, telefon)"}
-                {paymentType === "shopping" && " (np. zakupy spożywcze)"}
-                {paymentType === "insurance" && " (np. ubezpieczenie na życie)"}
+                {paymentType === "installments" && t("form.paymentNameInstallments")}
+                {paymentType === "shopping" && t("form.paymentNameShopping")}
+                {paymentType === "insurance" && t("form.paymentNameInsurance")}
+                {(paymentType === "bills" || paymentType === "other" || !paymentType) && t("form.paymentName")}
               </S.Label>
               <S.Input
-                {...register("name", { required: "Podaj nazwę płatności" })}
+                {...register("name", { required: t("form.nameRequired") })}
                 placeholder={
                   paymentType === "installments"
-                    ? "np. Lodówka Samsung"
+                    ? t("form.placeholderInstallments")
                     : paymentType === "shopping"
-                      ? "np. Zakupy spożywcze"
+                      ? t("form.placeholderShopping")
                       : paymentType === "insurance"
-                        ? "np. Ubezpieczenie na życie"
+                        ? t("form.placeholderInsurance")
                         : paymentType === "bills"
-                          ? "np. Rachunek za prąd"
-                          : "np. Prąd, Czynsz, Zakupy spożywcze"
+                          ? t("form.placeholderBills")
+                          : t("form.placeholderOther")
                 }
               />
               {errors.name && (
@@ -378,7 +378,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
 
             {paymentType !== "installments" && paymentType !== "insurance" && (
               <S.FormGroup>
-                <S.Label>Kwota (zł) *</S.Label>
+                <S.Label>{t("filters.amount", { symbol: currency.symbol })} *</S.Label>
                 <S.Input
                   type="number"
                   step="0.01"
@@ -397,11 +397,11 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
               </S.FormGroup>
             )}
 
-            <S.FormGroup>
-              <S.Label>Termin płatności *</S.Label>
+            <S.FormGroup as="div" lang={i18n.language?.split("-")[0] || "en"}>
+              <S.Label>{t("form.paymentDate")}</S.Label>
               <S.Input
                 type="date"
-                {...register("date", { required: "Wybierz datę" })}
+                {...register("date", { required: t("form.dateRequired") })}
               />
               {errors.date && (
                 <S.ErrorMessage>{errors.date.message}</S.ErrorMessage>
@@ -410,18 +410,18 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
 
             {!paymentType && (
               <S.FormGroup>
-                <S.Label>Kategoria</S.Label>
+                <S.Label>{t("form.category")}</S.Label>
                 <S.Select {...register("category")} defaultValue="other">
-                  <option value="bills">🧾 Rachunki</option>
-                  <option value="shopping">🛒 Zakupy</option>
-                  <option value="other">📌 Inne</option>
+                  <option value="bills">🧾 {t("charts.bills")}</option>
+                  <option value="shopping">🛒 {t("charts.shopping")}</option>
+                  <option value="other">📌 {t("charts.other")}</option>
                 </S.Select>
               </S.FormGroup>
             )}
 
             {paymentType !== "installments" && paymentType !== "insurance" && (
               <S.FormGroup $fullWidth>
-                <S.Label>Bank/Metoda płatności</S.Label>
+                <S.Label>{t("form.paymentMethod")}</S.Label>
                 <S.Select
                   {...register("bank")}
                   defaultValue={watch("bank") || "other"}
@@ -445,10 +445,10 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
             />
 
             <S.FormGroup $fullWidth>
-              <S.Label>Notatki</S.Label>
+              <S.Label>{t("form.notes")}</S.Label>
               <S.TextArea
                 {...register("notes")}
-                placeholder="Dodatkowe informacje o płatności..."
+                placeholder={t("form.notesPlaceholder")}
               />
             </S.FormGroup>
 
@@ -460,9 +460,9 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
                   {...register("sharedWithFamily")}
                 />
                 <S.CheckboxLabel htmlFor="sharedWithFamily">
-                  👨‍👩‍👧‍👦 Udostępnij rodzinie
+                  👨‍👩‍👧‍👦 {t("form.shareWithFamily")}
                   <S.CheckboxHint>
-                    Członkowie rodziny będą widzieć tę płatność
+                    {t("form.shareHint")}
                   </S.CheckboxHint>
                 </S.CheckboxLabel>
               </S.CheckboxWrapper>
@@ -484,10 +484,10 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
                 dispatch(toggleModal());
               }}
             >
-              Anuluj
+              {t("form.cancel")}
             </S.CancelButton>
             <S.SubmitButton type="submit" disabled={isCompressing}>
-              {isCompressing ? "Kompresowanie..." : "Zapisz płatność"}
+              {isCompressing ? t("form.compressing") : t("form.savePayment")}
             </S.SubmitButton>
           </S.ButtonGroup>
         </form>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import * as S from "./styled";
 
 export const AddItemForm = ({
@@ -7,7 +8,9 @@ export const AddItemForm = ({
   onNameChange,
   onPriceChange,
   onSubmit,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <S.Form
     onSubmit={(e) => {
       e.preventDefault();
@@ -16,7 +19,7 @@ export const AddItemForm = ({
   >
     <S.Input
       type="text"
-      placeholder="Nazwa produktu..."
+      placeholder={t("shopping.productPlaceholder")}
       value={newItemName}
       onChange={(e) => onNameChange(e.target.value)}
       onKeyPress={(e) => {
@@ -29,7 +32,7 @@ export const AddItemForm = ({
     <S.PriceInput
       type="number"
       step="0.01"
-      placeholder="Cena..."
+      placeholder={t("shopping.pricePlaceholder")}
       value={newItemPrice}
       onChange={(e) => onPriceChange(e.target.value)}
       onKeyPress={(e) => {
@@ -39,6 +42,7 @@ export const AddItemForm = ({
         }
       }}
     />
-    <S.SaveButton type="submit">+ Dodaj</S.SaveButton>
+    <S.SaveButton type="submit">{t("shopping.add")}</S.SaveButton>
   </S.Form>
-);
+  );
+};

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ItemCard } from "../ItemCard";
 import * as S from "./styled";
 
@@ -8,6 +9,7 @@ export const ItemsSection = ({
   onToggle,
   onDelete,
 }) => {
+  const { t } = useTranslation();
   const toBuy = items.filter((item) => !item.purchased);
   const purchased = items.filter((item) => item.purchased);
 
@@ -15,7 +17,7 @@ export const ItemsSection = ({
     <>
       {toBuy.length > 0 && (
         <S.Block>
-          <S.Header>🛒 Do kupienia</S.Header>
+          <S.Header>🛒 {t("shopping.toBuy")}</S.Header>
           <S.List>
             {toBuy.map((item) => (
               <ItemCard
@@ -31,7 +33,7 @@ export const ItemsSection = ({
 
       {purchased.length > 0 && (
         <S.Block>
-          <S.Header>✓ Kupione</S.Header>
+          <S.Header>✓ {t("shopping.bought")}</S.Header>
           <S.List>
             {purchased.map((item) => (
               <ItemCard

@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectPayments,
@@ -7,10 +8,13 @@ import {
   selectDateFilter,
   setCategoryFilter,
 } from "../../../features/payments/paymentSlice";
+import { selectCurrency, formatAmount } from "../../../features/currency/currencySlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
 const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
+  const { t } = useTranslation();
+  const currency = useSelector(selectCurrency);
   const dispatch = useDispatch();
   const paymentsFromStore = useSelector(selectPayments);
   const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
@@ -44,9 +48,9 @@ const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
 
   const categoryStats = useMemo(() => {
     const stats = {
-      bills: { amount: 0, count: 0, icon: "🧾", name: "Rachunki", color: "#3182ce" },
-      shopping: { amount: 0, count: 0, icon: "🛒", name: "Zakupy", color: "#38a169" },
-      other: { amount: 0, count: 0, icon: "📌", name: "Inne", color: "#718096" },
+      bills: { amount: 0, count: 0, icon: "🧾", nameKey: "charts.bills", color: "#3182ce" },
+      shopping: { amount: 0, count: 0, icon: "🛒", nameKey: "charts.shopping", color: "#38a169" },
+      other: { amount: 0, count: 0, icon: "📌", nameKey: "charts.other", color: "#718096" },
     };
 
     filteredPayments.forEach((payment) => {
@@ -66,10 +70,10 @@ const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
     return (
       <S.ChartsContainer>
         <S.ChartsHeader>
-          <S.ChartsTitle>Zestawienie wg kategorii</S.ChartsTitle>
+          <S.ChartsTitle>{t("charts.byCategory")}</S.ChartsTitle>
         </S.ChartsHeader>
         <S.EmptyChart>
-          Brak danych do wyświetlenia. Dodaj płatności, aby zobaczyć zestawienie.
+          {t("charts.noData")}
         </S.EmptyChart>
       </S.ChartsContainer>
     );
@@ -78,7 +82,7 @@ const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
   return (
     <S.ChartsContainer>
       <S.ChartsHeader>
-        <S.ChartsTitle>Zestawienie wg kategorii</S.ChartsTitle>
+        <S.ChartsTitle>{t("charts.byCategory")}</S.ChartsTitle>
       </S.ChartsHeader>
 
       <S.ChartsGrid>
@@ -110,11 +114,11 @@ const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
             }}
           >
             <S.CategoryIcon>{stat.icon}</S.CategoryIcon>
-            <S.CategoryName>{stat.name}</S.CategoryName>
+            <S.CategoryName>{t(stat.nameKey)}</S.CategoryName>
             <S.CategoryAmount $color={stat.color}>
-              {stat.amount.toFixed(2)} zł
+              {formatAmount(stat.amount, currency)}
             </S.CategoryAmount>
-            <S.CategoryCount>{stat.count} płatności</S.CategoryCount>
+            <S.CategoryCount>{t("charts.paymentsCount", { count: stat.count })}</S.CategoryCount>
           </S.CategoryCard>
         ))}
       </S.ChartsGrid>

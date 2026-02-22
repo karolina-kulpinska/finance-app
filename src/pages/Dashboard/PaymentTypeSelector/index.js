@@ -1,41 +1,43 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import * as S from "./styled";
 
 const PaymentTypeSelector = ({ onSelectType, onClose }) => {
+  const { t } = useTranslation();
   const types = [
     {
       id: "installments",
       icon: "📅",
-      title: "Raty",
-      description: "Płatności cykliczne co miesiąc",
+      title: t("form.typeInstallments"),
+      description: t("form.typeInstallmentsDesc"),
       color: "#3182ce",
     },
     {
       id: "bills",
       icon: "🧾",
-      title: "Rachunki",
-      description: "Prąd, gaz, czynsz, internet",
+      title: t("form.typeBills"),
+      description: t("form.typeBillsDesc"),
       color: "#f5576c",
     },
     {
       id: "shopping",
       icon: "🛒",
-      title: "Zakupy",
-      description: "Zakupy spożywcze i inne",
+      title: t("form.typeShopping"),
+      description: t("form.typeShoppingDesc"),
       color: "#38a169",
     },
     {
       id: "insurance",
       icon: "🛡️",
-      title: "Ubezpieczenie",
-      description: "Opłaty cykliczne co miesiąc",
+      title: t("form.typeInsurance"),
+      description: t("form.typeInsuranceDesc"),
       color: "#3182ce",
     },
     {
       id: "other",
       icon: "📌",
-      title: "Inne",
-      description: "Pozostałe płatności",
+      title: t("form.typeOther"),
+      description: t("form.typeOtherDesc"),
       color: "#718096",
     },
   ];
@@ -43,7 +45,7 @@ const PaymentTypeSelector = ({ onSelectType, onClose }) => {
   return (
     <S.Overlay onClick={onClose}>
       <S.Container onClick={(e) => e.stopPropagation()}>
-        <S.Title>Wybierz typ płatności</S.Title>
+        <S.Title>{t("form.selectType")}</S.Title>
         <S.TypeGrid>
           {types.map((type) => (
             <S.TypeCard
@@ -57,7 +59,7 @@ const PaymentTypeSelector = ({ onSelectType, onClose }) => {
             </S.TypeCard>
           ))}
         </S.TypeGrid>
-        <S.CancelButton onClick={onClose}>Anuluj</S.CancelButton>
+        <S.CancelButton onClick={onClose}>{t("form.cancel")}</S.CancelButton>
       </S.Container>
     </S.Overlay>
   );

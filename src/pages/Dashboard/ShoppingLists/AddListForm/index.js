@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import * as S from "./styled";
 
 export const AddListForm = ({
@@ -7,11 +8,13 @@ export const AddListForm = ({
   shareWithFamily,
   onShareChange,
   onAdd,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <S.Form>
     <S.Input
       type="text"
-      placeholder="Nazwa listy zakupów..."
+      placeholder={t("shopping.listNamePlaceholder")}
       value={newListName}
       onChange={(e) => onNameChange(e.target.value)}
     />
@@ -23,9 +26,10 @@ export const AddListForm = ({
         onChange={(e) => onShareChange(e.target.checked)}
       />
       <S.CheckboxLabel htmlFor="shareNewListMain">
-        👨‍👩‍👧‍👦 Udostępnij rodzinie
+        👨‍👩‍👧‍👦 {t("shopping.shareWithFamily")}
       </S.CheckboxLabel>
     </S.CheckboxWrapper>
-    <S.SaveButton onClick={onAdd}>Dodaj listę</S.SaveButton>
+    <S.SaveButton onClick={onAdd}>{t("shopping.addList")}</S.SaveButton>
   </S.Form>
-);
+  );
+};

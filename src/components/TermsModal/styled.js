@@ -12,12 +12,17 @@ const fadeIn = keyframes`
 const slideIn = keyframes`
   from {
     opacity: 0;
-    transform: translate(-50%, -55%);
+    transform: translate(-50%, -50%) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1);
   }
+`;
+
+const fadeInOnly = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
 `;
 
 export const Overlay = styled.div`
@@ -67,6 +72,7 @@ export const Modal = styled.div`
     left: 0;
     transform: none;
     height: 100vh;
+    animation: ${fadeInOnly} 0.15s ease-out;
   }
 `;
 

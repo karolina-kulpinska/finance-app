@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import PaymentsList from "../../List";
 import ShoppingLists from "../../ShoppingLists";
 import Files from "../../Files";
 import { MembersSection } from "../MembersSection";
 import * as S from "./styled";
 
-const PANELS = {
-  members: "Członkowie",
-  payments: "Płatności",
-  shopping: "Listy zakupów",
-  files: "Pliki",
-  link: "Link zaproszeniowy",
-  danger: "Zarządzanie",
+const PANEL_KEYS = {
+  members: "family.members",
+  payments: "family.payments",
+  shopping: "family.shoppingLists",
+  files: "family.files",
+  link: "family.inviteLink",
+  danger: "family.management",
 };
 
 export const MainView = ({
@@ -30,6 +31,7 @@ export const MainView = ({
   onDeleteFamily,
   isDemo = false,
 }) => {
+  const { t } = useTranslation();
   const [localPanel, setLocalPanel] = useState(null);
   const panel = onOpenPanel ? (activePanel ?? null) : localPanel;
   const setPanel = onOpenPanel ? onOpenPanel : setLocalPanel;
@@ -41,13 +43,13 @@ export const MainView = ({
   }, [family?.name]);
 
   const cards = [
-    { key: "members", label: "Członkowie" },
-    { key: "payments", label: "Płatności" },
-    { key: "shopping", label: "Listy zakupów" },
-    { key: "files", label: "Pliki" },
+    { key: "members", labelKey: "family.members" },
+    { key: "payments", labelKey: "family.payments" },
+    { key: "shopping", labelKey: "family.shoppingLists" },
+    { key: "files", labelKey: "family.files" },
     ...(isOwner ? [
-      { key: "link", label: "Link zaproszeniowy" },
-      { key: "danger", label: "Zarządzanie" },
+      { key: "link", labelKey: "family.inviteLink" },
+      { key: "danger", labelKey: "family.management" },
     ] : []),
   ];
 
@@ -56,7 +58,7 @@ export const MainView = ({
       <S.Container>
         <S.PanelHeader>
           <S.BackButton onClick={() => (onOpenPanel ? handleBack() : setPanel(null))}>←</S.BackButton>
-          <S.PanelTitle>{PANELS[panel]}</S.PanelTitle>
+          <S.PanelTitle>{t(PANEL_KEYS[panel])}</S.PanelTitle>
         </S.PanelHeader>
 
         <S.PanelContent>
@@ -64,7 +66,7 @@ export const MainView = ({
             <>
               {isOwner && onAddMember && (
                 <S.AddMemberButton onClick={onAddMember} disabled={isDemo}>
-                  Zaproś członka
+                  {t("family.inviteMember")}
                 </S.AddMemberButton>
               )}
               <MembersSection
@@ -82,7 +84,7 @@ export const MainView = ({
           {panel === "link" && (
             <S.LinkBox onClick={isDemo ? undefined : onCopyInviteLink} style={{ opacity: isDemo ? 0.6 : 1, cursor: isDemo ? "not-allowed" : "pointer" }}>
               <S.LinkContent>
-                <S.LinkLabel>{isDemo ? "W trybie demo nie możesz kopiować linków" : "Kliknij, aby skopiować link"}</S.LinkLabel>
+                <S.LinkLabel>{isDemo ? t("family.demoCannotCopy") : t("family.copyLinkHint")}</S.LinkLabel>
                 <S.LinkUrl>{getInviteLink()}</S.LinkUrl>
               </S.LinkContent>
             </S.LinkBox>
@@ -91,22 +93,22 @@ export const MainView = ({
             <>
               {onRenameFamily && (
                 <S.RenameForm>
-                  <S.RenameLabel>Zmień nazwę rodziny</S.RenameLabel>
+                  <S.RenameLabel>{t("family.changeName")}</S.RenameLabel>
                   <S.RenameInput
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    placeholder="np. Rodzina Kowalskich"
+                    placeholder={t("family.familyPlaceholder")}
                   />
                   <S.RenameButton
                     onClick={() => onRenameFamily(editName)}
                     disabled={!editName.trim() || editName.trim() === family?.name}
                   >
-                    Zapisz nazwę
+                    {t("family.saveName")}
                   </S.RenameButton>
                 </S.RenameForm>
               )}
               <S.DeleteFamilyButton onClick={onDeleteFamily} disabled={isDemo}>
-                Usuń rodzinę
+                {t("family.deleteFamily")}
               </S.DeleteFamilyButton>
             </>
           )}
@@ -121,15 +123,15 @@ export const MainView = ({
         <S.HeaderContent>
           <S.FamilyTitle>{family.name}</S.FamilyTitle>
           <S.FamilySubtitle>
-            {activeMembers.length} {activeMembers.length === 1 ? "członek" : "członków"}
+            {activeMembers.length} {activeMembers.length === 1 ? t("family.member") : t("family.members")}
           </S.FamilySubtitle>
         </S.HeaderContent>
       </S.FamilyHeader>
 
       <S.CardsGrid>
-        {cards.map(({ key, label }) => (
+        {cards.map(({ key, labelKey }) => (
           <S.Card key={key} onClick={() => setPanel(key)}>
-            <S.CardLabel>{label}</S.CardLabel>
+            <S.CardLabel>{t(labelKey)}</S.CardLabel>
             <S.CardChevron>›</S.CardChevron>
           </S.Card>
         ))}

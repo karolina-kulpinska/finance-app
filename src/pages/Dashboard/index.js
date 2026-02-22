@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../api/firebase";
@@ -32,6 +33,7 @@ import { useAppHistory } from "../../hooks/useAppHistory";
 import * as S from "./styled";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const isModalOpen = useSelector(selectIsModalOpen);
@@ -163,7 +165,7 @@ const Dashboard = () => {
             {categoryFilter !== "all" && (
               <S.CategoryBackBar>
                 <S.CategoryBackButton onClick={() => dispatch(setCategoryFilter("all"))}>
-                  ← Wróć
+                  ← {t("common.back")}
                 </S.CategoryBackButton>
               </S.CategoryBackBar>
             )}
@@ -225,6 +227,13 @@ const Dashboard = () => {
           onAddPayment={handleAddPayment}
           onToggleFilters={() => setShowFilters(!showFilters)}
           showFilters={showFilters}
+          onBack={goBack}
+          showBack={
+            activeTab === "shopping" ||
+            activeTab === "family" ||
+            activeTab === "files" ||
+            activeTab === "profile"
+          }
           hideFilters={
             activeTab === "shopping" ||
             activeTab === "family" ||

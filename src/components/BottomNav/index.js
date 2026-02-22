@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../features/auth/authSlice";
@@ -8,20 +9,21 @@ import { toLanding } from "../../routes";
 import * as S from "./styled";
 
 const BottomNav = ({ activeTab, onTabChange, isDemo = false, onExitDemo }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const tabs = [
-    { id: "dashboard", icon: "🏠", label: "Główna" },
-    { id: "payments", icon: "💳", label: "Płatności" },
-    { id: "shopping", icon: "🛒", label: "Zakupy" },
-    { id: "family", icon: "👨‍👩‍👧‍👦", label: "Rodzina" },
-    { id: "files", icon: "📁", label: "Pliki" },
-    { id: "profile", icon: "👤", label: "Profil" },
+    { id: "dashboard", icon: "🏠", label: t("nav.home") },
+    { id: "payments", icon: "💳", label: t("nav.payments") },
+    { id: "shopping", icon: "🛒", label: t("nav.shopping") },
+    { id: "family", icon: "👨‍👩‍👧‍👦", label: t("nav.family") },
+    { id: "files", icon: "📁", label: t("nav.files") },
+    { id: "profile", icon: "👤", label: t("nav.profile") },
     {
       id: "logout",
       icon: "🚪",
-      label: isDemo ? "Wyjdź" : "Wyloguj",
+      label: isDemo ? t("nav.exitDemo") : t("nav.logout"),
     },
   ];
 

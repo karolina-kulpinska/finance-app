@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import {
@@ -9,6 +10,7 @@ import {
   getCreateCheckoutSession,
   getVerifyAndSetProFromStripe,
 } from "../../../api/firebase";
+import { LANGUAGES } from "../../../i18n";
 import * as S from "./styled";
 
 const Header = ({
@@ -18,12 +20,29 @@ const Header = ({
   hideFilters,
   hideAddPayment,
   onOpenUpgrade,
+  onBack,
+  showBack,
 }) => {
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const isPro = useSelector(selectIsPro);
   const [showUpgradeTip, setShowUpgradeTip] = useState(false);
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [upgradeError, setUpgradeError] = useState("");
+  const langDropdownRef = React.useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target)) {
+        setShowLangDropdown(false);
+      }
+    };
+    if (showLangDropdown) {
+      document.addEventListener("click", handleClickOutside);
+    }
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [showLangDropdown]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !user?.uid) return;
@@ -99,8 +118,8 @@ const Header = ({
   const proOrUpgrade = isPro ? (
     <S.ProBadge>Pro</S.ProBadge>
   ) : (
-    <S.UpgradeButton onClick={handleUpgradeClick} aria-label="Ulepsz do Pro">
-      Ulepsz do Pro
+    <S.UpgradeButton onClick={handleUpgradeClick} aria-label={t("header.upgradePro")}>
+      {t("header.upgradePro")}
     </S.UpgradeButton>
   );
 
@@ -110,19 +129,54 @@ const Header = ({
         <S.TitleSection>
           <S.TitleRow>
             <S.Brand>
-              <S.Logo src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`} alt="Mój Smart Budget" />
-              <S.Title>Mój Smart Budget</S.Title>
+              <S.Logo src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`} alt={t("appName")} />
+              <S.Title>{t("appName")}</S.Title>
             </S.Brand>
-            <S.ProCorner>{proOrUpgrade}</S.ProCorner>
+            <S.HeaderRight>
+              <S.LangFlagWrap ref={langDropdownRef}>
+                <S.LangFlagButton
+                  type="button"
+                  onClick={() => setShowLangDropdown((v) => !v)}
+                  aria-label={t("profile.language")}
+                  title={t("profile.language")}
+                >
+                  {i18n.language?.startsWith("en") ? "🇬🇧" : "🇵🇱"}
+                </S.LangFlagButton>
+                {showLangDropdown && (
+                  <S.LangDropdown>
+                    {LANGUAGES.map((lang) => (
+                      <S.LangOption
+                        key={lang.code}
+                        $active={i18n.language?.startsWith(lang.code)}
+                        onClick={() => {
+                          i18n.changeLanguage(lang.code);
+                          setShowLangDropdown(false);
+                        }}
+                        title={lang.name}
+                        aria-label={lang.name}
+                      >
+                        {lang.code === "pl" ? "🇵🇱" : "🇬🇧"}
+                      </S.LangOption>
+                    ))}
+                  </S.LangDropdown>
+                )}
+              </S.LangFlagWrap>
+              <S.ProCorner>{proOrUpgrade}</S.ProCorner>
+            </S.HeaderRight>
           </S.TitleRow>
           <S.Subtitle>
-            Witaj, {user?.displayName ? user.displayName : "Użytkowniku"}!
+            {t("header.welcome", { name: user?.displayName || t("header.user") })}
           </S.Subtitle>
         </S.TitleSection>
         <S.Actions>
+          {showBack && onBack && (
+            <S.FilterToggleButton onClick={onBack} type="button">
+              ← {t("common.back")}
+            </S.FilterToggleButton>
+          )}
           <S.ProDesktop>{proOrUpgrade}</S.ProDesktop>
           {!hideAddPayment && (
-            <S.AddButton onClick={onAddPayment}>+ Dodaj płatność</S.AddButton>
+            <S.AddButton onClick={onAddPayment}>{t("header.addPayment")}</S.AddButton>
           )}
           {!hideFilters && (
             <S.FilterToggleButton onClick={onToggleFilters}>

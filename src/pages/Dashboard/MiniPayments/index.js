@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import {
   selectPayments,
@@ -6,10 +7,13 @@ import {
   selectCategoryFilter,
   selectDateFilter,
 } from "../../../features/payments/paymentSlice";
+import { selectCurrency, formatAmount } from "../../../features/currency/currencySlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
 const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
+  const { t } = useTranslation();
+  const currency = useSelector(selectCurrency);
   const paymentsFromStore = useSelector(selectPayments);
   const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
   const statusFilter = useSelector(selectFilter);
@@ -63,7 +67,7 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
   return (
     <S.MiniPaymentsContainer>
       <S.Section>
-        <S.SectionTitle>⏳ Do zapłaty</S.SectionTitle>
+        <S.SectionTitle>⏳ {t("miniPayments.toPay")}</S.SectionTitle>
         {upcomingPayments.length > 0 ? (
           <S.PaymentsList>
             {upcomingPayments.map((payment) => (
@@ -76,17 +80,17 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
                   </S.PaymentName>
                   <S.PaymentDate>{payment.date}</S.PaymentDate>
                 </S.PaymentInfo>
-                <S.PaymentAmount $paid={payment.paid}>{payment.amount.toFixed(2)} zł</S.PaymentAmount>
+                <S.PaymentAmount $paid={payment.paid}>{formatAmount(payment.amount, currency)}</S.PaymentAmount>
               </S.MiniPaymentCard>
             ))}
           </S.PaymentsList>
         ) : (
-          <S.EmptyMessage>Brak płatności do zapłaty</S.EmptyMessage>
+          <S.EmptyMessage>{t("miniPayments.noToPay")}</S.EmptyMessage>
         )}
       </S.Section>
 
       <S.Section>
-        <S.SectionTitle>✅ Ostatnio zapłacone</S.SectionTitle>
+        <S.SectionTitle>✅ {t("miniPayments.recentlyPaid")}</S.SectionTitle>
         {recentPaidPayments.length > 0 ? (
           <S.PaymentsList>
             {recentPaidPayments.map((payment) => (
@@ -99,12 +103,12 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
                   </S.PaymentName>
                   <S.PaymentDate>{payment.date}</S.PaymentDate>
                 </S.PaymentInfo>
-                <S.PaymentAmount $paid={payment.paid}>{payment.amount.toFixed(2)} zł</S.PaymentAmount>
+                <S.PaymentAmount $paid={payment.paid}>{formatAmount(payment.amount, currency)}</S.PaymentAmount>
               </S.MiniPaymentCard>
             ))}
           </S.PaymentsList>
         ) : (
-          <S.EmptyMessage>Brak ostatnio zapłaconych</S.EmptyMessage>
+          <S.EmptyMessage>{t("miniPayments.noRecent")}</S.EmptyMessage>
         )}
       </S.Section>
     </S.MiniPaymentsContainer>

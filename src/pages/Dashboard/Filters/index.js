@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { pl, enUS } from "date-fns/locale";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   setFilter,
   setCategoryFilter,
@@ -7,7 +11,20 @@ import {
   selectFilter,
   selectDateFilter,
 } from "../../../features/payments/paymentSlice";
+import { selectCurrency } from "../../../features/currency/currencySlice";
 import * as S from "./styled";
+
+registerLocale("pl", pl);
+registerLocale("en", enUS);
+
+const toLocalDateString = (d) => {
+  if (!d) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+const parseDateString = (s) => (s ? new Date(s + "T12:00:00") : null);
 
 const Filters = ({
   minDate,
@@ -21,7 +38,9 @@ const Filters = ({
   setMaxAmount,
   setSearchName,
 }) => {
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
+  const currency = useSelector(selectCurrency);
   const activeFilter = useSelector(selectFilter);
   const activeDateFilter = useSelector(selectDateFilter);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -36,16 +55,16 @@ const Filters = ({
   }, [minDate, maxDate, dispatch]);
 
   const statusFilters = [
-    { id: "all", label: "Wszystkie" },
-    { id: "unpaid", label: "Do zapłaty" },
-    { id: "paid", label: "Zapłacone" },
+    { id: "all", label: t("filters.allStatus") },
+    { id: "unpaid", label: t("filters.toPay") },
+    { id: "paid", label: t("filters.paid") },
   ];
 
   const dateFilters = [
-    { id: "today", label: "Dziś" },
-    { id: "week", label: "Tydzień" },
-    { id: "month", label: "Miesiąc" },
-    { id: "all", label: "Wszystko" },
+    { id: "today", label: t("filters.today") },
+    { id: "week", label: t("filters.week") },
+    { id: "month", label: t("filters.month") },
+    { id: "all", label: t("filters.all") },
   ];
 
   const handleClearFilters = () => {
@@ -75,14 +94,14 @@ const Filters = ({
         </S.QuickFilters>
 
         <S.AdvancedToggle onClick={() => setShowAdvanced(!showAdvanced)}>
-          {showAdvanced ? "Mniej ▲" : "Więcej ▼"}
+          {showAdvanced ? t("filters.less") : t("filters.more")}
         </S.AdvancedToggle>
       </S.FilterRow>
 
       {showAdvanced && (
         <S.AdvancedSection>
           <S.FilterGroup>
-            <S.FilterLabel>Status</S.FilterLabel>
+            <S.FilterLabel>{t("filters.status")}</S.FilterLabel>
             <S.FilterButtons>
               {statusFilters.map((filter) => (
                 <S.FilterChip
@@ -98,7 +117,7 @@ const Filters = ({
               <S.SearchIcon>🔍</S.SearchIcon>
               <S.SearchInput
                 type="text"
-                placeholder="Wpisz nazwę płatności..."
+                placeholder={t("filters.searchPlaceholder")}
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
               />
@@ -110,43 +129,57 @@ const Filters = ({
             </S.SearchInputWrapper>
           </S.FilterGroup>
 
-          <S.FilterGroup>
-            <S.FilterLabel>Data płatności</S.FilterLabel>
+          <S.FilterGroup as="div">
+            <S.FilterLabel>{t("filters.paymentDate")}</S.FilterLabel>
             <S.AmountInputs>
-              <S.AmountInput
-                type="date"
-                placeholder="Od"
-                value={minDate || ""}
-                onChange={(e) => setMinDate(e.target.value)}
-                style={{ minWidth: 0 }}
-              />
+              <S.DatePickerWrap>
+                <DatePicker
+                  selected={parseDateString(minDate)}
+                  onChange={(d) => setMinDate(d ? toLocalDateString(d) : "")}
+                  locale={i18n.language?.startsWith("en") ? "en" : "pl"}
+                  dateFormat={i18n.language?.startsWith("en") ? "MM/dd/yyyy" : "dd.MM.yyyy"}
+                  placeholderText={t("filters.from")}
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  yearDropdownItemNumber={100}
+                  scrollableYearDropdown
+                />
+              </S.DatePickerWrap>
               <S.AmountSeparator>-</S.AmountSeparator>
-              <S.AmountInput
-                type="date"
-                placeholder="Do"
-                value={maxDate || ""}
-                onChange={(e) => setMaxDate(e.target.value)}
-                style={{ minWidth: 0 }}
-              />
+              <S.DatePickerWrap>
+                <DatePicker
+                  selected={parseDateString(maxDate)}
+                  onChange={(d) => setMaxDate(d ? toLocalDateString(d) : "")}
+                  locale={i18n.language?.startsWith("en") ? "en" : "pl"}
+                  dateFormat={i18n.language?.startsWith("en") ? "MM/dd/yyyy" : "dd.MM.yyyy"}
+                  placeholderText={t("filters.to")}
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  yearDropdownItemNumber={100}
+                  scrollableYearDropdown
+                />
+              </S.DatePickerWrap>
               <S.SearchButton onClick={() => {}} type="button">
-                🔍 Szukaj
+                🔍 {t("filters.search")}
               </S.SearchButton>
             </S.AmountInputs>
           </S.FilterGroup>
 
           <S.FilterGroup>
-            <S.FilterLabel>Kwota (zł)</S.FilterLabel>
+            <S.FilterLabel>{t("filters.amount", { symbol: currency.symbol })}</S.FilterLabel>
             <S.AmountInputs>
               <S.AmountInput
                 type="number"
-                placeholder="Od"
+                placeholder={t("filters.from")}
                 value={minAmount}
                 onChange={(e) => setMinAmount(e.target.value)}
               />
               <S.AmountSeparator>-</S.AmountSeparator>
               <S.AmountInput
                 type="number"
-                placeholder="Do"
+                placeholder={t("filters.to")}
                 value={maxAmount}
                 onChange={(e) => setMaxAmount(e.target.value)}
               />
@@ -154,7 +187,7 @@ const Filters = ({
           </S.FilterGroup>
 
           <S.ClearButton onClick={handleClearFilters}>
-            ✕ Wyczyść filtry
+            {t("filters.clearFilters")}
           </S.ClearButton>
         </S.AdvancedSection>
       )}

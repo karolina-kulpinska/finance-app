@@ -1,7 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import * as S from "./styled";
 
-export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemoveMember, isDemo = false }) => (
+export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemoveMember, isDemo = false }) => {
+  const { t } = useTranslation();
+  return (
   <>
     <S.MembersList>
       {activeMembers.map((member) => (
@@ -22,7 +25,7 @@ export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemov
     </S.MembersList>
     {pendingMembers.length > 0 && (
       <>
-        <S.PendingDivider>Oczekujące zaproszenia</S.PendingDivider>
+        <S.PendingDivider>{t("family.pendingInvitations")}</S.PendingDivider>
         {pendingMembers.map((member) => (
           <S.PendingCard key={member.email}>
             <S.PendingIcon />
@@ -35,4 +38,5 @@ export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemov
       </>
     )}
   </>
-);
+  );
+};

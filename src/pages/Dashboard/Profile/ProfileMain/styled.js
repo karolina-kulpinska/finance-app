@@ -119,6 +119,26 @@ export const SettingArrow = styled.div`
   flex-shrink: 0;
 `;
 
+export const LanguageOption = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: ${({ $active }) => ($active ? "rgba(44, 82, 130, 0.1)" : "transparent")};
+  border: 1px solid ${({ $active }) => ($active ? "#2c5282" : "transparent")};
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+`;
+
 export const AppVersion = styled.div`
   text-align: center;
   font-size: 12px;

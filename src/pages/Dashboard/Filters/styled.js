@@ -158,6 +158,37 @@ export const AmountInputs = styled.div`
   }
 `;
 
+export const DatePickerWrap = styled.div`
+  flex: 1;
+  min-width: 0;
+
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  .react-datepicker__input-container input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid ${({ theme }) => theme.colors.border};
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+
+  .react-datepicker__input-container input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    .react-datepicker__input-container input {
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+  }
+`;
+
 export const AmountInput = styled.input`
   flex: 1;
   min-width: 0;

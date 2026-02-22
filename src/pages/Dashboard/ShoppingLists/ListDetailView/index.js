@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { AddItemForm } from "../AddItemForm";
 import { ItemsSection } from "../ItemsSection";
+import { selectCurrency, formatAmount } from "../../../../features/currency/currencySlice";
 import * as S from "./styled";
 
 export const ListDetailView = ({
@@ -20,6 +23,8 @@ export const ListDetailView = ({
   onDownloadReceipt,
   onDeleteList,
 }) => {
+  const { t } = useTranslation();
+  const currency = useSelector(selectCurrency);
   const receiptInputRef = useRef(null);
 
   const handleShareChange = (checked) => {
@@ -61,8 +66,8 @@ export const ListDetailView = ({
       )}
 
       <S.TotalCard>
-        <S.TotalLabel>Suma:</S.TotalLabel>
-        <S.TotalAmount>{list.totalPrice.toFixed(2)} zł</S.TotalAmount>
+        <S.TotalLabel>{t("shopping.total")}</S.TotalLabel>
+        <S.TotalAmount>{formatAmount(list.totalPrice, currency)}</S.TotalAmount>
       </S.TotalCard>
 
       {list.receipt && (
@@ -73,9 +78,9 @@ export const ListDetailView = ({
               <S.ReceiptDownload
                 type="button"
                 onClick={() => onDownloadReceipt(list.receipt.url, list.receipt.name)}
-                title="Pobierz plik"
+                title={t("shopping.downloadFile")}
               >
-                ⬇️ Pobierz
+                ⬇️ {t("files.download")}
               </S.ReceiptDownload>
             )}
             <S.ReceiptRemove onClick={handleReceiptRemove}>✕</S.ReceiptRemove>
@@ -85,14 +90,14 @@ export const ListDetailView = ({
 
       <S.BottomButtons>
         <S.BottomButton $variant="danger" onClick={() => onDeleteList(list.id)}>
-          🗑️ Usuń listę
+          🗑️ {t("shopping.removeList")}
         </S.BottomButton>
         <S.BottomButton
           $variant="family"
           $active={list.sharedWithFamily === true}
           onClick={() => handleShareChange(!list.sharedWithFamily)}
         >
-          👨‍👩‍👧‍👦 {list.sharedWithFamily ? "Usuń z rodziny" : "Dodaj do rodziny"}
+          👨‍👩‍👧‍👦 {list.sharedWithFamily ? t("shopping.removeFromFamily") : t("shopping.addToFamily")}
         </S.BottomButton>
         <>
           <input
@@ -112,7 +117,7 @@ export const ListDetailView = ({
             disabled={receiptUploading}
             onClick={() => receiptInputRef.current?.click()}
           >
-            {receiptUploading ? "⏳ Wgrywanie…" : "📎 Dodaj paragon"}
+            {receiptUploading ? `⏳ ${t("shopping.uploading")}` : `📎 ${t("shopping.addReceipt")}`}
           </S.BottomButton>
         </>
       </S.BottomButtons>

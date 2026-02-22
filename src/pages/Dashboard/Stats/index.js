@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import {
   selectPayments,
@@ -6,10 +7,13 @@ import {
   selectCategoryFilter,
   selectDateFilter,
 } from "../../../features/payments/paymentSlice";
+import { selectCurrency, formatAmount } from "../../../features/currency/currencySlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
 const Stats = ({ payments: paymentsProp = null }) => {
+  const { t } = useTranslation();
+  const currency = useSelector(selectCurrency);
   const paymentsFromStore = useSelector(selectPayments);
   const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
   const statusFilter = useSelector(selectFilter);
@@ -50,31 +54,32 @@ const Stats = ({ payments: paymentsProp = null }) => {
   const paymentsCount = filteredPayments.length;
   const unpaidCount = filteredPayments.filter((p) => !p.paid).length;
 
+  const paidCountVal = paymentsCount - unpaidCount;
   const stats = [
     {
       id: 1,
       icon: "💰",
-      label: "Wszystkie",
+      label: t("stats.all"),
       value: `${totalAmount.toFixed(2)} zł`,
-      subtext: `${paymentsCount} płatności`,
+      subtext: t("stats.paymentsCount", { count: paymentsCount }),
       variant: "total",
       delay: "0s",
     },
     {
       id: 2,
       icon: "⏳",
-      label: "Do zapłaty",
-      value: `${unpaidAmount.toFixed(2)} zł`,
-      subtext: `${unpaidCount} niezapłaconych`,
+      label: t("stats.toPay"),
+      value: formatAmount(unpaidAmount, currency),
+      subtext: t("stats.unpaidCount", { count: unpaidCount }),
       variant: "unpaid",
       delay: "0.1s",
     },
     {
       id: 3,
       icon: "✅",
-      label: "Zapłacone",
-      value: `${paidAmount.toFixed(2)} zł`,
-      subtext: `${paymentsCount - unpaidCount} opłaconych`,
+      label: t("stats.paid"),
+      value: formatAmount(paidAmount, currency),
+      subtext: t("stats.paidCount", { count: paidCountVal }),
       variant: "paid",
       delay: "0.2s",
     },

@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectPayments,
@@ -25,6 +26,7 @@ const PaymentsList = ({
   sharedOnly = false,
   payments: paymentsProp = null,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const paymentsFromStore = useSelector(selectPayments);
   const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
@@ -200,18 +202,17 @@ const PaymentsList = ({
         >
           <S.ConfirmModalBox onClick={(e) => e.stopPropagation()}>
             <S.ConfirmTitle id="bulk-delete-title">
-              Usuń zaznaczone płatności
+              {t("list.deleteSelected")}
             </S.ConfirmTitle>
             <S.ConfirmMessage>
-              Czy na pewno chcesz usunąć {selectedIds.length} płatności? Ta
-              czynność jest nieodwracalna.
+              {t("list.deleteConfirm", { count: selectedIds.length })}
             </S.ConfirmMessage>
             <S.ConfirmButtonGroup>
               <S.ConfirmCancelBtn onClick={() => setShowBulkDeleteConfirm(false)}>
-                Anuluj
+                {t("common.cancel")}
               </S.ConfirmCancelBtn>
               <S.ConfirmDeleteBtn onClick={handleBulkDeleteConfirm}>
-                Usuń ({selectedIds.length})
+                {t("list.deleteCount", { count: selectedIds.length })}
               </S.ConfirmDeleteBtn>
             </S.ConfirmButtonGroup>
           </S.ConfirmModalBox>
@@ -221,8 +222,8 @@ const PaymentsList = ({
         <S.TitleRow>
           <S.ListTitle>
             {sharedOnly
-              ? `Płatności udostępnione rodzinie (${filteredPayments.length})`
-              : `Wszystkie płatności (${filteredPayments.length})`}
+              ? t("list.sharedPayments", { count: filteredPayments.length })
+              : t("list.allPayments", { count: filteredPayments.length })}
           </S.ListTitle>
           <S.CollapseButton
             onClick={() => {
@@ -230,7 +231,7 @@ const PaymentsList = ({
               setExpandedPayment(null);
             }}
           >
-            {collapsed ? "Rozwiń" : "Zwiń"}
+            {collapsed ? t("list.expand") : t("list.collapse")}
           </S.CollapseButton>
         </S.TitleRow>
         <S.HeaderActions>
@@ -243,7 +244,7 @@ const PaymentsList = ({
                 id="select-all-payments"
               />
               <S.SelectAllLabel htmlFor="select-all-payments">
-                Zaznacz wszystkie
+                {t("list.selectAll")}
               </S.SelectAllLabel>
             </S.SelectAllWrapper>
           )}
@@ -252,7 +253,7 @@ const PaymentsList = ({
               type="button"
               onClick={() => setShowBulkDeleteConfirm(true)}
             >
-              🗑️ Usuń zaznaczone ({selectedIds.length})
+              🗑️ {t("list.deleteSelected")} ({selectedIds.length})
             </S.BulkDeleteButton>
           )}
         </S.HeaderActions>

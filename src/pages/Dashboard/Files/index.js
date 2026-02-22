@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { ref, deleteObject } from "firebase/storage";
 import { storage } from "../../../api/firebase";
@@ -9,7 +10,7 @@ import { showNotification } from "../../../features/notification/notificationSli
 import * as S from "./styled";
 import { generateFilesPDF } from "./generatePDF";
 
-function getShoppingListReceipts(sharedOnly) {
+function getShoppingListReceipts(sharedOnly, locale = "pl-PL") {
   try {
     const raw = localStorage.getItem("shoppingLists");
     const lists = raw ? JSON.parse(raw) : [];
@@ -18,7 +19,7 @@ function getShoppingListReceipts(sharedOnly) {
       .map((l) => {
         const createdAt = l.createdAt ? new Date(l.createdAt) : null;
         const dateISO = createdAt ? createdAt.toISOString().split("T")[0] : "";
-        const dateDisplay = createdAt ? createdAt.toLocaleDateString("pl-PL") : "";
+        const dateDisplay = createdAt ? createdAt.toLocaleDateString(locale) : "";
         return {
           id: `receipt-${l.id}`,
           name: l.name,
@@ -35,7 +36,11 @@ function getShoppingListReceipts(sharedOnly) {
   }
 }
 
+const dateLocale = (lang) => (lang?.startsWith("en") ? "en-US" : "pl-PL");
+
 const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = false }) => {
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n.language);
   const dispatch = useDispatch();
   const paymentsFromStore = useSelector(selectPayments);
   const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
@@ -49,10 +54,10 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
   const [selected, setSelected] = useState([]);
 
   const filters = [
-    { id: "all", label: "Wszystkie", icon: "📋" },
-    { id: "bills", label: "Rachunki", icon: "🧾" },
-    { id: "shopping", label: "Zakupy", icon: "🛒" },
-    { id: "other", label: "Inne", icon: "📌" },
+    { id: "all", label: t("files.all"), icon: "📋" },
+    { id: "bills", label: t("files.bills"), icon: "🧾" },
+    { id: "shopping", label: t("files.shopping"), icon: "🛒" },
+    { id: "other", label: t("files.other"), icon: "📌" },
   ];
 
   const filesFromPayments = payments
@@ -64,12 +69,12 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
         if (typeof p.date === "string" && p.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
           dateISO = p.date;
           const d = new Date(p.date + "T00:00:00");
-          dateDisplay = d.toLocaleDateString("pl-PL");
+          dateDisplay = d.toLocaleDateString(locale);
         } else {
           const paymentDate = new Date(p.date);
           if (!isNaN(paymentDate.getTime())) {
             dateISO = paymentDate.toISOString().split("T")[0];
-            dateDisplay = paymentDate.toLocaleDateString("pl-PL");
+            dateDisplay = paymentDate.toLocaleDateString(locale);
           }
         }
       }
@@ -80,46 +85,45 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
         fromShoppingList: false,
       };
     });
-  const filesFromLists = getShoppingListReceipts(sharedOnly);
+  const filesFromLists = getShoppingListReceipts(sharedOnly, locale);
   
-  // Przykładowe pliki dla demo
   const demoFiles = isDemo ? [
     {
       id: "demo_file_1",
-      name: "Rachunek za prąd",
+      name: locale === "en-US" ? "Electricity bill" : "Rachunek za prąd",
       attachmentName: "rachunek_prad_2024_01.pdf",
       date: "2024-01-15",
-      dateDisplay: "15 stycznia 2024",
+      dateDisplay: new Date("2024-01-15").toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" }),
       category: "bills",
       attachmentUrl: null, // Brak URL - nie można pobrać
       fromShoppingList: false,
     },
     {
       id: "demo_file_2",
-      name: "Rachunek za gaz",
+      name: locale === "en-US" ? "Gas bill" : "Rachunek za gaz",
       attachmentName: "rachunek_gaz_2024_01.pdf",
       date: "2024-01-20",
-      dateDisplay: "20 stycznia 2024",
+      dateDisplay: new Date("2024-01-20").toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" }),
       category: "bills",
       attachmentUrl: null,
       fromShoppingList: false,
     },
     {
       id: "demo_file_3",
-      name: "Paragon - Zakupy spożywcze",
+      name: locale === "en-US" ? "Receipt - Groceries" : "Paragon - Zakupy spożywcze",
       attachmentName: "paragon_zakupy_2024_01.jpg",
       date: "2024-01-25",
-      dateDisplay: "25 stycznia 2024",
+      dateDisplay: new Date("2024-01-25").toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" }),
       category: "shopping",
       attachmentUrl: null,
       fromShoppingList: false,
     },
     {
       id: "demo_file_4",
-      name: "Faktura - Internet",
+      name: locale === "en-US" ? "Invoice - Internet" : "Faktura - Internet",
       attachmentName: "faktura_internet_2024_02.pdf",
       date: "2024-02-01",
-      dateDisplay: "1 lutego 2024",
+      dateDisplay: new Date("2024-02-01").toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" }),
       category: "other",
       attachmentUrl: null,
       fromShoppingList: false,
@@ -150,7 +154,7 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
 
   const handleDownload = (url, name) => {
     if (isDemo) {
-      dispatch(showNotification({ message: "W trybie demo nie możesz pobierać plików.", type: "info" }));
+      dispatch(showNotification({ message: t("files.demoNoDownload"), type: "info" }));
       return;
     }
     const fileName = name || "plik";
@@ -267,15 +271,14 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
         >
           <S.ConfirmModalBox onClick={(e) => e.stopPropagation()}>
             <S.ConfirmTitle id="confirm-delete-title">
-              Usuń plik
+              {t("files.deleteFile")}
             </S.ConfirmTitle>
             <S.ConfirmMessage>
-              Czy na pewno chcesz usunąć ten plik z całej aplikacji? Ta czynność
-              jest nieodwracalna.
+              {t("files.deleteFileConfirm")}
             </S.ConfirmMessage>
             <S.ConfirmButtonGroup>
               <S.ConfirmCancelBtn onClick={() => setFileToDelete(null)}>
-                Anuluj
+                {t("common.cancel")}
               </S.ConfirmCancelBtn>
               <S.ConfirmDeleteBtn
                 onClick={() => {
@@ -284,7 +287,7 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
                 }}
                 disabled={deletingId === fileToDelete.id}
               >
-                {deletingId === fileToDelete.id ? "Usuwanie…" : "Usuń"}
+                {deletingId === fileToDelete.id ? t("files.deleting") : t("common.delete")}
               </S.ConfirmDeleteBtn>
             </S.ConfirmButtonGroup>
           </S.ConfirmModalBox>
@@ -317,11 +320,11 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
             placeholder="Do"
           />
           <S.SearchButton onClick={handleSearch} type="button">
-            🔍 Szukaj
+            🔍 {t("files.search")}
           </S.SearchButton>
           {(activeMinDate || activeMaxDate || activeFilter !== "all") && (
             <S.ClearButton onClick={handleClearFilters} type="button">
-              ✕ Wyczyść
+              ✕ {t("files.clear")}
             </S.ClearButton>
           )}
         </S.DateInputs>
@@ -330,13 +333,13 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
       {filteredFiles.length === 0 ? (
         <S.EmptyState>
           <S.EmptyIcon>📂</S.EmptyIcon>
-          <S.EmptyTitle>Brak plików</S.EmptyTitle>
+          <S.EmptyTitle>{t("files.noFiles")}</S.EmptyTitle>
           <S.EmptyText>
             {isDemo
-              ? "W trybie demo nie możesz dodawać załączników do płatności. Zarejestruj się, aby przesyłać pliki."
+              ? t("files.demoNoAttach")
               : sharedOnly
-                ? "Brak plików udostępnionych rodzinie. Zaznacz „Udostępnij rodzinie” przy płatności z załącznikiem."
-                : "Dodaj załączniki do płatności lub paragony do list zakupów, aby zobaczyć je tutaj."}
+                ? t("files.noSharedFiles")
+                : t("files.addFilesHint")}
           </S.EmptyText>
         </S.EmptyState>
       ) : (
@@ -351,21 +354,21 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
                 }
                 onChange={handleSelectAll}
               />
-              <S.SelectAllLabel>Zaznacz wszystkie</S.SelectAllLabel>
+              <S.SelectAllLabel>{t("files.selectAll")}</S.SelectAllLabel>
               <S.DownloadSelectedButton
                 disabled={selected.length === 0}
                 onClick={handleDownloadSelected}
-                title="Pobierz wybrane"
+                title={t("files.downloadSelected")}
               >
-                Pobierz wybrane ({selected.length})
+                {t("files.downloadSelected")} ({selected.length})
               </S.DownloadSelectedButton>
               <S.DownloadSelectedButton
                 disabled={selected.length === 0}
                 onClick={handleDownloadPDF}
                 $variant="pdf"
-                title="PDF zestawienie"
+                title={t("files.pdfReport")}
               >
-                PDF zestawienie
+                {t("files.pdfReport")}
               </S.DownloadSelectedButton>
             </S.FilesActions>
           )}
@@ -396,7 +399,7 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
                         e.stopPropagation();
                         handleDownload(file.attachmentUrl, file.attachmentName);
                       }}
-                      title="Pobierz"
+                      title={t("files.download")}
                     >
                       ⬇️
                     </S.DownloadIcon>
@@ -408,7 +411,7 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
                         opacity: 0.5,
                         cursor: "not-allowed",
                       }}
-                      title="W trybie demo nie można pobierać plików"
+                      title={t("files.demoNoDownload")}
                     >
                       ⬇️
                     </span>
@@ -419,7 +422,7 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
                         flexShrink: 0,
                         opacity: 0.7,
                       }}
-                      title="Załączony do listy zakupów"
+                      title={t("files.attachedToList")}
                     >
                       📎
                     </span>
@@ -431,7 +434,7 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
                         setFileToDelete(file);
                       }}
                       disabled={deletingId === file.id}
-                      title="Usuń plik"
+                      title={t("files.deleteFile")}
                     >
                       {deletingId === file.id ? "⏳" : "🗑️"}
                     </S.DeleteIcon>

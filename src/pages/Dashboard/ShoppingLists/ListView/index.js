@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { EmptyState } from "../EmptyState";
 import { AddListForm } from "../AddListForm";
 import { ListCard } from "../ListCard";
@@ -16,12 +17,14 @@ export const ListView = ({
   sharedOnly,
   listsEmpty,
   onSelectList,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <S.Container>
     <S.Header>
-      <S.Title>🛒 Listy zakupów</S.Title>
+      <S.Title>🛒 {t("shopping.title")}</S.Title>
       <S.AddButton onClick={onToggleAddForm}>
-        {showAddForm ? "✕ Anuluj" : "+ Nowa lista"}
+        {showAddForm ? `✕ ${t("common.cancel")}` : t("shopping.newList")}
       </S.AddButton>
     </S.Header>
 
@@ -49,4 +52,5 @@ export const ListView = ({
       </S.ListsGrid>
     )}
   </S.Container>
-);
+  );
+};

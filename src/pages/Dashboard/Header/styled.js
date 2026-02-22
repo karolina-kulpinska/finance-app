@@ -61,6 +61,64 @@ export const Title = styled.h1`
   }
 `;
 
+export const HeaderRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+`;
+
+export const LangFlagWrap = styled.div`
+  position: relative;
+`;
+
+export const LangFlagButton = styled.button`
+  padding: 4px 6px;
+  background: transparent;
+  border: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};
+  border-radius: 8px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(49, 130, 206, 0.1);
+    border-color: #3182ce;
+  }
+`;
+
+export const LangDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: white;
+  border: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  min-width: 140px;
+`;
+
+export const LangOption = styled.button`
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  background: ${({ $active }) => ($active ? "rgba(49, 130, 206, 0.1)" : "white")};
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(49, 130, 206, 0.1);
+  }
+`;
+
 export const ProCorner = styled.div`
   display: none;
   flex-shrink: 0;
@@ -68,7 +126,6 @@ export const ProCorner = styled.div`
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     display: flex;
     align-items: center;
-    margin-left: auto;
   }
 `;
 

@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { FaUniversity } from "react-icons/fa";
 import { getBankConfig } from "../../../../utils/bankIcons";
 import { getCategoryLabel, getPriorityLabel } from "../constants";
+import { selectCurrency, formatAmount } from "../../../../features/currency/currencySlice";
 import { isOverdue, getOverdueDays } from "../utils";
 import * as S from "./styled";
 
@@ -13,6 +16,9 @@ export const PaymentDetailModal = ({
   onDelete,
   onDownload,
 }) => {
+  const { t } = useTranslation();
+  const currency = useSelector(selectCurrency);
+
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape") {
@@ -51,13 +57,13 @@ export const PaymentDetailModal = ({
           <S.ModalTitle>
             {overdue && (
               <S.OverdueWarning>
-                ⚠️ Po terminie: {overdueDays} dni
+                ⚠️ {t("paymentCard.overdueDays", { days: overdueDays })}
               </S.OverdueWarning>
             )}
             {payment.name}
             {payment.isInstallment && (
               <S.InstallmentBadge>
-                Rata {payment.installmentInfo.current}/{payment.installmentInfo.total}
+                {t("paymentCard.installment")} {payment.installmentInfo.current}/{payment.installmentInfo.total}
               </S.InstallmentBadge>
             )}
             {payment.sharedWithFamily && <S.FamilyBadge>👨‍👩‍👧‍👦</S.FamilyBadge>}
@@ -67,54 +73,54 @@ export const PaymentDetailModal = ({
 
         <S.ModalBody>
           <S.AmountSection>
-            <S.AmountLabel>Kwota</S.AmountLabel>
+            <S.AmountLabel>{t("paymentCard.amount")}</S.AmountLabel>
             <S.AmountValue $paid={payment.paid}>
-              {Number(payment.amount).toFixed(2)} zł
+              {formatAmount(payment.amount, currency)}
             </S.AmountValue>
           </S.AmountSection>
 
           <S.DetailsGrid>
             <S.DetailRow>
-              <S.DetailLabel>Data płatności:</S.DetailLabel>
+              <S.DetailLabel>{t("paymentCard.paymentDate")}</S.DetailLabel>
               <S.DetailValue>{payment.date}</S.DetailValue>
             </S.DetailRow>
 
             <S.DetailRow>
-              <S.DetailLabel>Kategoria:</S.DetailLabel>
-              <S.DetailValue>{getCategoryLabel(payment.category)}</S.DetailValue>
+              <S.DetailLabel>{t("paymentCard.category")}</S.DetailLabel>
+              <S.DetailValue>{getCategoryLabel(payment.category, t)}</S.DetailValue>
             </S.DetailRow>
 
             <S.DetailRow>
-              <S.DetailLabel>Priorytet:</S.DetailLabel>
+              <S.DetailLabel>{t("paymentCard.priority")}</S.DetailLabel>
               <S.PriorityBadge $priority={payment.priority}>
-                {getPriorityLabel(payment.priority)}
+                {getPriorityLabel(payment.priority, t)}
               </S.PriorityBadge>
             </S.DetailRow>
 
             <S.DetailRow>
-              <S.DetailLabel>Status:</S.DetailLabel>
+              <S.DetailLabel>{t("paymentCard.status")}</S.DetailLabel>
               <S.StatusBadge $paid={payment.paid}>
-                {payment.paid ? "✅ Zapłacone" : "⏳ Do zapłaty"}
+                {payment.paid ? `✅ ${t("filters.paid")}` : `⏳ ${t("filters.toPay")}`}
               </S.StatusBadge>
             </S.DetailRow>
 
             {payment.bank && (
               <S.DetailRow>
-                <S.DetailLabel>Metoda płatności:</S.DetailLabel>
+                <S.DetailLabel>{t("paymentCard.paymentMethod")}</S.DetailLabel>
                 {renderBankIcon()}
               </S.DetailRow>
             )}
 
             {payment.paymentType && (
               <S.DetailRow>
-                <S.DetailLabel>Typ płatności:</S.DetailLabel>
+                <S.DetailLabel>{t("paymentCard.paymentType")}</S.DetailLabel>
                 <S.DetailValue>{payment.paymentType}</S.DetailValue>
               </S.DetailRow>
             )}
 
             {payment.notes && (
               <S.DetailRow $fullWidth>
-                <S.DetailLabel>Notatki:</S.DetailLabel>
+                <S.DetailLabel>{t("paymentCard.notes")}</S.DetailLabel>
                 <S.NotesText>"{payment.notes}"</S.NotesText>
               </S.DetailRow>
             )}
@@ -122,21 +128,21 @@ export const PaymentDetailModal = ({
 
           <S.ActionsSection>
             <S.ActionButton $variant="status" onClick={() => onStatusToggle(payment)}>
-              {payment.paid ? "↩️ Oznacz jako niezapłacone" : "✓ Oznacz jako zapłacone"}
+              {payment.paid ? `↩️ ${t("paymentCard.markAsUnpaid")}` : `✓ ${t("paymentCard.markAsPaid")}`}
             </S.ActionButton>
             <S.ActionButton $variant="edit" onClick={() => onEdit(payment)}>
-              ✏️ Edytuj
+              ✏️ {t("common.edit")}
             </S.ActionButton>
             {payment.attachmentUrl && (
               <S.ActionButton
                 $variant="download"
                 onClick={() => onDownload(payment.attachmentUrl, payment.attachmentName)}
               >
-                📎 Pobierz załącznik
+                📎 {t("paymentCard.downloadAttachment")}
               </S.ActionButton>
             )}
             <S.ActionButton $variant="delete" onClick={() => onDelete(payment.id)}>
-              🗑️ Usuń
+              🗑️ {t("common.delete")}
             </S.ActionButton>
           </S.ActionsSection>
         </S.ModalBody>

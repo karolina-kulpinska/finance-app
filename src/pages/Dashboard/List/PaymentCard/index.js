@@ -1,7 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { FaUniversity } from "react-icons/fa";
 import { getBankConfig } from "../../../../utils/bankIcons";
 import { getCategoryLabel, getPriorityLabel } from "../constants";
+import { selectCurrency, formatAmount } from "../../../../features/currency/currencySlice";
 import { isOverdue, getOverdueDays } from "../utils";
 import * as S from "./styled";
 
@@ -16,6 +19,8 @@ export const PaymentCard = ({
   onDelete,
   onDownload,
 }) => {
+  const { t } = useTranslation();
+  const currency = useSelector(selectCurrency);
   const overdue = isOverdue(payment);
   const overdueDays = overdue ? getOverdueDays(payment) : 0;
 
@@ -50,12 +55,12 @@ export const PaymentCard = ({
             type="checkbox"
             checked={!!selected}
             onChange={() => onSelect()}
-            aria-label={`Zaznacz ${payment.name}`}
+            aria-label={t("paymentCard.selectLabel", { name: payment.name })}
           />
         </S.CardCheckboxWrapper>
       )}
       <S.PaymentIcon>
-        {getCategoryLabel(payment.category).split(" ")[0]}
+        {getCategoryLabel(payment.category, t).split(" ")[0]}
       </S.PaymentIcon>
       <S.CompactInfo>
         <S.CompactName $paid={payment.paid} $overdue={overdue}>
@@ -63,7 +68,7 @@ export const PaymentCard = ({
             <>
               ⚠️{" "}
               <b style={{ color: "#c53030" }}>
-                Po terminie: {overdueDays} dni
+                {t("paymentCard.overdueDays", { days: overdueDays })}
               </b>{" "}
               <br />
             </>
@@ -77,7 +82,7 @@ export const PaymentCard = ({
           {payment.sharedWithFamily && <S.FamilyBadge>👨‍👩‍👧‍👦</S.FamilyBadge>}
         </S.CompactName>
         <S.CompactAmount $paid={payment.paid} $expanded={isExpanded}>
-          {Number(payment.amount).toFixed(2)} zł
+          {formatAmount(payment.amount, currency)}
         </S.CompactAmount>
         <S.CompactDate>{payment.date}</S.CompactDate>
       </S.CompactInfo>
@@ -85,24 +90,24 @@ export const PaymentCard = ({
       {isExpanded && (
         <S.ExpandedDetails onClick={(e) => e.stopPropagation()}>
           <S.DetailRow>
-            <S.DetailLabel>Kategoria:</S.DetailLabel>
-            <S.DetailValue>{getCategoryLabel(payment.category)}</S.DetailValue>
+            <S.DetailLabel>{t("paymentCard.category")}</S.DetailLabel>
+            <S.DetailValue>{getCategoryLabel(payment.category, t)}</S.DetailValue>
           </S.DetailRow>
           <S.DetailRow>
-            <S.DetailLabel>Priorytet:</S.DetailLabel>
+            <S.DetailLabel>{t("paymentCard.priority")}</S.DetailLabel>
             <S.PriorityBadge $priority={payment.priority}>
-              {getPriorityLabel(payment.priority)}
+              {getPriorityLabel(payment.priority, t)}
             </S.PriorityBadge>
           </S.DetailRow>
           <S.DetailRow>
-            <S.DetailLabel>Status:</S.DetailLabel>
+            <S.DetailLabel>{t("paymentCard.status")}</S.DetailLabel>
             <S.DetailValue>
-              {payment.paid ? "✅ Zapłacone" : "⏳ Do zapłaty"}
+              {payment.paid ? `✅ ${t("filters.paid")}` : `⏳ ${t("filters.toPay")}`}
             </S.DetailValue>
           </S.DetailRow>
           {payment.bank && (
             <S.DetailRow>
-              <S.DetailLabel>Płatność:</S.DetailLabel>
+              <S.DetailLabel>{t("paymentCard.payment")}</S.DetailLabel>
               {renderBankIcon()}
             </S.DetailRow>
           )}

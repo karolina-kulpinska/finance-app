@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { pl, enUS } from "date-fns/locale";
+import "react-datepicker/dist/react-datepicker.css";
 import { ref, deleteObject } from "firebase/storage";
 import { storage } from "../../../api/firebase";
 import { openStorageDownloadUrl } from "../../../utils/firebaseStorageDownload";
@@ -9,6 +12,13 @@ import { updatePaymentRequest } from "../../../features/payments/paymentSlice";
 import { showNotification } from "../../../features/notification/notificationSlice";
 import * as S from "./styled";
 import { generateFilesPDF } from "./generatePDF";
+
+registerLocale("pl", pl);
+registerLocale("en", enUS);
+
+const parseDate = (s) => (s ? new Date(s + "T12:00:00") : null);
+const toDateString = (d) =>
+  d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` : "";
 
 function getShoppingListReceipts(sharedOnly, locale = "pl-PL") {
   try {
@@ -306,19 +316,33 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
           ))}
         </S.FiltersChipsRow>
         <S.DateInputs>
-          <S.DateInput
-            type="date"
-            value={minDate}
-            onChange={(e) => setMinDate(e.target.value)}
-            placeholder="Od"
-          />
+          <S.DatePickerWrap>
+            <DatePicker
+              selected={parseDate(minDate)}
+              onChange={(d) => setMinDate(toDateString(d))}
+              locale={i18n.language?.startsWith("en") ? "en" : "pl"}
+              dateFormat={i18n.language?.startsWith("en") ? "MM/dd/yyyy" : "dd.MM.yyyy"}
+              placeholderText={t("filters.from")}
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              withPortal
+            />
+          </S.DatePickerWrap>
           <S.DateSeparator>-</S.DateSeparator>
-          <S.DateInput
-            type="date"
-            value={maxDate}
-            onChange={(e) => setMaxDate(e.target.value)}
-            placeholder="Do"
-          />
+          <S.DatePickerWrap>
+            <DatePicker
+              selected={parseDate(maxDate)}
+              onChange={(d) => setMaxDate(toDateString(d))}
+              locale={i18n.language?.startsWith("en") ? "en" : "pl"}
+              dateFormat={i18n.language?.startsWith("en") ? "MM/dd/yyyy" : "dd.MM.yyyy"}
+              placeholderText={t("filters.to")}
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              withPortal
+            />
+          </S.DatePickerWrap>
           <S.SearchButton onClick={handleSearch} type="button">
             🔍 {t("files.search")}
           </S.SearchButton>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addPaymentRequest,
@@ -15,12 +15,17 @@ import {
 import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
 import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
-import { bankOptions } from "../../../utils/bankIcons";
 import { selectCurrency } from "../../../features/currency/currencySlice";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { pl, enUS } from "date-fns/locale";
+import "react-datepicker/dist/react-datepicker.css";
 import ReceiptScanner from "../../../components/ReceiptScanner";
 import { TypeSpecificFields } from "./TypeSpecificFields";
 import { AttachmentField } from "./AttachmentField";
 import * as S from "./styled";
+
+registerLocale("pl", pl);
+registerLocale("en", enUS);
 
 const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
   const { t, i18n } = useTranslation();
@@ -32,6 +37,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
   const [fileInfo, setFileInfo] = useState(null);
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     setValue,
@@ -397,11 +403,24 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
               </S.FormGroup>
             )}
 
-            <S.FormGroup as="div" lang={i18n.language?.split("-")[0] || "en"}>
+            <S.FormGroup as="div">
               <S.Label>{t("form.paymentDate")}</S.Label>
-              <S.Input
-                type="date"
-                {...register("date", { required: t("form.dateRequired") })}
+              <Controller
+                name="date"
+                control={control}
+                rules={{ required: t("form.dateRequired") }}
+                render={({ field }) => (
+                  <S.DatePickerWrap>
+                    <DatePicker
+                      selected={field.value ? new Date(field.value + "T12:00:00") : null}
+                      onChange={(d) => field.onChange(d ? d.toISOString().split("T")[0] : "")}
+                      locale={i18n.language?.startsWith("en") ? "en" : "pl"}
+                      dateFormat={i18n.language?.startsWith("en") ? "MM/dd/yyyy" : "dd.MM.yyyy"}
+                      placeholderText={t("form.dateRequired")}
+                      withPortal
+                    />
+                  </S.DatePickerWrap>
+                )}
               />
               {errors.date && (
                 <S.ErrorMessage>{errors.date.message}</S.ErrorMessage>
@@ -415,27 +434,6 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
                   <option value="bills">🧾 {t("charts.bills")}</option>
                   <option value="shopping">🛒 {t("charts.shopping")}</option>
                   <option value="other">📌 {t("charts.other")}</option>
-                </S.Select>
-              </S.FormGroup>
-            )}
-
-            {paymentType !== "installments" && paymentType !== "insurance" && (
-              <S.FormGroup $fullWidth>
-                <S.Label>{t("form.paymentMethod")}</S.Label>
-                <S.Select
-                  {...register("bank")}
-                  defaultValue={watch("bank") || "other"}
-                  style={{ maxWidth: 320, width: "100%", fontSize: 14 }}
-                >
-{bankOptions.map((bank) => (
-                  <option key={bank.value} value={bank.value}>
-                    {bank.value === "cash"
-                      ? t("form.bankCash")
-                      : bank.value === "other"
-                        ? t("form.bankOther")
-                        : bank.label}
-                  </option>
-                ))}
                 </S.Select>
               </S.FormGroup>
             )}

@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Tesseract from "tesseract.js";
+import i18n from "../../i18n";
 import * as S from "./styled";
 
 const ReceiptScanner = ({ onScanComplete }) => {
+  const { t } = useTranslation();
   const [scanning, setScanning] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -26,7 +29,7 @@ const ReceiptScanner = ({ onScanComplete }) => {
       const parsedData = parseReceipt(text);
       onScanComplete(parsedData);
     } catch (error) {
-      alert("Nie udało się odczytać paragonu. Spróbuj ponownie.");
+      alert(t("form.receiptScanError"));
     } finally {
       setScanning(false);
       setProgress(0);
@@ -67,7 +70,7 @@ const ReceiptScanner = ({ onScanComplete }) => {
       : 0;
 
     return {
-      name: storeName || "Zakupy",
+      name: storeName || (i18n.language?.startsWith("en") ? "Shopping" : "Zakupy"),
       amount: totalAmount,
       date: date || new Date().toISOString().split("T")[0],
       category: "shopping",
@@ -80,12 +83,12 @@ const ReceiptScanner = ({ onScanComplete }) => {
         {scanning ? (
           <>
             <S.ScanIcon>⏳</S.ScanIcon>
-            Skanowanie... {progress}%
+            {t("form.scanning")} {progress}%
           </>
         ) : (
           <>
             <S.ScanIcon>📸</S.ScanIcon>
-            Zeskanuj paragon
+            {t("form.scanReceipt")}
           </>
         )}
       </S.ScanButton>
@@ -103,7 +106,7 @@ const ReceiptScanner = ({ onScanComplete }) => {
         </S.ProgressBar>
       )}
       <S.HintText>
-        📝 Zrób zdjęcie lub wybierz plik - wypełnimy formularz automatycznie
+        📝 {t("form.scanHint")}
       </S.HintText>
     </S.Container>
   );

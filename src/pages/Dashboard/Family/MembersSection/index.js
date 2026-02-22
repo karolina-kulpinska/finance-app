@@ -16,7 +16,7 @@ export const MembersSection = ({ activeMembers, pendingMembers, isOwner, onRemov
             <S.MemberName>{member.displayName}</S.MemberName>
             <S.MemberEmail>{member.email}</S.MemberEmail>
           </S.MemberInfo>
-          {member.role === "owner" && <S.OwnerBadge>Właściciel</S.OwnerBadge>}
+          {member.role === "owner" && <S.OwnerBadge>{t("family.owner")}</S.OwnerBadge>}
           {isOwner && member.role !== "owner" && (
             <S.RemoveButton onClick={() => onRemoveMember(member.email)}>✕</S.RemoveButton>
           )}

@@ -43,6 +43,31 @@ export const DateInputs = styled.div`
   }
 `;
 
+export const DatePickerWrap = styled.div`
+  flex: 1;
+  min-width: 0;
+
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  .react-datepicker__input-container input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: inherit;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    .react-datepicker__input-container input {
+      padding: 4px 6px;
+      font-size: 11px;
+    }
+  }
+`;
+
 export const DateInput = styled.input`
   padding: 6px 10px;
   border: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};

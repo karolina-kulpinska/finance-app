@@ -326,10 +326,6 @@
     "typeInsurance": "Insurance",
     "typeInsuranceDesc": "Monthly recurring payments",
     "typeOther": "Other",
-    "typeOtherDesc": "Other payments",
-    "scanReceipt": "Scan receipt",
-    "scanning": "Scanning...",
-    "scanHint": "Take a photo or choose a file - we will fill the form automatically",
-    "receiptScanError": "Failed to read receipt. Please try again."
+    "typeOtherDesc": "Other payments"
   }
 }

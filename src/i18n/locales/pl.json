@@ -323,10 +323,6 @@
     "typeInsurance": "Ubezpieczenie",
     "typeInsuranceDesc": "Opłaty cykliczne co miesiąc",
     "typeOther": "Inne",
-    "typeOtherDesc": "Pozostałe płatności",
-    "scanReceipt": "Zeskanuj paragon",
-    "scanning": "Skanowanie...",
-    "scanHint": "Zrób zdjęcie lub wybierz plik - wypełnimy formularz automatycznie",
-    "receiptScanError": "Nie udało się odczytać paragonu. Spróbuj ponownie."
+    "typeOtherDesc": "Pozostałe płatności"
   }
 }

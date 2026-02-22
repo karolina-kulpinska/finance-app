@@ -19,7 +19,6 @@ import { selectCurrency } from "../../../features/currency/currencySlice";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { pl, enUS } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
-import ReceiptScanner from "../../../components/ReceiptScanner";
 import { TypeSpecificFields } from "./TypeSpecificFields";
 import { AttachmentField } from "./AttachmentField";
 import * as S from "./styled";
@@ -146,13 +145,6 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
         setIsCompressing(false);
       }
     }
-  };
-
-  const handleScanComplete = (scannedData) => {
-    if (scannedData.name) setValue("name", scannedData.name);
-    if (scannedData.amount) setValue("amount", scannedData.amount);
-    if (scannedData.date) setValue("date", scannedData.date);
-    if (scannedData.category) setValue("category", scannedData.category);
   };
 
   const onSubmit = async (data) => {
@@ -367,13 +359,6 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
     <S.Overlay onClick={onClose}>
       <S.Modal onClick={(e) => e.stopPropagation()}>
         <S.FormTitle>{getFormTitle()}</S.FormTitle>
-
-        {!editingPayment &&
-          (effectivePaymentType === "other" ||
-            effectivePaymentType === "bills" ||
-            effectivePaymentType === "shopping") && (
-            <ReceiptScanner onScanComplete={handleScanComplete} />
-          )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <S.FormGrid>

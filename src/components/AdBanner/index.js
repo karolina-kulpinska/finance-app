@@ -11,7 +11,7 @@ const AdBanner = () => {
 
   const bannerContent = (
     <S.AvalonContentWrap>
-      <S.AvalonMainTitle $small={isPro}>PRZEKAŻ 1,5% PODATKU LUB DAROWIZNĘ!</S.AvalonMainTitle>
+      <S.AvalonMainTitle $small={isPro}>Kliknij i przekaż 1,5% podatku lub darowiznę!</S.AvalonMainTitle>
       <S.UlotkaWrap $small={isPro}>
         <S.UlotkaImg
           $small={isPro}

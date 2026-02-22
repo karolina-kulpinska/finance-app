@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import { selectPayments } from "../../../features/payments/paymentSlice";
@@ -32,6 +33,7 @@ import { SubscriptionSection } from "./SubscriptionSection";
 import * as S from "./styled";
 
 const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
+  const { t } = useTranslation();
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
@@ -47,8 +49,8 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const userEmail = user?.email || "brak@email.com";
-  const userName = user?.displayName || "Użytkownik";
+  const userEmail = user?.email || t("profile.noEmail");
+  const userName = user?.displayName || t("profile.userDefault");
   const userInitials = userName
     .split(" ")
     .map((n) => n[0])
@@ -60,7 +62,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
     if (!payments || payments.length === 0) {
       dispatch(
         showNotification({
-          message: "Brak płatności do eksportu",
+          message: t("profile.noPaymentsExport"),
           type: "error",
         })
       );
@@ -70,7 +72,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
       generatePaymentsPDF(payments);
       dispatch(
         showNotification({
-          message: "✅ Historia płatności została wyeksportowana do PDF!",
+          message: "✅ " + t("profile.exportSuccess"),
           type: "success",
         })
       );
@@ -88,7 +90,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
     if (!editName.trim()) {
       dispatch(
         showNotification({
-          message: "Imię nie może być puste",
+          message: t("profile.nameRequired"),
           type: "error",
         })
       );
@@ -98,7 +100,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
       await updateProfile(auth.currentUser, { displayName: editName });
       dispatch(
         showNotification({
-          message: "✅ Imię zostało zaktualizowane!",
+          message: "✅ " + t("profile.nameUpdated"),
           type: "success",
         })
       );
@@ -106,7 +108,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
     } catch (error) {
       dispatch(
         showNotification({
-          message: "❌ Błąd aktualizacji: " + error.message,
+          message: "❌ " + t("profile.updateError") + ": " + error.message,
           type: "error",
         })
       );
@@ -117,7 +119,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
     if (newPassword !== confirmPassword) {
       dispatch(
         showNotification({
-          message: "❌ Nowe hasła nie są identyczne",
+          message: "❌ " + t("profile.passwordsMismatch"),
           type: "error",
         })
       );
@@ -126,7 +128,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
     if (newPassword.length < 6) {
       dispatch(
         showNotification({
-          message: "❌ Hasło musi mieć minimum 6 znaków",
+          message: "❌ " + t("profile.passwordMinLength"),
           type: "error",
         })
       );
@@ -141,7 +143,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
       await updatePassword(auth.currentUser, newPassword);
       dispatch(
         showNotification({
-          message: "✅ Hasło zostało zmienione!",
+          message: "✅ " + t("profile.passwordChanged"),
           type: "success",
         })
       );
@@ -150,9 +152,9 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
       setConfirmPassword("");
       setActiveSection(null);
     } catch (error) {
-      let errorMessage = "❌ Błąd zmiany hasła";
+      let errorMessage = "❌ " + t("profile.changePasswordError");
       if (error.code === "auth/wrong-password") {
-        errorMessage = "❌ Nieprawidłowe stare hasło";
+        errorMessage = "❌ " + t("profile.wrongPassword");
       }
       dispatch(
         showNotification({
@@ -180,14 +182,14 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
       URL.revokeObjectURL(url);
       dispatch(
         showNotification({
-          message: "✅ Dane zostały wyeksportowane!",
+          message: "✅ " + t("profile.dataExported"),
           type: "success",
         })
       );
     } catch (error) {
       dispatch(
         showNotification({
-          message: "❌ Błąd eksportu danych",
+          message: "❌ " + t("profile.dataExportError"),
           type: "error",
         })
       );
@@ -195,14 +197,10 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
   };
 
   const handleDeleteAccount = async () => {
-    const confirmed = window.confirm(
-      "⚠️ CZY NA PEWNO CHCESZ USUNĄĆ KONTO?\n\nTa operacja jest NIEODWRACALNA!\nStracisz wszystkie swoje dane, płatności i listy zakupów."
-    );
+    const confirmed = window.confirm("⚠️ " + t("profile.deleteConfirm"));
     if (!confirmed) return;
 
-    const doubleConfirm = window.confirm(
-      "🚨 OSTATNIE OSTRZEŻENIE!\n\nCzy jesteś absolutnie pewien?\nWszystkie dane zostaną TRWALE USUNIĘTE."
-    );
+    const doubleConfirm = window.confirm("🚨 " + t("profile.deleteConfirmFinal"));
     if (!doubleConfirm) return;
 
     try {
@@ -211,18 +209,17 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
       if (error.code === "auth/requires-recent-login") {
         dispatch(
           showNotification({
-            message:
-              "❌ Musisz się wylogować i zalogować ponownie przed usunięciem konta",
+            message: "❌ " + t("profile.mustReLogin"),
             type: "error",
           })
         );
       } else {
-        dispatch(
-          showNotification({
-            message: "❌ Błąd usuwania konta: " + error.message,
-            type: "error",
-          })
-        );
+dispatch(
+        showNotification({
+          message: "❌ " + t("profile.deleteAccountError") + ": " + error.message,
+          type: "error",
+        })
+      );
       }
     }
   };
@@ -244,7 +241,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
         } else {
           dispatch(
             showNotification({
-              message: "❌ Nie udało się otworzyć panelu zarządzania subskrypcją",
+              message: "❌ " + t("profile.subscriptionPortalError"),
               type: "error",
             })
           );
@@ -435,7 +432,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
         onAbout={() =>
           dispatch(
             showNotification({
-              message: "📱 Wersja aplikacji: 1.0.0",
+              message: "📱 " + t("profile.version"),
               type: "success",
             })
           )

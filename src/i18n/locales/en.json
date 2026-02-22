@@ -10,7 +10,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
-    "close": "Close"
+    "close": "Close",
+    "confirmation": "Confirmation"
   },
   "nav": {
     "home": "Home",
@@ -59,7 +60,46 @@
     "version": "Version 1.0.0",
     "language": "Language",
     "selectLanguage": "Select language",
-    "currency": "Currency"
+    "currency": "Currency",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Enter your full name",
+    "email": "Email",
+    "emailCannotChange": "Email cannot be changed",
+    "saveChanges": "Save changes",
+    "oldPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "oldPasswordPlaceholder": "Enter current password",
+    "newPasswordPlaceholder": "Minimum 6 characters",
+    "confirmPasswordPlaceholder": "Re-enter new password",
+    "changePasswordButton": "Change password",
+    "dangerZone": "Danger zone",
+    "deleteAccountWarning": "Deleting your account is irreversible. You will lose all your data, payments, shopping lists and family access.",
+    "deleteAccountButton": "Delete account permanently",
+    "downloadData": "Download your data",
+    "downloadDataDesc": "Download all your data as JSON or payment history as PDF. The JSON file will contain payments, shopping lists and settings.",
+    "exportDataJson": "Export data (JSON)",
+    "exportPaymentsPdf": "Export payment history (PDF)",
+    "userDefault": "User",
+    "noEmail": "no@email.com",
+    "noPaymentsExport": "No payments to export",
+    "exportSuccess": "Payment history has been exported to PDF!",
+    "exportError": "PDF export error",
+    "nameRequired": "Name cannot be empty",
+    "nameUpdated": "Name has been updated!",
+    "updateError": "Update error",
+    "passwordsMismatch": "New passwords do not match",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "passwordChanged": "Password has been changed!",
+    "wrongPassword": "Incorrect current password",
+    "changePasswordError": "Error changing password",
+    "dataExported": "Data has been exported!",
+    "dataExportError": "Data export error",
+    "deleteConfirm": "ARE YOU SURE YOU WANT TO DELETE YOUR ACCOUNT?\n\nThis operation is IRREVERSIBLE!\nYou will lose all your data, payments and shopping lists.",
+    "deleteConfirmFinal": "FINAL WARNING!\n\nAre you absolutely sure?\nAll data will be PERMANENTLY DELETED.",
+    "mustReLogin": "You must log out and log in again before deleting your account",
+    "deleteAccountError": "Error deleting account",
+    "subscriptionPortalError": "Failed to open subscription management panel"
   },
   "family": {
     "members": "Users",
@@ -80,7 +120,11 @@
     "membersCount": "users",
     "familyPlaceholder": "e.g. Smith Family",
     "pendingInvitations": "Pending invitations",
-    "owner": "Owner"
+    "owner": "Owner",
+    "removeMemberConfirm": "Remove {{email}} from family?",
+    "removeMemberError": "Failed to remove member",
+    "deleteFamilyConfirm": "ARE YOU SURE YOU WANT TO DELETE THE FAMILY?\n\nThis will permanently delete the family. Are you sure?",
+    "deleteFamilyFinal": "FINAL WARNING! Do you really want to delete the family?"
   },
   "auth": {
     "login": "Log in",
@@ -135,7 +179,8 @@
     "deleteSelected": "Delete selected",
     "deleteConfirm_one": "Are you sure you want to delete {{count}} payment? This action cannot be undone.",
     "deleteConfirm_other": "Are you sure you want to delete {{count}} payments? This action cannot be undone.",
-    "deleteCount": "Delete ({{count}})"
+    "deleteCount": "Delete ({{count}})",
+    "deletePaymentConfirm": "Are you sure you want to delete this payment? This action cannot be undone."
   },
   "charts": {
     "byCategory": "Summary by category",

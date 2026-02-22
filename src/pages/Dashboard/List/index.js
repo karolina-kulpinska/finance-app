@@ -138,7 +138,7 @@ const PaymentsList = ({
     setSelectedPayment(null);
     dispatch(
       showConfirm({
-        message: "Czy na pewno chcesz usunąć tę płatność?",
+        message: t("list.deletePaymentConfirm"),
         paymentId,
       })
     );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import { db, getSendFamilyInviteEmail } from "../../../api/firebase";
@@ -23,6 +24,7 @@ const generateInviteToken = () =>
   Math.random().toString(36).substring(2) + Date.now().toString(36);
 
 const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activePanelProp, onNavigate, onBack }) => {
+  const { t } = useTranslation();
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const [family, setFamily] = useState(null);
@@ -198,7 +200,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
       await updateDoc(doc(db, "families", family.id), { members: updatedMembers });
       setFamily({ ...family, members: updatedMembers });
     } catch (error) {
-      alert("Nie udało się usunąć członka");
+      alert(t("family.removeMemberError"));
     }
   };
 
@@ -222,8 +224,8 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
       dispatch(showNotification({ message: "W trybie demo nie możesz usuwać rodziny.", type: "info" }));
       return;
     }
-    if (!window.confirm("⚠️ CZY NA PEWNO CHCESZ USUNĄĆ RODZINĘ?\n\nTa operacja usunie rodzinę na zawsze. Czy jesteś pewien?")) return;
-    if (!window.confirm("🔴 OSTATNIE OSTRZEŻENIE! Naprawdę chcesz usunąć rodzinę?")) return;
+    if (!window.confirm(`⚠️ ${t("family.deleteFamilyConfirm")}`)) return;
+    if (!window.confirm(`🔴 ${t("family.deleteFamilyFinal")}`)) return;
     try {
       if (!family?.id) return;
       const updatePromises = family.members

@@ -33,6 +33,9 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
   const currency = useSelector(selectCurrency);
   const editingPayment = useSelector(selectEditingPayment);
   const isPro = useSelector(selectIsPro);
+  const effectivePaymentType = editingPayment
+    ? (editingPayment.paymentType || "other")
+    : (paymentType || "other");
   const [isCompressing, setIsCompressing] = useState(false);
   const [fileInfo, setFileInfo] = useState(null);
   const {
@@ -65,13 +68,25 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
 
   useEffect(() => {
     if (editingPayment) {
-      setValue("name", editingPayment.name);
+      const baseName =
+        editingPayment.installmentInfo?.originalName || editingPayment.name;
+      setValue("name", baseName);
       setValue("amount", editingPayment.amount);
       setValue("date", editingPayment.date);
-      setValue("category", editingPayment.category);
+      setValue("category", editingPayment.category || "other");
       setValue("notes", editingPayment.notes || "");
       setValue("bank", editingPayment.bank || "other");
       setValue("sharedWithFamily", Boolean(editingPayment.sharedWithFamily));
+      setValue("accountNumber", editingPayment.accountNumber || "");
+
+      if (editingPayment.paymentType === "installments" && editingPayment.installmentInfo) {
+        setValue("installments", String(editingPayment.installmentInfo.total));
+        setValue("installmentAmount", String(editingPayment.amount));
+      }
+      if (editingPayment.paymentType === "insurance") {
+        setValue("policyNumber", editingPayment.policyNumber || "");
+        if (editingPayment.duration) setValue("duration", String(editingPayment.duration));
+      }
 
       if (editingPayment.attachmentName) {
         setFileInfo({
@@ -175,7 +190,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
           }),
         );
       } else {
-        if (paymentType === "installments") {
+        if (effectivePaymentType === "installments") {
           const installments = parseInt(data.installments) || 0;
           const installmentAmount = parseFloat(data.installmentAmount) || 0;
           const startDate = new Date(data.date);
@@ -204,7 +219,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
 
             dispatch(addDemoPayment(installmentData));
           }
-        } else if (paymentType === "insurance") {
+        } else if (effectivePaymentType === "insurance") {
           const duration = parseInt(data.duration) || 12;
           const startDate = new Date(data.date);
 
@@ -228,10 +243,10 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
         } else {
           const paymentData = {
             ...data,
-            paymentType: paymentType || "other",
+            paymentType: effectivePaymentType,
             sharedWithFamily: Boolean(data.sharedWithFamily),
           };
-          if (paymentType && paymentType !== "other") {
+          if (effectivePaymentType !== "other") {
             delete paymentData.category;
           }
           dispatch(addDemoPayment(paymentData));
@@ -249,18 +264,24 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
 
     // Normalny tryb - zapisz do Firebase
     if (editingPayment) {
-      dispatch(
-        updatePaymentRequest({
-          id: editingPayment.id,
-          ...data,
-          sharedWithFamily: Boolean(data.sharedWithFamily),
-          attachmentUrl: editingPayment.attachmentUrl,
-          attachmentName: editingPayment.attachmentName,
-          oldAttachmentUrl: editingPayment.attachmentUrl,
-        }),
-      );
+      const updatePayload = {
+        id: editingPayment.id,
+        ...data,
+        category: data.category ?? editingPayment.category ?? "other",
+        sharedWithFamily: Boolean(data.sharedWithFamily),
+        attachmentUrl: editingPayment.attachmentUrl,
+        attachmentName: editingPayment.attachmentName,
+        oldAttachmentUrl: editingPayment.attachmentUrl,
+      };
+      if (effectivePaymentType === "installments" && data.installmentAmount != null) {
+        updatePayload.amount = parseFloat(data.installmentAmount);
+      }
+      if (effectivePaymentType === "insurance" && data.amount != null) {
+        updatePayload.amount = parseFloat(data.amount);
+      }
+      dispatch(updatePaymentRequest(updatePayload));
     } else {
-      if (paymentType === "installments") {
+      if (effectivePaymentType === "installments") {
         const installments = parseInt(data.installments) || 0;
         const installmentAmount = parseFloat(data.installmentAmount) || 0;
         const startDate = new Date(data.date);
@@ -290,7 +311,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
           if (i > 0) delete installmentData.attachment;
           dispatch(addPaymentRequest(installmentData));
         }
-      } else if (paymentType === "insurance") {
+      } else if (effectivePaymentType === "insurance") {
         const duration = parseInt(data.duration) || 12;
         const startDate = new Date(data.date);
 
@@ -315,10 +336,10 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
       } else {
         const paymentData = {
           ...data,
-          paymentType: paymentType || "other",
+          paymentType: effectivePaymentType,
           sharedWithFamily: Boolean(data.sharedWithFamily),
         };
-        if (paymentType && paymentType !== "other") {
+        if (effectivePaymentType !== "other") {
           delete paymentData.category;
         }
         dispatch(addPaymentRequest(paymentData));
@@ -338,8 +359,8 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
       shopping: "form.formTitleShopping",
       insurance: "form.formTitleInsurance",
     };
-    const key = keys[paymentType] || "form.formTitleDefault";
-    return `${icons[paymentType] || icons.other} ${t(key)}`;
+    const key = keys[effectivePaymentType] || "form.formTitleDefault";
+    return `${icons[effectivePaymentType] || icons.other} ${t(key)}`;
   };
 
   return (
@@ -348,9 +369,9 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
         <S.FormTitle>{getFormTitle()}</S.FormTitle>
 
         {!editingPayment &&
-          (paymentType === "other" ||
-            paymentType === "bills" ||
-            paymentType === "shopping") && (
+          (effectivePaymentType === "other" ||
+            effectivePaymentType === "bills" ||
+            effectivePaymentType === "shopping") && (
             <ReceiptScanner onScanComplete={handleScanComplete} />
           )}
 
@@ -358,21 +379,21 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
           <S.FormGrid>
             <S.FormGroup $fullWidth>
               <S.Label>
-                {paymentType === "installments" && t("form.paymentNameInstallments")}
-                {paymentType === "shopping" && t("form.paymentNameShopping")}
-                {paymentType === "insurance" && t("form.paymentNameInsurance")}
-                {(paymentType === "bills" || paymentType === "other" || !paymentType) && t("form.paymentName")}
+                {effectivePaymentType === "installments" && t("form.paymentNameInstallments")}
+                {effectivePaymentType === "shopping" && t("form.paymentNameShopping")}
+                {effectivePaymentType === "insurance" && t("form.paymentNameInsurance")}
+                {(effectivePaymentType === "bills" || effectivePaymentType === "other") && t("form.paymentName")}
               </S.Label>
               <S.Input
                 {...register("name", { required: t("form.nameRequired") })}
                 placeholder={
-                  paymentType === "installments"
+                  effectivePaymentType === "installments"
                     ? t("form.placeholderInstallments")
-                    : paymentType === "shopping"
+                    : effectivePaymentType === "shopping"
                       ? t("form.placeholderShopping")
-                      : paymentType === "insurance"
+                      : effectivePaymentType === "insurance"
                         ? t("form.placeholderInsurance")
-                        : paymentType === "bills"
+                        : effectivePaymentType === "bills"
                           ? t("form.placeholderBills")
                           : t("form.placeholderOther")
                 }
@@ -382,7 +403,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
               )}
             </S.FormGroup>
 
-            {paymentType !== "installments" && paymentType !== "insurance" && (
+            {effectivePaymentType !== "installments" && effectivePaymentType !== "insurance" && (
               <S.FormGroup>
                 <S.Label>{t("filters.amount", { symbol: currency.symbol })} *</S.Label>
                 <S.Input
@@ -427,7 +448,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
               )}
             </S.FormGroup>
 
-            {!paymentType && (
+            {effectivePaymentType === "other" && (
               <S.FormGroup>
                 <S.Label>{t("form.category")}</S.Label>
                 <S.Select {...register("category")} defaultValue="other">
@@ -439,7 +460,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
             )}
 
             <TypeSpecificFields
-              paymentType={paymentType}
+              paymentType={effectivePaymentType}
               register={register}
               errors={errors}
               totalInstallmentAmount={totalInstallmentAmount}

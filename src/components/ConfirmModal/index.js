@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "styled-components";
 import {
@@ -11,6 +12,7 @@ import { WarningIcon } from "../Icons";
 import * as S from "./styled";
 
 const ConfirmModal = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useTheme();
   const { open, message, paymentId } = useSelector(selectConfirm);
@@ -35,11 +37,11 @@ const ConfirmModal = () => {
         <S.IconWrapper>
           <WarningIcon size={64} color={theme.colors.warning} />
         </S.IconWrapper>
-        <S.Title>Potwierdzenie</S.Title>
+        <S.Title>{t("common.confirmation")}</S.Title>
         <S.Message>{message}</S.Message>
         <S.ButtonGroup>
-          <S.ConfirmButton onClick={handleConfirm}>Usuń</S.ConfirmButton>
-          <S.CancelButton onClick={handleCancel}>Anuluj</S.CancelButton>
+          <S.ConfirmButton onClick={handleConfirm}>{t("common.delete")}</S.ConfirmButton>
+          <S.CancelButton onClick={handleCancel}>{t("common.cancel")}</S.CancelButton>
         </S.ButtonGroup>
       </S.Modal>
     </>

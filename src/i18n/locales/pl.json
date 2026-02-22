@@ -10,7 +10,8 @@
     "delete": "Usuń",
     "edit": "Edytuj",
     "add": "Dodaj",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "confirmation": "Potwierdzenie"
   },
   "nav": {
     "home": "Główna",
@@ -59,7 +60,46 @@
     "version": "Wersja 1.0.0",
     "language": "Język",
     "selectLanguage": "Wybierz język",
-    "currency": "Waluta"
+    "currency": "Waluta",
+    "fullName": "Imię i nazwisko",
+    "fullNamePlaceholder": "Wpisz imię i nazwisko",
+    "email": "Email",
+    "emailCannotChange": "Email nie może być zmieniony",
+    "saveChanges": "Zapisz zmiany",
+    "oldPassword": "Stare hasło",
+    "newPassword": "Nowe hasło",
+    "confirmPassword": "Potwierdź nowe hasło",
+    "oldPasswordPlaceholder": "Wprowadź stare hasło",
+    "newPasswordPlaceholder": "Minimum 6 znaków",
+    "confirmPasswordPlaceholder": "Wpisz ponownie nowe hasło",
+    "changePasswordButton": "Zmień hasło",
+    "dangerZone": "Strefa niebezpieczna",
+    "deleteAccountWarning": "Usunięcie konta jest operacją nieodwracalną. Stracisz wszystkie swoje dane, płatności, listy zakupów i dostęp do rodziny.",
+    "deleteAccountButton": "Usuń konto na zawsze",
+    "downloadData": "Pobierz swoje dane",
+    "downloadDataDesc": "Pobierz wszystkie swoje dane w formacie JSON lub historię płatności w PDF. Plik JSON będzie zawierał płatności, listy zakupów i ustawienia.",
+    "exportDataJson": "Eksportuj dane (JSON)",
+    "exportPaymentsPdf": "Eksportuj historię płatności (PDF)",
+    "userDefault": "Użytkownik",
+    "noEmail": "brak@email.com",
+    "noPaymentsExport": "Brak płatności do eksportu",
+    "exportSuccess": "Historia płatności została wyeksportowana do PDF!",
+    "exportError": "Błąd eksportu PDF",
+    "nameRequired": "Imię nie może być puste",
+    "nameUpdated": "Imię zostało zaktualizowane!",
+    "updateError": "Błąd aktualizacji",
+    "passwordsMismatch": "Nowe hasła nie są identyczne",
+    "passwordMinLength": "Hasło musi mieć minimum 6 znaków",
+    "passwordChanged": "Hasło zostało zmienione!",
+    "wrongPassword": "Nieprawidłowe stare hasło",
+    "changePasswordError": "Błąd zmiany hasła",
+    "dataExported": "Dane zostały wyeksportowane!",
+    "dataExportError": "Błąd eksportu danych",
+    "deleteConfirm": "CZY NA PEWNO CHCESZ USUNĄĆ KONTO?\n\nTa operacja jest NIEODWRACALNA!\nStracisz wszystkie swoje dane, płatności i listy zakupów.",
+    "deleteConfirmFinal": "OSTATNIE OSTRZEŻENIE!\n\nCzy jesteś absolutnie pewien?\nWszystkie dane zostaną TRWALE USUNIĘTE.",
+    "mustReLogin": "Musisz się wylogować i zalogować ponownie przed usunięciem konta",
+    "deleteAccountError": "Błąd usuwania konta",
+    "subscriptionPortalError": "Nie udało się otworzyć panelu zarządzania subskrypcją"
   },
   "family": {
     "members": "Użytkownicy",
@@ -80,7 +120,11 @@
     "membersCount": "użytkowników",
     "familyPlaceholder": "np. Rodzina Kowalskich",
     "pendingInvitations": "Oczekujące zaproszenia",
-    "owner": "Właściciel"
+    "owner": "Właściciel",
+    "removeMemberConfirm": "Usunąć {{email}} z rodziny?",
+    "removeMemberError": "Nie udało się usunąć członka",
+    "deleteFamilyConfirm": "CZY NA PEWNO CHCESZ USUNĄĆ RODZINĘ?\n\nTa operacja usunie rodzinę na zawsze. Czy jesteś pewien?",
+    "deleteFamilyFinal": "OSTATNIE OSTRZEŻENIE! Naprawdę chcesz usunąć rodzinę?"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -133,7 +177,8 @@
     "selectAll": "Zaznacz wszystkie",
     "deleteSelected": "Usuń zaznaczone",
     "deleteConfirm": "Czy na pewno chcesz usunąć {{count}} płatności? Ta czynność jest nieodwracalna.",
-    "deleteCount": "Usuń ({{count}})"
+    "deleteCount": "Usuń ({{count}})",
+    "deletePaymentConfirm": "Czy na pewno chcesz usunąć tę płatność? Ta czynność jest nieodwracalna."
   },
   "charts": {
     "byCategory": "Zestawienie wg kategorii",

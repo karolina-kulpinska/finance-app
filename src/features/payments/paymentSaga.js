@@ -237,13 +237,15 @@ function* updatePaymentHandler({ payload }) {
       name: updateData.name,
       amount: parseFloat(updateData.amount),
       date: updateData.date,
-      category: updateData.category,
-      priority: updateData.priority,
+      category: updateData.category || "other",
+      priority: updateData.priority || "normal",
       notes: updateData.notes || "",
       bank: updateData.bank || null,
       sharedWithFamily: Boolean(updateData.sharedWithFamily),
       attachmentUrl,
       attachmentName,
+      accountNumber: updateData.accountNumber || null,
+      policyNumber: updateData.policyNumber || null,
     };
 
     const paymentRef = payment?._source === "old" || payment?.source === "old"

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -33,6 +34,7 @@ import { useAppHistory } from "../../hooks/useAppHistory";
 import * as S from "../Dashboard/styled";
 
 const DemoDashboard = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isModalOpen = useSelector(selectIsModalOpen);
@@ -246,7 +248,7 @@ const DemoDashboard = () => {
                 onAbout={() =>
                   dispatch(
                     showNotification({
-                      message: "Wersja aplikacji: 1.0.0",
+                      message: "📱 " + t("profile.version"),
                       type: "success",
                     })
                   )

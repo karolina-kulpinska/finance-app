@@ -8,6 +8,7 @@ export const TypeSpecificFields = ({
   paymentType,
   register,
   errors,
+  watch,
   totalInstallmentAmount,
   totalInsuranceAmount,
 }) => {
@@ -26,6 +27,7 @@ export const TypeSpecificFields = ({
         <InsuranceFields
           register={register}
           errors={errors}
+          watch={watch}
           totalAmount={totalInsuranceAmount}
         />
       );

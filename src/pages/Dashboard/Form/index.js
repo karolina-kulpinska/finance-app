@@ -5,8 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addPaymentRequest,
   updatePaymentRequest,
+  updatePaymentsBatchRequest,
   toggleModal,
   selectEditingPayment,
+  selectPayments,
 } from "../../../features/payments/paymentSlice";
 import {
   addDemoPayment,
@@ -17,8 +19,8 @@ import { compressImage, validateFile } from "../../../utils/imageCompression";
 import { showNotification } from "../../../features/notification/notificationSlice";
 import { selectCurrency } from "../../../features/currency/currencySlice";
 import DatePicker, { registerLocale } from "react-datepicker";
-import { pl, enUS } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
+import { pl, enUS } from "date-fns/locale";
 import BankSelector from "../../../components/BankSelector";
 import { TypeSpecificFields } from "./TypeSpecificFields";
 import { AttachmentField } from "./AttachmentField";
@@ -27,10 +29,38 @@ import * as S from "./styled";
 registerLocale("pl", pl);
 registerLocale("en", enUS);
 
+const toLocalDateString = (d) => {
+  if (!d) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+const parseDateString = (s) => (s ? new Date(s + "T12:00:00") : null);
+
+const getInsuranceSiblings = (payments, payment) => {
+  if (!payments?.length || payment?.paymentType !== "insurance") return [];
+  if (payment.insuranceInfo?.groupId) {
+    return payments.filter(
+      (p) => p.paymentType === "insurance" && p.insuranceInfo?.groupId === payment.insuranceInfo.groupId
+    );
+  }
+  const match = payment.name?.match(/^(.+?) \((\d+)\/(\d+)\)$/);
+  if (!match) return [payment];
+  const [, baseName, , total] = match;
+  const totalNum = parseInt(total, 10);
+  return payments.filter((p) => {
+    if (p.paymentType !== "insurance") return false;
+    const m = p.name?.match(/^(.+?) \((\d+)\/(\d+)\)$/);
+    return m && m[1] === baseName && parseInt(m[3], 10) === totalNum;
+  });
+};
+
 const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const currency = useSelector(selectCurrency);
+  const payments = useSelector(selectPayments);
   const editingPayment = useSelector(selectEditingPayment);
   const isPro = useSelector(selectIsPro);
   const effectivePaymentType = editingPayment
@@ -38,6 +68,8 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
     : (paymentType || "other");
   const [isCompressing, setIsCompressing] = useState(false);
   const [fileInfo, setFileInfo] = useState(null);
+  const [insuranceEditScope, setInsuranceEditScope] = useState("single");
+  const [insuranceSplitDate, setInsuranceSplitDate] = useState("");
   const {
     register,
     control,
@@ -46,7 +78,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
     setValue,
     watch,
   } = useForm({
-    defaultValues: { sharedWithFamily: false },
+    defaultValues: { sharedWithFamily: false, insuranceInterval: "month" },
   });
 
   const watchInstallments = watch("installments");
@@ -86,6 +118,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
       if (editingPayment.paymentType === "insurance") {
         setValue("policyNumber", editingPayment.policyNumber || "");
         if (editingPayment.duration) setValue("duration", String(editingPayment.duration));
+        setValue("insuranceInterval", editingPayment.insuranceInterval || "month");
       }
 
       if (editingPayment.attachmentName) {
@@ -215,18 +248,26 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
         } else if (effectivePaymentType === "insurance") {
           const duration = parseInt(data.duration) || 12;
           const startDate = new Date(data.date);
+          const isYearly = data.insuranceInterval === "year";
+          const groupId = `ins_${Date.now()}`;
 
           for (let i = 0; i < duration; i++) {
             const paymentDate = new Date(startDate);
-            paymentDate.setMonth(startDate.getMonth() + i);
+            if (isYearly) {
+              paymentDate.setFullYear(startDate.getFullYear() + i);
+            } else {
+              paymentDate.setMonth(startDate.getMonth() + i);
+            }
 
             const insuranceData = {
               ...data,
               name: `${data.name} (${i + 1}/${duration})`,
               date: paymentDate.toISOString().split("T")[0],
               paymentType: "insurance",
+              insuranceInterval: isYearly ? "year" : "month",
               isRecurring: true,
               sharedWithFamily: Boolean(data.sharedWithFamily),
+              insuranceInfo: { originalName: data.name, current: i + 1, total: duration, groupId },
             };
             delete insuranceData.category;
             delete insuranceData.duration;
@@ -310,18 +351,26 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
       } else if (effectivePaymentType === "insurance") {
         const duration = parseInt(data.duration) || 12;
         const startDate = new Date(data.date);
+        const isYearly = data.insuranceInterval === "year";
+        const groupId = `ins_${Date.now()}`;
 
         for (let i = 0; i < duration; i++) {
           const paymentDate = new Date(startDate);
-          paymentDate.setMonth(startDate.getMonth() + i);
+          if (isYearly) {
+            paymentDate.setFullYear(startDate.getFullYear() + i);
+          } else {
+            paymentDate.setMonth(startDate.getMonth() + i);
+          }
 
           const insuranceData = {
             ...data,
             name: `${data.name} (${i + 1}/${duration})`,
             date: paymentDate.toISOString().split("T")[0],
             paymentType: "insurance",
+            insuranceInterval: isYearly ? "year" : "month",
             isRecurring: true,
             sharedWithFamily: Boolean(data.sharedWithFamily),
+            insuranceInfo: { originalName: data.name, current: i + 1, total: duration, groupId },
           };
           delete insuranceData.category;
           delete insuranceData.duration;
@@ -364,7 +413,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
   };
 
   return (
-    <S.Overlay onClick={onClose}>
+    <S.Overlay>
       <S.Modal onClick={(e) => e.stopPropagation()}>
         <S.FormTitle>{getFormTitle()}</S.FormTitle>
 
@@ -426,12 +475,19 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
                 render={({ field }) => (
                   <S.DatePickerWrap>
                     <DatePicker
-                      selected={field.value ? new Date(field.value + "T12:00:00") : null}
-                      onChange={(d) => field.onChange(d ? d.toISOString().split("T")[0] : "")}
+                      selected={parseDateString(field.value)}
+                      onChange={(d) => field.onChange(d ? toLocalDateString(d) : "")}
                       locale={i18n.language?.startsWith("en") ? "en" : "pl"}
                       dateFormat={i18n.language?.startsWith("en") ? "MM/dd/yyyy" : "dd.MM.yyyy"}
                       placeholderText={t("form.dateRequired")}
-                      withPortal
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      yearDropdownItemNumber={150}
+                      scrollableYearDropdown
+                      minDate={new Date(1900, 0, 1)}
+                      maxDate={new Date(2100, 11, 31)}
+                      autoComplete="off"
                     />
                   </S.DatePickerWrap>
                 )}
@@ -456,6 +512,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
               paymentType={effectivePaymentType}
               register={register}
               errors={errors}
+              watch={watch}
               totalInstallmentAmount={totalInstallmentAmount}
               totalInsuranceAmount={totalInsuranceAmount}
             />
@@ -512,7 +569,7 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch(toggleModal());
+                onClose();
               }}
             >
               {t("form.cancel")}

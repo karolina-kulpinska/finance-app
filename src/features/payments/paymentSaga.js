@@ -22,6 +22,7 @@ import {
   deletePaymentRequest,
   updatePaymentStatusRequest,
   updatePaymentRequest,
+  updatePaymentsBatchRequest,
   updatePaymentSuccess,
   selectPayments,
 } from "./paymentSlice";
@@ -118,6 +119,7 @@ function* addPaymentHandler({ payload }) {
       isInstallment: payload.isInstallment || false,
       installmentInfo: payload.installmentInfo || null,
       isRecurring: payload.isRecurring || false,
+      insuranceInfo: payload.insuranceInfo || null,
       policyNumber: payload.policyNumber || null,
       accountNumber: payload.accountNumber || null,
       createdAt: serverTimestamp(),
@@ -296,10 +298,55 @@ function* updatePaymentHandler({ payload }) {
   }
 }
 
+function* updatePaymentsBatchHandler({ payload }) {
+  try {
+    const { updates } = payload;
+    const user = yield select(selectUser);
+    const paymentData = yield select(selectPayments);
+
+    for (const { id, ...updateData } of updates) {
+      const payment = paymentData.find((p) => p.id === id);
+      const paymentRef =
+        payment?._source === "old" || payment?.source === "old"
+          ? doc(db, "payments", id)
+          : doc(db, "users", user.uid, "payments", id);
+      const paymentUpdateData = {
+        name: updateData.name,
+        amount: parseFloat(updateData.amount),
+        date: updateData.date,
+        category: updateData.category || "other",
+        priority: updateData.priority || "normal",
+        notes: updateData.notes || "",
+        bank: updateData.bank || null,
+        sharedWithFamily: Boolean(updateData.sharedWithFamily),
+        accountNumber: updateData.accountNumber || null,
+        policyNumber: updateData.policyNumber || null,
+      };
+      yield call(updateDoc, paymentRef, paymentUpdateData);
+    }
+
+    yield put(updatePaymentSuccess());
+    yield put(
+      showNotification({
+        message: "Płatności zostały zaktualizowane!",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    yield put(
+      showNotification({
+        message: "Nie udało się zaktualizować płatności.",
+        type: "error",
+      })
+    );
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(addPaymentRequest.type, addPaymentHandler);
   yield takeLatest(fetchPaymentsRequest.type, fetchPaymentsHandler);
   yield takeLatest(deletePaymentRequest.type, deletePaymentHandler);
   yield takeLatest(updatePaymentStatusRequest.type, updateStatusHandler);
   yield takeLatest(updatePaymentRequest.type, updatePaymentHandler);
+  yield takeLatest(updatePaymentsBatchRequest.type, updatePaymentsBatchHandler);
 }

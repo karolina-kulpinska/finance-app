@@ -25,6 +25,7 @@ const PaymentsList = ({
   searchName = "",
   sharedOnly = false,
   payments: paymentsProp = null,
+  dateFilterOverride = null,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -32,7 +33,8 @@ const PaymentsList = ({
   const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
   const statusFilter = useSelector(selectFilter);
   const categoryFilter = useSelector(selectCategoryFilter);
-  const dateFilter = useSelector(selectDateFilter);
+  const reduxDateFilter = useSelector(selectDateFilter);
+  const dateFilter = dateFilterOverride !== null ? dateFilterOverride : reduxDateFilter;
   const [expandedPayment, setExpandedPayment] = React.useState(null);
   const [collapsed, setCollapsed] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState([]);
@@ -60,7 +62,22 @@ const PaymentsList = ({
       filtered = filtered.filter((p) => p.category === categoryFilter);
     }
 
-    if (minDate || maxDate) {
+    if (dateFilter === "overdue") {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      filtered = filtered.filter((p) => !p.paid && p.date && new Date(p.date) < today);
+    } else if (dateFilter === "monthOrOverdue") {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const monthRange = getDateRange("month");
+      filtered = filtered.filter((p) => {
+        if (!p.date) return false;
+        const paymentDate = new Date(p.date);
+        const isOverdue = !p.paid && paymentDate < today;
+        const isInMonth = monthRange && isDateInRange(p.date, monthRange);
+        return isInMonth || isOverdue;
+      });
+    } else if (minDate || maxDate) {
       if (minDate) {
         const minDateStr = minDate.split("T")[0];
         filtered = filtered.filter((p) => {
@@ -112,6 +129,7 @@ const PaymentsList = ({
     statusFilter,
     categoryFilter,
     dateFilter,
+    dateFilterOverride,
     minDate,
     maxDate,
     minAmount,

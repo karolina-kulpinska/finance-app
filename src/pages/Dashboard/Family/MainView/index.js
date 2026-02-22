@@ -4,6 +4,7 @@ import PaymentsList from "../../List";
 import ShoppingLists from "../../ShoppingLists";
 import Files from "../../Files";
 import { MembersSection } from "../MembersSection";
+import { FamilyPaymentsFilters } from "../FamilyPaymentsFilters";
 import * as S from "./styled";
 
 const PANEL_KEYS = {
@@ -36,6 +37,10 @@ export const MainView = ({
   const setPanel = onOpenPanel ? onOpenPanel : setLocalPanel;
   const handleBack = onBack || (() => setLocalPanel(null));
   const [editName, setEditName] = useState(family?.name || "");
+  const [familyDatePreset, setFamilyDatePreset] = useState("monthOrOverdue");
+  const [familyMinDate, setFamilyMinDate] = useState("");
+  const [familyMaxDate, setFamilyMaxDate] = useState("");
+  const [familySearchName, setFamilySearchName] = useState("");
 
   useEffect(() => {
     setEditName(family?.name || "");
@@ -95,7 +100,27 @@ export const MainView = ({
               )}
             </>
           )}
-          {panel === "payments" && <PaymentsList sharedOnly />}
+          {panel === "payments" && (
+            <>
+              <FamilyPaymentsFilters
+                preset={familyDatePreset}
+                minDate={familyMinDate}
+                maxDate={familyMaxDate}
+                searchName={familySearchName}
+                onPresetChange={setFamilyDatePreset}
+                onMinDateChange={setFamilyMinDate}
+                onMaxDateChange={setFamilyMaxDate}
+                onSearchChange={setFamilySearchName}
+              />
+              <PaymentsList
+                sharedOnly
+                dateFilterOverride={familyDatePreset === "custom" ? "all" : familyDatePreset}
+                minDate={familyDatePreset === "custom" ? familyMinDate || undefined : undefined}
+                maxDate={familyDatePreset === "custom" ? familyMaxDate || undefined : undefined}
+                searchName={familySearchName}
+              />
+            </>
+          )}
           {panel === "shopping" && <ShoppingLists sharedOnly />}
           {panel === "files" && <Files sharedOnly />}
           {panel === "danger" && (

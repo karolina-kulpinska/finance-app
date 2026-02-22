@@ -88,7 +88,20 @@ export const FormGroup = styled.div`
   grid-column: ${({ $fullWidth }) => ($fullWidth ? "1 / -1" : "auto")};
 `;
 
+export const DateSelectRow = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  select {
+    flex: 1;
+    min-width: 0;
+  }
+`;
+
 export const DatePickerWrap = styled.div`
+  width: 100%;
+
   .react-datepicker-wrapper {
     width: 100%;
   }
@@ -100,6 +113,9 @@ export const DatePickerWrap = styled.div`
     border-radius: 8px;
     font-size: 13px;
     font-family: inherit;
+    color: ${({ theme }) => theme.colors.text};
+    background: white;
+    transition: all 0.3s ease;
   }
 
   .react-datepicker__input-container input:focus {

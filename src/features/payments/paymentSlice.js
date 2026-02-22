@@ -45,6 +45,9 @@ const paymentSlice = createSlice({
     updatePaymentRequest: (state) => {
       state.loading = true;
     },
+    updatePaymentsBatchRequest: (state) => {
+      state.loading = true;
+    },
     updatePaymentSuccess: (state) => {
       state.loading = false;
       state.isModalOpen = false;
@@ -72,6 +75,7 @@ export const {
   deletePaymentRequest,
   updatePaymentStatusRequest,
   updatePaymentRequest,
+  updatePaymentsBatchRequest,
   updatePaymentSuccess,
   setFilter,
   setCategoryFilter,

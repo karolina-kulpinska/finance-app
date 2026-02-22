@@ -19,6 +19,9 @@ export const MainView = ({
   activeMembers,
   pendingMembers,
   isOwner,
+  activePanel,
+  onOpenPanel,
+  onBack,
   onAddMember,
   onCopyInviteLink,
   getInviteLink,
@@ -27,7 +30,10 @@ export const MainView = ({
   onDeleteFamily,
   isDemo = false,
 }) => {
-  const [activePanel, setActivePanel] = useState(null);
+  const [localPanel, setLocalPanel] = useState(null);
+  const panel = onOpenPanel ? (activePanel ?? null) : localPanel;
+  const setPanel = onOpenPanel ? onOpenPanel : setLocalPanel;
+  const handleBack = onBack || (() => setLocalPanel(null));
   const [editName, setEditName] = useState(family?.name || "");
 
   useEffect(() => {
@@ -45,16 +51,16 @@ export const MainView = ({
     ] : []),
   ];
 
-  if (activePanel) {
+  if (panel) {
     return (
       <S.Container>
         <S.PanelHeader>
-          <S.BackButton onClick={() => setActivePanel(null)}>←</S.BackButton>
-          <S.PanelTitle>{PANELS[activePanel]}</S.PanelTitle>
+          <S.BackButton onClick={() => (onOpenPanel ? handleBack() : setPanel(null))}>←</S.BackButton>
+          <S.PanelTitle>{PANELS[panel]}</S.PanelTitle>
         </S.PanelHeader>
 
         <S.PanelContent>
-          {activePanel === "members" && (
+          {panel === "members" && (
             <>
               {isOwner && onAddMember && (
                 <S.AddMemberButton onClick={onAddMember} disabled={isDemo}>
@@ -70,10 +76,10 @@ export const MainView = ({
               />
             </>
           )}
-          {activePanel === "payments" && <PaymentsList sharedOnly />}
-          {activePanel === "shopping" && <ShoppingLists sharedOnly />}
-          {activePanel === "files" && <Files sharedOnly />}
-          {activePanel === "link" && (
+          {panel === "payments" && <PaymentsList sharedOnly />}
+          {panel === "shopping" && <ShoppingLists sharedOnly />}
+          {panel === "files" && <Files sharedOnly />}
+          {panel === "link" && (
             <S.LinkBox onClick={isDemo ? undefined : onCopyInviteLink} style={{ opacity: isDemo ? 0.6 : 1, cursor: isDemo ? "not-allowed" : "pointer" }}>
               <S.LinkContent>
                 <S.LinkLabel>{isDemo ? "W trybie demo nie możesz kopiować linków" : "Kliknij, aby skopiować link"}</S.LinkLabel>
@@ -81,7 +87,7 @@ export const MainView = ({
               </S.LinkContent>
             </S.LinkBox>
           )}
-          {activePanel === "danger" && (
+          {panel === "danger" && (
             <>
               {onRenameFamily && (
                 <S.RenameForm>
@@ -122,7 +128,7 @@ export const MainView = ({
 
       <S.CardsGrid>
         {cards.map(({ key, label }) => (
-          <S.Card key={key} onClick={() => setActivePanel(key)}>
+          <S.Card key={key} onClick={() => setPanel(key)}>
             <S.CardLabel>{label}</S.CardLabel>
             <S.CardChevron>›</S.CardChevron>
           </S.Card>

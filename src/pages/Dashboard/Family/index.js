@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import { db, getSendFamilyInviteEmail } from "../../../api/firebase";
@@ -23,13 +22,19 @@ import * as S from "./styled";
 const generateInviteToken = () =>
   Math.random().toString(36).substring(2) + Date.now().toString(36);
 
-const Family = ({ isDemo = false }) => {
-  const navigate = useNavigate();
+const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activePanelProp, onNavigate, onBack }) => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const [family, setFamily] = useState(null);
   const [loading, setLoading] = useState(!isDemo);
-  const [activeView, setActiveView] = useState("main");
+  const [localView, setLocalView] = useState("main");
+  const [localPanel, setLocalPanel] = useState(null);
+  const useHistory = Boolean(onNavigate && onBack);
+  const activeView = useHistory ? (activeViewProp || "main") : localView;
+  const activePanel = useHistory ? (activePanelProp ?? null) : localPanel;
+  const setActiveView = useHistory ? (v) => onNavigate({ familyView: v }) : setLocalView;
+  const setActivePanel = useHistory ? (p) => (p ? onNavigate({ familyPanel: p }) : onBack()) : setLocalPanel;
+  const handleBack = useHistory ? onBack : () => { setLocalPanel(null); setLocalView("main"); };
   const [familyName, setFamilyName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
 
@@ -135,7 +140,7 @@ const Family = ({ isDemo = false }) => {
       );
       await setDoc(doc(db, "families", familyId), familyData);
       setFamily({ id: familyId, ...familyData });
-      setActiveView("main");
+      if (useHistory) onNavigate({ familyView: "main" }); else setLocalView("main");
       setFamilyName("");
       dispatch(showNotification({ message: "✅ Rodzina utworzona pomyślnie!", type: "success" }));
     } catch (error) {
@@ -169,7 +174,7 @@ const Family = ({ isDemo = false }) => {
       });
       setFamily({ ...family, members: [...family.members, newMember] });
       setInviteEmail("");
-      setActiveView("main");
+      if (useHistory) onNavigate({ familyView: "main" }); else setLocalView("main");
       try {
         const sendEmail = getSendFamilyInviteEmail();
         await sendEmail({ email: inviteEmail.trim(), inviteLink: getInviteLink(), familyName: family.name || "" });
@@ -228,7 +233,7 @@ const Family = ({ isDemo = false }) => {
       await deleteDoc(doc(db, "families", family.id));
       dispatch(showNotification({ message: "✅ Rodzina została usunięta", type: "success" }));
       setFamily(null);
-      setActiveView("main");
+      if (useHistory && onNavigate) onNavigate({ familyView: "main" }); else setLocalView("main");
     } catch (error) {
       dispatch(showNotification({ message: `❌ Nie udało się usunąć rodziny: ${error.message}`, type: "error" }));
     }
@@ -244,7 +249,7 @@ const Family = ({ isDemo = false }) => {
 
   if (activeView === "create") {
     if (isDemo) {
-      setActiveView("main");
+      if (useHistory && onNavigate) onNavigate({ familyView: "main" }); else setLocalView("main");
       return null;
     }
     return (
@@ -252,14 +257,14 @@ const Family = ({ isDemo = false }) => {
         familyName={familyName}
         setFamilyName={setFamilyName}
         onCreateFamily={handleCreateFamily}
-        onBack={() => navigate(-1)}
+        onBack={handleBack}
       />
     );
   }
 
   if (activeView === "invite") {
     if (isDemo) {
-      setActiveView("main");
+      if (useHistory && onNavigate) onNavigate({ familyView: "main" }); else setLocalView("main");
       return null;
     }
     return (
@@ -267,7 +272,7 @@ const Family = ({ isDemo = false }) => {
         inviteEmail={inviteEmail}
         setInviteEmail={setInviteEmail}
         onInviteMember={handleInviteMember}
-        onBack={() => navigate(-1)}
+        onBack={handleBack}
       />
     );
   }
@@ -275,7 +280,7 @@ const Family = ({ isDemo = false }) => {
   if (!family) {
     return (
       <EmptyState
-        onCreateFamily={isDemo ? undefined : () => setActiveView("create")}
+        onCreateFamily={isDemo ? undefined : () => (useHistory ? onNavigate({ familyView: "create" }) : setLocalView("create"))}
         isDemo={isDemo}
       />
     );
@@ -291,7 +296,10 @@ const Family = ({ isDemo = false }) => {
       activeMembers={activeMembers}
       pendingMembers={pendingMembers}
       isOwner={isOwner}
-      onAddMember={isDemo ? undefined : () => setActiveView("invite")}
+      activePanel={activePanel}
+      onOpenPanel={setActivePanel}
+      onBack={handleBack}
+      onAddMember={isDemo ? undefined : () => (useHistory ? onNavigate({ familyView: "invite" }) : setLocalView("invite"))}
       onCopyInviteLink={handleCopyInviteLink}
       getInviteLink={getInviteLink}
       onRemoveMember={handleRemoveMember}

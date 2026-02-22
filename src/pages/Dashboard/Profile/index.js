@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import { selectPayments } from "../../../features/payments/paymentSlice";
@@ -32,14 +31,17 @@ import { DeleteSection } from "./DeleteSection";
 import { SubscriptionSection } from "./SubscriptionSection";
 import * as S from "./styled";
 
-const Profile = () => {
-  const navigate = useNavigate();
+const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
   const isPro = useSelector(selectIsPro);
 
-  const [activeSection, setActiveSection] = useState(null);
+  const [localSection, setLocalSection] = useState(null);
+  const useHistory = Boolean(onNavigate && onBack);
+  const activeSection = useHistory ? (activeSectionProp ?? null) : localSection;
+  const setActiveSection = useHistory ? (s) => (s ? onNavigate({ profileSection: s }) : onBack()) : setLocalSection;
+  const handleBack = useHistory ? onBack : () => setLocalSection(null);
   const [editName, setEditName] = useState(user?.displayName || "");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -348,7 +350,7 @@ const Profile = () => {
       <S.Container>
         <SectionLayout
           title="Dane osobowe"
-          onBack={() => navigate(-1)}
+          onBack={handleBack}
         >
           <PersonalForm
             editName={editName}
@@ -364,7 +366,7 @@ const Profile = () => {
   if (activeSection === "security") {
     return (
       <S.Container>
-        <SectionLayout title="Zmiana hasła" onBack={() => navigate(-1)}>
+        <SectionLayout title="Zmiana hasła" onBack={handleBack}>
           <SecurityForm
             oldPassword={oldPassword}
             newPassword={newPassword}
@@ -384,7 +386,7 @@ const Profile = () => {
       <S.Container>
         <SectionLayout
           title="Eksport danych"
-          onBack={() => navigate(-1)}
+          onBack={handleBack}
         >
           <ExportSection
             onExportData={handleExportData}
@@ -398,7 +400,7 @@ const Profile = () => {
   if (activeSection === "delete") {
     return (
       <S.Container>
-        <SectionLayout title="Usuń konto" onBack={() => navigate(-1)}>
+        <SectionLayout title="Usuń konto" onBack={handleBack}>
           <DeleteSection onDelete={handleDeleteAccount} />
         </SectionLayout>
       </S.Container>
@@ -410,7 +412,7 @@ const Profile = () => {
       <S.Container>
         <SectionLayout
           title="Subskrypcja"
-          onBack={() => navigate(-1)}
+          onBack={handleBack}
         >
           <SubscriptionSection
             onManageSubscription={handleManageSubscription}
@@ -428,7 +430,7 @@ const Profile = () => {
         userInitials={userInitials}
         userName={userName}
         userEmail={userEmail}
-        onSectionSelect={setActiveSection}
+        onSectionSelect={(s) => (useHistory ? onNavigate({ profileSection: s }) : setLocalSection(s))}
         onContact={() => window.open("mailto:pomoc@finanseapp.pl", "_blank")}
         onAbout={() =>
           dispatch(

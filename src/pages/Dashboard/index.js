@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../api/firebase";
@@ -8,6 +7,7 @@ import {
   selectIsModalOpen,
   selectPayments,
   selectCategoryFilter,
+  setCategoryFilter,
   fetchPaymentsRequest,
 } from "../../features/payments/paymentSlice";
 
@@ -28,17 +28,18 @@ import Family from "./Family";
 import BottomNav from "../../components/BottomNav";
 import AdBanner from "../../components/AdBanner";
 import TermsModal from "../../components/TermsModal";
+import { useAppHistory } from "../../hooks/useAppHistory";
 import * as S from "./styled";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const isModalOpen = useSelector(selectIsModalOpen);
   const payments = useSelector(selectPayments);
   const categoryFilter = useSelector(selectCategoryFilter);
   const scrollBeforeCategoryRef = useRef(null);
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const { viewState, pushView, goBack } = useAppHistory({ tab: "dashboard" });
+  const activeTab = viewState.tab || "dashboard";
   const scrollPositions = useRef({});
   const [showFilters, setShowFilters] = useState(false);
   const [showTypeSelector, setShowTypeSelector] = useState(false);
@@ -94,7 +95,13 @@ const Dashboard = () => {
 
   const handleTabChange = (newTab) => {
     scrollPositions.current[activeTab] = window.scrollY ?? document.documentElement.scrollTop;
-    setActiveTab(newTab);
+    pushView({
+      tab: newTab,
+      familyView: null,
+      familyPanel: null,
+      profileSection: null,
+      shoppingListId: null,
+    });
   };
 
   useEffect(() => {
@@ -155,9 +162,7 @@ const Dashboard = () => {
           <>
             {categoryFilter !== "all" && (
               <S.CategoryBackBar>
-                <S.CategoryBackButton
-                  onClick={() => navigate(-1)}
-                >
+                <S.CategoryBackButton onClick={() => dispatch(setCategoryFilter("all"))}>
                   ← Wróć
                 </S.CategoryBackButton>
               </S.CategoryBackBar>
@@ -182,13 +187,32 @@ const Dashboard = () => {
           </>
         );
       case "shopping":
-        return <ShoppingLists />;
+        return (
+          <ShoppingLists
+            selectedListId={viewState.shoppingListId}
+            onSelectList={(list) => pushView({ tab: "shopping", shoppingListId: list?.id ?? null })}
+            onBack={goBack}
+          />
+        );
       case "family":
-        return <Family />;
+        return (
+          <Family
+            activeView={viewState.familyView}
+            activePanel={viewState.familyPanel}
+            onNavigate={(patch) => pushView({ tab: "family", ...patch })}
+            onBack={goBack}
+          />
+        );
       case "files":
         return <Files />;
       case "profile":
-        return <Profile />;
+        return (
+          <Profile
+            activeSection={viewState.profileSection}
+            onNavigate={(patch) => pushView({ tab: "profile", ...patch })}
+            onBack={goBack}
+          />
+        );
       default:
         return null;
     }

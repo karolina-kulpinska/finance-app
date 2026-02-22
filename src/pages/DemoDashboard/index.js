@@ -5,6 +5,7 @@ import {
   toggleModal,
   selectIsModalOpen,
   selectCategoryFilter,
+  setCategoryFilter,
 } from "../../features/payments/paymentSlice";
 import {
   selectDemoPayments,
@@ -28,6 +29,7 @@ import { ProfileMain } from "../Dashboard/Profile/ProfileMain";
 import { Container as ProfileContainer } from "../Dashboard/Profile/styled";
 import BottomNav from "../../components/BottomNav";
 import SaveDataModal from "../../components/SaveDataModal";
+import { useAppHistory } from "../../hooks/useAppHistory";
 import * as S from "../Dashboard/styled";
 
 const DemoDashboard = () => {
@@ -38,7 +40,8 @@ const DemoDashboard = () => {
   const categoryFilter = useSelector(selectCategoryFilter);
   const hasUnsavedData = useSelector(selectHasUnsavedData);
   const scrollBeforeCategoryRef = useRef(null);
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const { viewState, pushView, goBack } = useAppHistory({ tab: "dashboard" });
+  const activeTab = viewState.tab || "dashboard";
   const scrollPositions = useRef({});
   const [showFilters, setShowFilters] = useState(false);
   const [showTypeSelector, setShowTypeSelector] = useState(false);
@@ -84,7 +87,13 @@ const DemoDashboard = () => {
 
   const handleTabChange = (newTab) => {
     scrollPositions.current[activeTab] = window.scrollY ?? document.documentElement.scrollTop;
-    setActiveTab(newTab);
+    pushView({
+      tab: newTab,
+      familyView: null,
+      familyPanel: null,
+      profileSection: null,
+      shoppingListId: null,
+    });
   };
 
   useEffect(() => {
@@ -156,9 +165,7 @@ const DemoDashboard = () => {
           <>
             {categoryFilter !== "all" && (
               <S.CategoryBackBar>
-                <S.CategoryBackButton
-                  onClick={() => navigate(-1)}
-                >
+                <S.CategoryBackButton onClick={() => dispatch(setCategoryFilter("all"))}>
                   ← Wróć
                 </S.CategoryBackButton>
               </S.CategoryBackBar>
@@ -184,7 +191,13 @@ const DemoDashboard = () => {
           </>
         );
       case "shopping":
-        return <ShoppingLists />;
+        return (
+          <ShoppingLists
+            selectedListId={viewState.shoppingListId}
+            onSelectList={(list) => pushView({ tab: "shopping", shoppingListId: list?.id ?? null })}
+            onBack={goBack}
+          />
+        );
       case "family":
         return (
           <>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../api/firebase";
@@ -8,8 +7,7 @@ import { selectUser } from "../../../features/auth/authSlice";
 import { ListView } from "./ListView";
 import { ListDetailView } from "./ListDetailView";
 
-const ShoppingLists = ({ sharedOnly = false }) => {
-  const navigate = useNavigate();
+const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBack }) => {
   const user = useSelector(selectUser);
   const [lists, setLists] = useState(() => {
     try {
@@ -39,7 +37,13 @@ const ShoppingLists = ({ sharedOnly = false }) => {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newListName, setNewListName] = useState("");
-  const [selectedList, setSelectedList] = useState(null);
+  const [localSelectedList, setLocalSelectedList] = useState(null);
+  const useHistory = Boolean(onSelectList && onBack);
+  const selectedList = useHistory
+    ? (selectedListId ? lists.find((l) => l.id === selectedListId) ?? null : null)
+    : localSelectedList;
+  const setSelectedList = useHistory ? (list) => onSelectList(list) : setLocalSelectedList;
+  const handleBack = useHistory ? onBack : () => setLocalSelectedList(null);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
   const [shareWithFamily, setShareWithFamily] = useState(sharedOnly);
@@ -192,7 +196,7 @@ const ShoppingLists = ({ sharedOnly = false }) => {
         newItemPrice={newItemPrice}
         setNewItemName={setNewItemName}
         setNewItemPrice={setNewItemPrice}
-        onBack={() => navigate(-1)}
+        onBack={handleBack}
         onAddItem={handleAddItem}
         onTogglePurchased={handleTogglePurchased}
         onDeleteItem={handleDeleteItem}

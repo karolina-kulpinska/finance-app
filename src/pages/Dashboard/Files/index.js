@@ -8,6 +8,7 @@ import { ref, deleteObject } from "firebase/storage";
 import { storage } from "../../../api/firebase";
 import { openStorageDownloadUrl } from "../../../utils/firebaseStorageDownload";
 import { selectPayments } from "../../../features/payments/paymentSlice";
+import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
 import { updatePaymentRequest } from "../../../features/payments/paymentSlice";
 import { showNotification } from "../../../features/notification/notificationSlice";
 import * as S from "./styled";
@@ -53,6 +54,7 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
   const locale = dateLocale(i18n.language);
   const dispatch = useDispatch();
   const paymentsFromStore = useSelector(selectPayments);
+  const isPro = useSelector(selectIsPro);
   const payments = paymentsProp !== null ? paymentsProp : paymentsFromStore;
   const [activeFilter, setActiveFilter] = useState("all");
   const [deletingId, setDeletingId] = useState(null);
@@ -272,6 +274,11 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
 
   return (
     <S.Container>
+      {!isPro && !isDemo && (
+        <S.ProInfoBanner>
+          ℹ️ {t("files.proFilesInfo")}
+        </S.ProInfoBanner>
+      )}
       {fileToDelete && (
         <S.ConfirmOverlay
           onClick={() => setFileToDelete(null)}

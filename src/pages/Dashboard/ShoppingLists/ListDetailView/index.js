@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { showNotification } from "../../../../features/notification/notificationSlice";
 import { AddItemForm } from "../AddItemForm";
 import { ItemsSection } from "../ItemsSection";
 import { selectCurrency, formatAmount } from "../../../../features/currency/currencySlice";
@@ -22,12 +23,23 @@ export const ListDetailView = ({
   receiptUploading,
   onDownloadReceipt,
   onDeleteList,
+  canShareWithFamily = true,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const currency = useSelector(selectCurrency);
   const receiptInputRef = useRef(null);
 
   const handleShareChange = (checked) => {
+    if (checked && !canShareWithFamily) {
+      dispatch(
+        showNotification({
+          message: t("shopping.sharedLimitReached"),
+          type: "info",
+        })
+      );
+      return;
+    }
     setLists(
       lists.map((l) =>
         l.id === list.id ? { ...l, sharedWithFamily: checked } : l
@@ -104,6 +116,7 @@ export const ListDetailView = ({
         <S.BottomButton
           $variant="family"
           $active={list.sharedWithFamily === true}
+          $disabled={!list.sharedWithFamily && !canShareWithFamily}
           onClick={() => handleShareChange(!list.sharedWithFamily)}
         >
           👨‍👩‍👧‍👦 {list.sharedWithFamily ? t("shopping.removeFromFamily") : t("shopping.addToFamily")}

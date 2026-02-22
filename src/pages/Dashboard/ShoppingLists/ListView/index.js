@@ -7,11 +7,14 @@ import * as S from "./styled";
 
 export const ListView = ({
   showAddForm,
+  canAddList = true,
   onToggleAddForm,
+  onLimitReached,
   newListName,
   onNewListNameChange,
   shareWithFamily,
   onShareWithFamilyChange,
+  canShareWithFamily = true,
   onAddList,
   displayLists,
   sharedOnly,
@@ -23,17 +26,27 @@ export const ListView = ({
   <S.Container>
     <S.Header>
       <S.Title>🛒 {t("shopping.title")}</S.Title>
-      <S.AddButton onClick={onToggleAddForm}>
-        {showAddForm ? `✕ ${t("common.cancel")}` : t("shopping.newList")}
-      </S.AddButton>
+      {canAddList ? (
+        <S.AddButton onClick={onToggleAddForm}>
+          {showAddForm ? `✕ ${t("common.cancel")}` : t("shopping.newList")}
+        </S.AddButton>
+      ) : (
+        <S.AddButtonDisabled
+          onClick={onLimitReached}
+          title={t("shopping.listsLimitReached")}
+        >
+          {t("shopping.newList")}
+        </S.AddButtonDisabled>
+      )}
     </S.Header>
 
-    {showAddForm && (
+    {showAddForm && canAddList && (
       <AddListForm
         newListName={newListName}
         onNameChange={onNewListNameChange}
         shareWithFamily={shareWithFamily}
         onShareChange={onShareWithFamilyChange}
+        canShareWithFamily={canShareWithFamily}
         onAdd={onAddList}
       />
     )}

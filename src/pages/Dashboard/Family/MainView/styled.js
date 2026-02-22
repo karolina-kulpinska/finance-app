@@ -126,21 +126,21 @@ export const AddMemberButton = styled.button`
   width: 100%;
   padding: 12px;
   background: white;
-  border: 1px solid #2c5282;
+  border: 1px solid ${({ $disabled }) => ($disabled ? "#cbd5e0" : "#2c5282")};
   border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #2c5282;
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  color: ${({ $disabled }) => ($disabled ? "#718096" : "#2c5282")};
+  cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
   margin-bottom: 12px;
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+  opacity: ${({ disabled, $disabled }) => (disabled || $disabled ? 0.7 : 1)};
 
-  &:hover:not(:disabled) {
-    background: #2c5282;
-    color: white;
-    box-shadow: 0 2px 8px rgba(44, 82, 130, 0.25);
+  &:hover {
+    background: ${({ $disabled }) => ($disabled ? "#f7fafc" : "#2c5282")};
+    color: ${({ $disabled }) => ($disabled ? "#718096" : "white")};
+    box-shadow: ${({ $disabled }) => ($disabled ? "none" : "0 2px 8px rgba(44, 82, 130, 0.25)")};
   }
 
   &:active:not(:disabled) {

@@ -1,5 +1,21 @@
 import styled from "styled-components";
 
+export const ProInfoBanner = styled.div`
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background: #e8f4fd;
+  border: 1px solid #90caf9;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #1565c0;
+  line-height: 1.4;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints?.tablet || "768px"}) {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+`;
+
 export const FiltersWrapper = styled.div`
   display: flex;
   flex-direction: column;

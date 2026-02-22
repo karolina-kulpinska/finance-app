@@ -148,13 +148,14 @@ export const BottomButton = styled.button`
     &:hover { background: #ffebee; }
   `}
 
-  ${({ $variant, $active, theme }) =>
+  ${({ $variant, $active, $disabled, theme }) =>
     $variant === "family" &&
     `
     background: ${$active ? "#e8f5e9" : "white"};
-    color: ${$active ? "#2e7d32" : "#333"};
+    color: ${$disabled ? "#9e9e9e" : $active ? "#2e7d32" : "#333"};
     border-color: ${theme?.colors?.border || "#e0e0e0"};
-    &:hover { background: #f1f8e9; }
+    opacity: ${$disabled ? 0.7 : 1};
+    &:hover { background: ${$disabled ? "white" : "#f1f8e9"}; }
   `}
 
   ${({ $variant }) =>

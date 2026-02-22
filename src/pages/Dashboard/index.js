@@ -12,7 +12,10 @@ import {
   fetchPaymentsRequest,
 } from "../../features/payments/paymentSlice";
 
-import { fetchSubscriptionRequest } from "../../features/subscription/subscriptionSlice";
+import {
+  fetchSubscriptionRequest,
+  selectIsPro,
+} from "../../features/subscription/subscriptionSlice";
 import { checkPaymentRemindersRequest } from "../../features/notifications/notificationsSlice";
 import { selectUser } from "../../features/auth/authSlice";
 import Header from "./Header";
@@ -40,6 +43,7 @@ const Dashboard = () => {
   const isModalOpen = useSelector(selectIsModalOpen);
   const payments = useSelector(selectPayments);
   const categoryFilter = useSelector(selectCategoryFilter);
+  const isPro = useSelector(selectIsPro);
   const scrollBeforeCategoryRef = useRef(null);
   const { viewState, pushView, goBack } = useAppHistory({ tab: "dashboard" });
   const activeTab = viewState.tab || "dashboard";
@@ -234,31 +238,39 @@ const Dashboard = () => {
 
   return (
     <S.Wrapper>
-      <S.Container>
-        <Header
-          onAddPayment={handleAddPayment}
-          onToggleFilters={() => setShowFilters(!showFilters)}
-          showFilters={showFilters}
-          onBack={goBack}
-          showBack={
-            (activeTab === "shopping" && !viewState.shoppingListId) ||
-            (activeTab === "family" && !viewState.familyPanel) ||
-            (activeTab === "files") ||
-            (activeTab === "profile" && !viewState.profileSection)
-          }
-          hideFilters={
-            activeTab === "shopping" ||
-            activeTab === "family" ||
-            activeTab === "files" ||
-            activeTab === "profile"
-          }
-          hideAddPayment={
-            activeTab === "shopping" ||
-            activeTab === "family" ||
-            activeTab === "files" ||
-            activeTab === "profile"
-          }
-        />
+      <S.HeaderRow>
+        <S.HeaderSpacer />
+        <S.HeaderCenter>
+          <Header
+            onAddPayment={handleAddPayment}
+            onToggleFilters={() => setShowFilters(!showFilters)}
+            showFilters={showFilters}
+            onBack={goBack}
+            showBack={
+              (activeTab === "shopping" && !viewState.shoppingListId) ||
+              (activeTab === "family" && !viewState.familyPanel) ||
+              (activeTab === "files") ||
+              (activeTab === "profile" && !viewState.profileSection)
+            }
+            hideFilters={
+              activeTab === "shopping" ||
+              activeTab === "family" ||
+              activeTab === "files" ||
+              activeTab === "profile"
+            }
+            hideAddPayment={
+              activeTab === "shopping" ||
+              activeTab === "family" ||
+              activeTab === "files" ||
+              activeTab === "profile"
+            }
+          />
+        </S.HeaderCenter>
+        <S.HeaderSpacer />
+      </S.HeaderRow>
+      <S.DesktopLayout>
+        <S.LeftAdArea $isEmpty={isPro} />
+        <S.MainContent>
         {(showFilters || window.innerWidth >= 768) &&
           activeTab !== "shopping" &&
           activeTab !== "family" &&
@@ -280,8 +292,11 @@ const Dashboard = () => {
             </S.FiltersBox>
           )}
         {renderContent()}
-        <AdBanner />
-      </S.Container>
+        </S.MainContent>
+        <S.RightAdArea>
+          <AdBanner />
+        </S.RightAdArea>
+      </S.DesktopLayout>
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       {showTypeSelector && (
         <PaymentTypeSelector

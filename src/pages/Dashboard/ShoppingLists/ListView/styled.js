@@ -51,6 +51,19 @@ export const AddButton = styled.button`
   }
 `;
 
+export const AddButtonDisabled = styled.button`
+  padding: 8px 16px;
+  background: #cbd5e0;
+  color: #718096;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  opacity: 0.8;
+`;
+
 export const ListsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

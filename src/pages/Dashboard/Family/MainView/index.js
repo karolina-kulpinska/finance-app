@@ -24,6 +24,7 @@ export const MainView = ({
   onOpenPanel,
   onBack,
   onAddMember,
+  canAddMember = true,
   onCopyInviteLink,
   getInviteLink,
   onRemoveMember,
@@ -76,7 +77,11 @@ export const MainView = ({
           {panel === "members" && (
             <>
               {isOwner && onAddMember && (
-                <S.AddMemberButton onClick={onAddMember} disabled={isDemo}>
+                <S.AddMemberButton
+                  onClick={onAddMember}
+                  disabled={isDemo}
+                  $disabled={!canAddMember}
+                >
                   {t("family.inviteMember")}
                 </S.AddMemberButton>
               )}

@@ -7,6 +7,7 @@ export const AddListForm = ({
   onNameChange,
   shareWithFamily,
   onShareChange,
+  canShareWithFamily = true,
   onAdd,
 }) => {
   const { t } = useTranslation();
@@ -23,7 +24,8 @@ export const AddListForm = ({
         type="checkbox"
         id="shareNewListMain"
         checked={shareWithFamily}
-        onChange={(e) => onShareChange(e.target.checked)}
+        disabled={!canShareWithFamily}
+        onChange={(e) => canShareWithFamily && onShareChange(e.target.checked)}
       />
       <S.CheckboxLabel htmlFor="shareNewListMain">
         👨‍👩‍👧‍👦 {t("shopping.shareWithFamily")}

@@ -13,6 +13,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { showNotification } from "../../../features/notification/notificationSlice";
+import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
 import { toInvite } from "../../../routes";
 import { EmptyState } from "./EmptyState";
 import { CreateForm } from "./CreateForm";
@@ -26,6 +27,7 @@ const generateInviteToken = () =>
 const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activePanelProp, onNavigate, onBack }) => {
   const { t } = useTranslation();
   const user = useSelector(selectUser);
+  const isPro = useSelector(selectIsPro);
   const dispatch = useDispatch();
   const [family, setFamily] = useState(null);
   const [loading, setLoading] = useState(!isDemo);
@@ -162,6 +164,15 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
   const handleInviteMember = async () => {
     if (isDemo) return;
     if (!inviteEmail.trim() || !family) return;
+    if (!isPro && (family.members?.length ?? 0) >= 2) {
+      dispatch(
+        showNotification({
+          message: t("family.membersLimitReached"),
+          type: "info",
+        })
+      );
+      return;
+    }
     try {
       const newMember = {
         userId: null,
@@ -291,6 +302,7 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
   const isOwner = isDemo ? true : family.ownerId === user?.uid;
   const activeMembers = family.members?.filter((m) => m.status === "active") || [];
   const pendingMembers = family.members?.filter((m) => m.status === "pending") || [];
+  const canAddMember = isPro || (family.members?.length ?? 0) < 2;
 
   return (
     <MainView
@@ -301,7 +313,17 @@ const Family = ({ isDemo = false, activeView: activeViewProp, activePanel: activ
       activePanel={activePanel}
       onOpenPanel={setActivePanel}
       onBack={handleBack}
-      onAddMember={isDemo ? undefined : () => setActiveView("invite")}
+      onAddMember={
+        isDemo
+          ? undefined
+          : canAddMember
+            ? () => setActiveView("invite")
+            : () =>
+                dispatch(
+                  showNotification({ message: t("family.membersLimitReached"), type: "info" })
+                )
+      }
+      canAddMember={canAddMember}
       onCopyInviteLink={handleCopyInviteLink}
       getInviteLink={getInviteLink}
       onRemoveMember={handleRemoveMember}

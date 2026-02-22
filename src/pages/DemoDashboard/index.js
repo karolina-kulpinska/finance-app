@@ -13,6 +13,7 @@ import {
   selectHasUnsavedData,
   clearDemoData,
 } from "../../features/demo/demoSlice";
+import { selectIsPro } from "../../features/subscription/subscriptionSlice";
 import { showNotification } from "../../features/notification/notificationSlice";
 import { toLanding } from "../../routes";
 import Header from "../Dashboard/Header";
@@ -26,6 +27,7 @@ import PaymentsList from "../Dashboard/List";
 import ShoppingLists from "../Dashboard/ShoppingLists";
 import Family from "../Dashboard/Family";
 import Files from "../Dashboard/Files";
+import AdBanner from "../../components/AdBanner";
 import { ProfileMain } from "../Dashboard/Profile/ProfileMain";
 import { Container as ProfileContainer } from "../Dashboard/Profile/styled";
 import BottomNav from "../../components/BottomNav";
@@ -41,6 +43,7 @@ const DemoDashboard = () => {
   const payments = useSelector(selectDemoPayments);
   const categoryFilter = useSelector(selectCategoryFilter);
   const hasUnsavedData = useSelector(selectHasUnsavedData);
+  const isPro = useSelector(selectIsPro);
   const scrollBeforeCategoryRef = useRef(null);
   const { viewState, pushView, goBack } = useAppHistory({ tab: "dashboard" });
   const activeTab = viewState.tab || "dashboard";
@@ -266,49 +269,61 @@ const DemoDashboard = () => {
 
   return (
     <S.Wrapper>
-      <S.Container>
-        <S.DemoBanner>
-          <S.DemoBannerText>
-            🎯 Tryb demo - dane są przechowywane tylko lokalnie.{" "}
-            <S.DemoBannerLink onClick={() => setShowSaveModal(true)}>
-              Zarejestruj się, aby zachować dane
-            </S.DemoBannerLink>
-          </S.DemoBannerText>
-          <S.DemoBannerClose onClick={handleBackToLanding}>✕</S.DemoBannerClose>
-        </S.DemoBanner>
-        <Header
-          onAddPayment={handleAddPayment}
-          onToggleFilters={() => setShowFilters(!showFilters)}
-          showFilters={showFilters}
-          hideFilters={
-            activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"
-          }
-          hideAddPayment={
-            activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"
-          }
-        />
-        {(showFilters || window.innerWidth >= 768) &&
-          activeTab !== "shopping" &&
-          activeTab !== "family" &&
-          activeTab !== "files" &&
-          activeTab !== "profile" && (
-            <S.FiltersBox>
-              <Filters
-                minDate={minDate}
-                maxDate={maxDate}
-                minAmount={minAmount}
-                maxAmount={maxAmount}
-                searchName={searchName}
-                setMinDate={setMinDate}
-                setMaxDate={setMaxDate}
-                setMinAmount={setMinAmount}
-                setMaxAmount={setMaxAmount}
-                setSearchName={setSearchName}
-              />
-            </S.FiltersBox>
-          )}
-        {renderContent()}
-      </S.Container>
+      <S.DemoBanner>
+        <S.DemoBannerText>
+          🎯 Tryb demo - dane są przechowywane tylko lokalnie.{" "}
+          <S.DemoBannerLink onClick={() => setShowSaveModal(true)}>
+            Zarejestruj się, aby zachować dane
+          </S.DemoBannerLink>
+        </S.DemoBannerText>
+        <S.DemoBannerClose onClick={handleBackToLanding}>✕</S.DemoBannerClose>
+      </S.DemoBanner>
+      <S.HeaderRow>
+        <S.HeaderSpacer />
+        <S.HeaderCenter>
+          <Header
+            onAddPayment={handleAddPayment}
+            onToggleFilters={() => setShowFilters(!showFilters)}
+            showFilters={showFilters}
+            hideFilters={
+              activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"
+            }
+            hideAddPayment={
+              activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"
+            }
+          />
+        </S.HeaderCenter>
+        <S.HeaderSpacer />
+      </S.HeaderRow>
+      <S.DesktopLayout>
+        <S.LeftAdArea $isEmpty={isPro} />
+        <S.MainContent>
+          {(showFilters || window.innerWidth >= 768) &&
+            activeTab !== "shopping" &&
+            activeTab !== "family" &&
+            activeTab !== "files" &&
+            activeTab !== "profile" && (
+              <S.FiltersBox>
+                <Filters
+                  minDate={minDate}
+                  maxDate={maxDate}
+                  minAmount={minAmount}
+                  maxAmount={maxAmount}
+                  searchName={searchName}
+                  setMinDate={setMinDate}
+                  setMaxDate={setMaxDate}
+                  setMinAmount={setMinAmount}
+                  setMaxAmount={setMaxAmount}
+                  setSearchName={setSearchName}
+                />
+              </S.FiltersBox>
+            )}
+          {renderContent()}
+        </S.MainContent>
+        <S.RightAdArea>
+          <AdBanner />
+        </S.RightAdArea>
+      </S.DesktopLayout>
       <BottomNav
         activeTab={activeTab}
         onTabChange={handleTabChange}

@@ -19,6 +19,10 @@ export const Wrapper = styled.main`
   animation: ${gradient} 15s ease infinite;
   padding: 20px 16px 80px 16px;
 
+  @media (min-width: 768px) {
+    padding: 20px 20px 80px 20px;
+  }
+
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     padding: 16px 12px 80px 12px;
   }
@@ -42,6 +46,109 @@ export const Container = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     gap: 12px;
+  }
+`;
+
+export const HeaderRow = styled.div`
+  display: flex;
+  width: 100%;
+  margin-bottom: 16px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+  }
+`;
+
+export const HeaderSpacer = styled.div`
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+    width: 280px;
+    min-width: 280px;
+    flex-shrink: 0;
+  }
+`;
+
+export const HeaderCenter = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+export const DesktopLayout = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+    max-width: 100%;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    gap: 12px;
+  }
+`;
+
+const adAreaBorder = "2px solid rgba(140, 80, 20, 0.5)";
+
+export const LeftAdArea = styled.div`
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+    width: 280px;
+    min-width: 280px;
+    flex-shrink: 0;
+    min-height: 200px;
+    border: ${adAreaBorder};
+    border-radius: 12px;
+    background: ${({ $isEmpty }) =>
+      $isEmpty ? "transparent" : "rgba(248, 250, 252, 0.8)"};
+  }
+`;
+
+export const MainContent = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    flex: 1;
+    max-width: none;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    gap: 12px;
+  }
+`;
+
+export const RightAdArea = styled.aside`
+  @media (min-width: 768px) {
+    display: block;
+    width: 280px;
+    min-width: 280px;
+    flex-shrink: 0;
+    min-height: 200px;
+    border: ${adAreaBorder};
+    border-radius: 12px;
+    position: sticky;
+    top: 20px;
+    overflow: hidden;
+
+    & > a {
+      border: none;
+      margin: 0;
+      border-radius: 10px;
+    }
   }
 `;
 

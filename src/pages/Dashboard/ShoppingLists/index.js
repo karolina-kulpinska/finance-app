@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../api/firebase";
 import { openStorageDownloadUrl } from "../../../utils/firebaseStorageDownload";
 import { selectUser } from "../../../features/auth/authSlice";
+import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
+import { showNotification } from "../../../features/notification/notificationSlice";
 import { ListView } from "./ListView";
 import { ListDetailView } from "./ListDetailView";
 import * as S from "./styled";
 
+const SHOPPING_LISTS_LIMIT_FREE = 2;
+const SHOPPING_SHARED_LIMIT_FREE = 1;
+
 const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBack }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const isPro = useSelector(selectIsPro);
   const [lists, setLists] = useState(() => {
     try {
       const saved = localStorage.getItem("shoppingLists");
@@ -57,7 +64,28 @@ const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBac
     ? lists.filter((l) => l.sharedWithFamily === true)
     : lists;
 
+  const sharedListsCount = lists.filter((l) => l.sharedWithFamily === true).length;
+  const canShareWithFamily = isPro || sharedListsCount < SHOPPING_SHARED_LIMIT_FREE;
+
   const handleAddList = () => {
+    if (!isPro && lists.length >= SHOPPING_LISTS_LIMIT_FREE) {
+      dispatch(
+        showNotification({
+          message: t("shopping.listsLimitReached"),
+          type: "info",
+        })
+      );
+      return;
+    }
+    if (shareWithFamily && !canShareWithFamily) {
+      dispatch(
+        showNotification({
+          message: t("shopping.sharedLimitReached"),
+          type: "info",
+        })
+      );
+      return;
+    }
     if (newListName.trim()) {
       const newList = {
         id: Date.now(),
@@ -241,20 +269,28 @@ const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBac
         receiptUploading={receiptUploadingListId === list.id}
         onDownloadReceipt={handleDownloadReceipt}
         onDeleteList={handleRequestDeleteList}
+        canShareWithFamily={canShareWithFamily}
         />
       );
     }
 
     const listsEmpty = sharedOnly ? displayLists.length === 0 : lists.length === 0;
 
+    const canAddList = isPro || lists.length < SHOPPING_LISTS_LIMIT_FREE;
+
     return (
       <ListView
       showAddForm={showAddForm}
+      canAddList={canAddList}
       onToggleAddForm={() => setShowAddForm(!showAddForm)}
+      onLimitReached={() =>
+        dispatch(showNotification({ message: t("shopping.listsLimitReached"), type: "info" }))
+      }
       newListName={newListName}
       onNewListNameChange={setNewListName}
       shareWithFamily={shareWithFamily}
       onShareWithFamilyChange={setShareWithFamily}
+      canShareWithFamily={canShareWithFamily}
       onAddList={handleAddList}
       displayLists={displayLists}
       sharedOnly={sharedOnly}

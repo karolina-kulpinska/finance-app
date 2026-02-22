@@ -61,7 +61,7 @@
     "currency": "Waluta"
   },
   "family": {
-    "members": "Członkowie",
+    "members": "Użytkownicy",
     "payments": "Płatności",
     "shoppingLists": "Listy zakupów",
     "files": "Pliki",
@@ -75,8 +75,8 @@
     "saveName": "Zapisz nazwę",
     "copyLinkHint": "Kliknij, aby skopiować link",
     "demoCannotCopy": "W trybie demo nie możesz kopiować linków",
-    "member": "członek",
-    "members": "członków",
+    "member": "użytkownik",
+    "membersCount": "użytkowników",
     "familyPlaceholder": "np. Rodzina Kowalskich",
     "pendingInvitations": "Oczekujące zaproszenia",
     "owner": "Właściciel"

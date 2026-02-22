@@ -66,7 +66,7 @@ export const MainView = ({
               else setPanel(null);
             }}
           >
-            ←
+            ← {t("common.back")}
           </S.BackButton>
           <S.PanelTitle>{t(PANEL_KEYS[panel])}</S.PanelTitle>
         </S.PanelHeader>
@@ -133,7 +133,7 @@ export const MainView = ({
         <S.HeaderContent>
           <S.FamilyTitle>{family.name}</S.FamilyTitle>
           <S.FamilySubtitle>
-            {activeMembers.length} {activeMembers.length === 1 ? t("family.member") : t("family.members")}
+            {activeMembers.length} {activeMembers.length === 1 ? t("family.member") : t("family.membersCount")}
           </S.FamilySubtitle>
         </S.HeaderContent>
       </S.FamilyHeader>

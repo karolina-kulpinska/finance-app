@@ -27,6 +27,7 @@ export const ProfileMain = ({
   const renewalDate = useSelector(selectRenewalDate);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [currencyExpanded, setCurrencyExpanded] = useState(false);
 
   const currentLang = i18nInstance.language?.split("-")[0] || "pl";
   const renewalDateDisplay = renewalDate
@@ -161,19 +162,29 @@ export const ProfileMain = ({
     </S.SettingsSection>
 
     <S.SettingsSection>
-      <S.SectionTitle>💱 {t("profile.currency")}</S.SectionTitle>
-      <S.SettingsList>
-        {CURRENCIES.map((curr) => (
-          <S.LanguageOption
-            key={curr.code}
-            $active={currencyCode === curr.code}
-            onClick={() => dispatch(setCurrency(curr.code))}
-          >
-            {curr.symbol} {curr.name}
-            {currencyCode === curr.code && " ✓"}
-          </S.LanguageOption>
-        ))}
-      </S.SettingsList>
+      <S.CollapsibleHeader
+        type="button"
+        onClick={() => setCurrencyExpanded((v) => !v)}
+        aria-expanded={currencyExpanded}
+        aria-controls="currency-list"
+      >
+        💱 {t("profile.currency")}
+        <S.CollapsibleArrow $open={currencyExpanded} aria-hidden>▼</S.CollapsibleArrow>
+      </S.CollapsibleHeader>
+      {currencyExpanded && (
+        <S.SettingsList id="currency-list">
+          {CURRENCIES.map((curr) => (
+            <S.LanguageOption
+              key={curr.code}
+              $active={currencyCode === curr.code}
+              onClick={() => dispatch(setCurrency(curr.code))}
+            >
+              {curr.symbol} {curr.name}
+              {currencyCode === curr.code && " ✓"}
+            </S.LanguageOption>
+          ))}
+        </S.SettingsList>
+      )}
     </S.SettingsSection>
 
     <S.AppVersion>{t("profile.version")}</S.AppVersion>

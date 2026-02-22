@@ -50,6 +50,34 @@ export const SectionTitle = styled.h3`
   margin: 0 0 12px 0;
 `;
 
+export const CollapsibleHeader = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 0 12px 0;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  text-align: left;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+export const CollapsibleArrow = styled.span`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.secondary};
+  transition: transform 0.2s ease;
+  transform: rotate(${({ $open }) => ($open ? "180deg" : "0deg")});
+`;
+
 export const SettingsList = styled.div`
   display: flex;
   flex-direction: column;

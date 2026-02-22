@@ -61,7 +61,7 @@
     "currency": "Currency"
   },
   "family": {
-    "members": "Members",
+    "members": "Users",
     "payments": "Payments",
     "shoppingLists": "Shopping lists",
     "files": "Files",
@@ -75,8 +75,8 @@
     "saveName": "Save name",
     "copyLinkHint": "Click to copy link",
     "demoCannotCopy": "In demo mode you cannot copy links",
-    "member": "member",
-    "members": "members",
+    "member": "user",
+    "membersCount": "users",
     "familyPlaceholder": "e.g. Smith Family",
     "pendingInvitations": "Pending invitations",
     "owner": "Owner"

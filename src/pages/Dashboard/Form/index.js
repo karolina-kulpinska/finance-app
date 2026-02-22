@@ -761,8 +761,6 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
                       minDate={new Date(1900, 0, 1)}
                       maxDate={new Date(2100, 11, 31)}
                       autoComplete="off"
-                      readOnly
-                      inputMode="none"
                     />
                   </S.DatePickerWrap>
                 )}

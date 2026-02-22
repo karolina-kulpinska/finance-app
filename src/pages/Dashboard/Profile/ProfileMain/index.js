@@ -81,6 +81,15 @@ export const ProfileMain = ({
           <S.SettingArrow>›</S.SettingArrow>
         </S.SettingItem>
 
+        <S.SettingItem onClick={() => onSectionSelect("notifications")} disabled={isDemo}>
+          <S.SettingIcon>🔔</S.SettingIcon>
+          <S.SettingInfo>
+            <S.SettingLabel>{t("profile.notifications")}</S.SettingLabel>
+            <S.SettingDesc>{t("notifications.title")}</S.SettingDesc>
+          </S.SettingInfo>
+          <S.SettingArrow>›</S.SettingArrow>
+        </S.SettingItem>
+
         <S.SettingItem onClick={() => onSectionSelect("security")} disabled={isDemo}>
           <S.SettingIcon>🔒</S.SettingIcon>
           <S.SettingInfo>

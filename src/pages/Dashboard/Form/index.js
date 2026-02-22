@@ -461,7 +461,6 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
             />
 
             {i18n.language?.startsWith("pl") &&
-              effectivePaymentType !== "installments" &&
               effectivePaymentType !== "insurance" && (
                 <S.FormGroup $fullWidth>
                   <S.Label>{t("form.paymentMethod")}</S.Label>

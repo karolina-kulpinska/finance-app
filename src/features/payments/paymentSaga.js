@@ -6,6 +6,7 @@ import {
   serverTimestamp,
   onSnapshot,
   doc,
+  getDoc,
   deleteDoc,
   updateDoc,
   query,
@@ -127,7 +128,31 @@ function* addPaymentHandler({ payload }) {
 
     const docRef = yield call(addDoc, collection(db, "users", user.uid, "payments"), paymentData);
     yield put(addPaymentSuccess({ id: docRef.id, ...paymentData }));
-    
+
+    if (payload.sharedWithFamily) {
+      try {
+        const userDoc = yield call(getDoc, doc(db, "users", user.uid));
+        const familyId = userDoc.data()?.familyId;
+        if (familyId) {
+          const familyDoc = yield call(getDoc, doc(db, "families", familyId));
+          const members = familyDoc.data()?.members || [];
+          const otherMemberIds = members
+            .filter((m) => m.userId && m.userId !== user.uid && m.status === "active")
+            .map((m) => m.userId);
+          const notif = {
+            type: "family_payment_added",
+            fromName: user.displayName || user.email || "Ktoś",
+            paymentName: payload.name,
+            createdAt: new Date().toISOString(),
+          };
+          for (const memberId of otherMemberIds) {
+            yield call(addDoc, collection(db, "users", memberId, "notifications"), notif);
+          }
+        }
+      } catch {
+      }
+    }
+
     yield put(
       showNotification({
         message: "Płatność została dodana pomyślnie!",

@@ -9,7 +9,9 @@ import { registrationSaga } from "./features/auth/registrationSaga";
 import { subscriptionSaga } from "./features/subscription/subscriptionSaga";
 import paymentReducer from "./features/payments/paymentSlice";
 import { paymentSaga } from "./features/payments/paymentSaga";
+import { notificationsSaga } from "./features/notifications/notificationsSaga";
 import notificationReducer from "./features/notification/notificationSlice";
+import notificationsReducer from "./features/notifications/notificationsSlice";
 import confirmReducer from "./features/notification/confirmSlice";
 import demoReducer from "./features/demo/demoSlice";
 // eslint-disable-next-line no-unused-vars -- used in reducer config
@@ -22,7 +24,7 @@ const sagaMiddleware = createSagaMiddleware({
 
 function* rootSaga() {
   try {
-    yield all([authSaga(), registrationSaga(), subscriptionSaga(), paymentSaga()]);
+    yield all([authSaga(), registrationSaga(), subscriptionSaga(), paymentSaga(), notificationsSaga()]);
   } catch (error) {
   }
 }
@@ -34,6 +36,7 @@ export const store = configureStore({
     subscription: subscriptionReducer,
     payments: paymentReducer,
     notification: notificationReducer,
+    notifications: notificationsReducer,
     confirm: confirmReducer,
     demo: demoReducer,
     currency: currencyReducer,

@@ -99,7 +99,24 @@
     "deleteConfirmFinal": "OSTATNIE OSTRZEŻENIE!\n\nCzy jesteś absolutnie pewien?\nWszystkie dane zostaną TRWALE USUNIĘTE.",
     "mustReLogin": "Musisz się wylogować i zalogować ponownie przed usunięciem konta",
     "deleteAccountError": "Błąd usuwania konta",
-    "subscriptionPortalError": "Nie udało się otworzyć panelu zarządzania subskrypcją"
+    "subscriptionPortalError": "Nie udało się otworzyć panelu zarządzania subskrypcją",
+    "notifications": "Powiadomienia"
+  },
+  "notifications": {
+    "title": "Powiadomienia",
+    "enable": "Włącz powiadomienia w przeglądarce",
+    "enableDesc": "Zezwól na powiadomienia, aby otrzymywać przypomnienia",
+    "daysBefore": "Przypomnij dni przed terminem płatności",
+    "daysBeforeDesc": "np. 1 = dzień przed, 3 = 3 dni przed",
+    "onDueDate": "Przypomnij w dniu płatności (jeśli nieopłacone)",
+    "familyPayment": "Gdy członek rodziny doda płatność",
+    "familyList": "Gdy członek rodziny doda listę zakupów",
+    "save": "Zapisz ustawienia",
+    "permissionNeeded": "Zezwól na powiadomienia w ustawieniach przeglądarki",
+    "paymentDueToday": "Płatność do uregulowania dziś",
+    "paymentInDays": "Płatność za {{days}} dni",
+    "multiplePayments": "{{count}} płatności wymagają uwagi",
+    "settingsSaved": "Ustawienia zapisane"
   },
   "family": {
     "members": "Użytkownicy",
@@ -108,6 +125,7 @@
     "files": "Pliki",
     "inviteMember": "Zaproś członka",
     "inviteLink": "Link zaproszeniowy",
+    "inviteLinkToFamily": "Link do zaproszenia do rodziny",
     "management": "Zarządzanie",
     "changeName": "Zmień nazwę rodziny",
     "deleteFamily": "Usuń rodzinę",

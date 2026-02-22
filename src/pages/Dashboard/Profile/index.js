@@ -30,9 +30,10 @@ import { SecurityForm } from "./SecurityForm";
 import { ExportSection } from "./ExportSection";
 import { DeleteSection } from "./DeleteSection";
 import { SubscriptionSection } from "./SubscriptionSection";
+import { NotificationsSection } from "./NotificationsSection";
 import * as S from "./styled";
 
-const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack }) => {
+const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo = false }) => {
   const { t } = useTranslation();
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
@@ -404,6 +405,19 @@ dispatch(
     );
   }
 
+  if (activeSection === "notifications") {
+    return (
+      <S.Container>
+        <SectionLayout
+          title={t("profile.notifications")}
+          onBack={handleBack}
+        >
+          <NotificationsSection isDemo={isDemo} />
+        </SectionLayout>
+      </S.Container>
+    );
+  }
+
   if (activeSection === "subscription") {
     return (
       <S.Container>
@@ -427,6 +441,7 @@ dispatch(
         userInitials={userInitials}
         userName={userName}
         userEmail={userEmail}
+        isDemo={isDemo}
         onSectionSelect={(s) => (useHistory ? onNavigate({ profileSection: s }) : setLocalSection(s))}
         onContact={() => window.open("mailto:pomoc@finanseapp.pl", "_blank")}
         onAbout={() =>

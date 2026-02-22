@@ -25,7 +25,7 @@ export const InviteForm = ({
     <S.InviteCard>
       <S.InviteTitle>Zaproś członka</S.InviteTitle>
       <S.InviteHint>
-        Wpisz e-mail. Otrzyma link do dołączenia do rodziny.
+        Wpisz e-mail, aby dodać go do listy zaproszeń.
       </S.InviteHint>
 
       <S.Input
@@ -39,7 +39,7 @@ export const InviteForm = ({
         onClick={onInviteMember}
         disabled={!inviteEmail.trim()}
       >
-        Wyślij zaproszenie
+        Dodaj e-mail
       </S.InviteButton>
     </S.InviteCard>
   </S.Container>

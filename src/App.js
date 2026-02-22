@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./api/firebase";
 import { loginSuccess, logout, selectUser } from "./features/auth/authSlice";
 import { fetchSubscriptionRequest } from "./features/subscription/subscriptionSlice";
+import { fetchNotificationPreferencesRequest, startNotificationsListenerRequest } from "./features/notifications/notificationsSlice";
 import LandingPage from "./pages/Landing";
 import LoginPage from "./pages/Login";
 import RegistrationPage from "./pages/Registration";
@@ -60,6 +61,8 @@ function App() {
           }),
         );
         dispatch(fetchSubscriptionRequest({ uid: user.uid }));
+        dispatch(fetchNotificationPreferencesRequest());
+        dispatch(startNotificationsListenerRequest());
       } else {
         dispatch(logout());
       }

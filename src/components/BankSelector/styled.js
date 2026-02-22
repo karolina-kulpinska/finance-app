@@ -10,13 +10,13 @@ export const BankGrid = styled.div`
   gap: 12px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
   }
 `;
 
@@ -27,8 +27,7 @@ export const BankTile = styled.div`
   justify-content: center;
   gap: 6px;
   padding: 12px 10px;
-  border: 2px solid
-    ${({ $color, $selected }) => ($selected ? $color : `${$color}30`)};
+  border: 2px solid ${({ $color, $selected }) => ($selected ? $color : `${$color}30`)};
   border-radius: 10px;
   background: ${({ $color, $selected }) =>
     $selected ? `${$color}15` : "white"};
@@ -46,6 +45,18 @@ export const BankTile = styled.div`
   &:active {
     transform: translateY(0);
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    padding: 8px 6px;
+    gap: 4px;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    padding: 6px 4px;
+    gap: 2px;
+    border-width: 1.5px;
+    border-radius: 8px;
+  }
 `;
 
 export const IconWrapper = styled.div`
@@ -59,6 +70,16 @@ export const IconWrapper = styled.div`
   svg {
     color: inherit;
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    width: 28px;
+    height: 28px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
 `;
 
 export const BankLabel = styled.span`
@@ -67,6 +88,14 @@ export const BankLabel = styled.span`
   text-align: center;
   color: ${({ theme }) => theme.colors.text};
   word-break: break-word;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    font-size: 10px;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobileL}) {
+    font-size: 9px;
+  }
 `;
 
 export const SelectionCheckmark = styled.div`
@@ -83,4 +112,12 @@ export const SelectionCheckmark = styled.div`
   justify-content: center;
   font-size: 14px;
   font-weight: 700;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    top: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    font-size: 10px;
+  }
 `;

@@ -152,6 +152,19 @@ export const AddMemberButton = styled.button`
   }
 `;
 
+export const LinkSection = styled.div`
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};
+`;
+
+export const LinkSectionTitle = styled.div`
+  font-size: 13px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors?.text || "#333"};
+  margin-bottom: 8px;
+`;
+
 export const LinkBox = styled.div`
   background: rgba(44, 82, 130, 0.08);
   border: 1px solid rgba(44, 82, 130, 0.3);

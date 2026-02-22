@@ -13,6 +13,7 @@ import {
 } from "../../features/payments/paymentSlice";
 
 import { fetchSubscriptionRequest } from "../../features/subscription/subscriptionSlice";
+import { checkPaymentRemindersRequest } from "../../features/notifications/notificationsSlice";
 import { selectUser } from "../../features/auth/authSlice";
 import Header from "./Header";
 import Stats from "./Stats";
@@ -57,6 +58,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(fetchPaymentsRequest());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => dispatch(checkPaymentRemindersRequest()), 2000);
+    return () => clearTimeout(timer);
   }, [dispatch]);
 
   const checkTermsAcceptance = useCallback(async () => {

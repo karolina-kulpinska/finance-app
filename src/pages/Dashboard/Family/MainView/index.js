@@ -11,7 +11,6 @@ const PANEL_KEYS = {
   payments: "family.payments",
   shopping: "family.shoppingLists",
   files: "family.files",
-  link: "family.inviteLink",
   danger: "family.management",
 };
 
@@ -47,10 +46,7 @@ export const MainView = ({
     { key: "payments", labelKey: "family.payments" },
     { key: "shopping", labelKey: "family.shoppingLists" },
     { key: "files", labelKey: "family.files" },
-    ...(isOwner ? [
-      { key: "link", labelKey: "family.inviteLink" },
-      { key: "danger", labelKey: "family.management" },
-    ] : []),
+    ...(isOwner ? [{ key: "danger", labelKey: "family.management" }] : []),
   ];
 
   if (panel) {
@@ -86,19 +82,22 @@ export const MainView = ({
                 onRemoveMember={onRemoveMember}
                 isDemo={isDemo}
               />
+              {isOwner && (
+                <S.LinkSection>
+                  <S.LinkSectionTitle>{t("family.inviteLinkToFamily")}</S.LinkSectionTitle>
+                  <S.LinkBox onClick={isDemo ? undefined : onCopyInviteLink} style={{ opacity: isDemo ? 0.6 : 1, cursor: isDemo ? "not-allowed" : "pointer" }}>
+                    <S.LinkContent>
+                      <S.LinkLabel>{isDemo ? t("family.demoCannotCopy") : t("family.copyLinkHint")}</S.LinkLabel>
+                      <S.LinkUrl>{getInviteLink()}</S.LinkUrl>
+                    </S.LinkContent>
+                  </S.LinkBox>
+                </S.LinkSection>
+              )}
             </>
           )}
           {panel === "payments" && <PaymentsList sharedOnly />}
           {panel === "shopping" && <ShoppingLists sharedOnly />}
           {panel === "files" && <Files sharedOnly />}
-          {panel === "link" && (
-            <S.LinkBox onClick={isDemo ? undefined : onCopyInviteLink} style={{ opacity: isDemo ? 0.6 : 1, cursor: isDemo ? "not-allowed" : "pointer" }}>
-              <S.LinkContent>
-                <S.LinkLabel>{isDemo ? t("family.demoCannotCopy") : t("family.copyLinkHint")}</S.LinkLabel>
-                <S.LinkUrl>{getInviteLink()}</S.LinkUrl>
-              </S.LinkContent>
-            </S.LinkBox>
-          )}
           {panel === "danger" && (
             <>
               {onRenameFamily && (

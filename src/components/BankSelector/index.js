@@ -23,7 +23,7 @@ const BankSelector = ({ value, onChange }) => {
               onClick={() => handleBankSelect(bank.value)}
             >
               <S.IconWrapper>
-                <IconComponent size={24} />
+                <IconComponent size={24} style={{ width: "100%", height: "100%" }} />
               </S.IconWrapper>
               <S.BankLabel>{config.label}</S.BankLabel>
               {isSelected && <S.SelectionCheckmark>✓</S.SelectionCheckmark>}

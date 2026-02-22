@@ -241,10 +241,10 @@ const Dashboard = () => {
           showFilters={showFilters}
           onBack={goBack}
           showBack={
-            activeTab === "shopping" ||
-            activeTab === "family" ||
-            activeTab === "files" ||
-            activeTab === "profile"
+            (activeTab === "shopping" && !viewState.shoppingListId) ||
+            (activeTab === "family" && !viewState.familyPanel) ||
+            (activeTab === "files") ||
+            (activeTab === "profile" && !viewState.profileSection)
           }
           hideFilters={
             activeTab === "shopping" ||

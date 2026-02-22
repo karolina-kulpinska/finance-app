@@ -10,6 +10,7 @@ import {
 import { selectCurrency, formatAmount } from "../../../features/currency/currencySlice";
 import { getDisplayCategory } from "../List/constants";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
+import { getDisplayCategory } from "../List/constants";
 import * as S from "./styled";
 
 const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
@@ -31,7 +32,7 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
     }
 
     if (categoryFilter !== "all") {
-      filtered = filtered.filter((p) => p.category === categoryFilter);
+      filtered = filtered.filter((p) => getDisplayCategory(p) === categoryFilter);
     }
 
     if (dateFilter !== "all") {

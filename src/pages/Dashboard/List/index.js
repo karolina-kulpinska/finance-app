@@ -12,6 +12,7 @@ import {
 } from "../../../features/payments/paymentSlice";
 import { showConfirm } from "../../../features/notification/confirmSlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
+import { getDisplayCategory } from "./constants";
 import { PaymentCard } from "./PaymentCard";
 import { PaymentDetailModal } from "./PaymentDetailModal";
 import { SeriesEditChoiceModal } from "../../../components/InsuranceEditChoiceModal";
@@ -108,7 +109,7 @@ const PaymentsList = ({
     }
 
     if (categoryFilter !== "all") {
-      filtered = filtered.filter((p) => p.category === categoryFilter);
+      filtered = filtered.filter((p) => getDisplayCategory(p) === categoryFilter);
     }
 
     if (dateFilter === "overdue") {
@@ -149,11 +150,29 @@ const PaymentsList = ({
         filtered = filtered.filter((p) => isDateInRange(p.date, dateRange));
       }
     }
+    const parseAmount = (v) => {
+      if (v == null || v === "") return NaN;
+      const s = String(v).trim().replace(",", ".");
+      const n = parseFloat(s);
+      return Number.isFinite(n) ? n : NaN;
+    };
     if (minAmount) {
-      filtered = filtered.filter((p) => Number(p.amount) >= Number(minAmount));
+      const min = parseAmount(minAmount);
+      if (!Number.isNaN(min)) {
+        filtered = filtered.filter((p) => {
+          const amt = parseAmount(p.amount);
+          return !Number.isNaN(amt) && amt >= min;
+        });
+      }
     }
     if (maxAmount) {
-      filtered = filtered.filter((p) => Number(p.amount) <= Number(maxAmount));
+      const max = parseAmount(maxAmount);
+      if (!Number.isNaN(max)) {
+        filtered = filtered.filter((p) => {
+          const amt = parseAmount(p.amount);
+          return !Number.isNaN(amt) && amt <= max;
+        });
+      }
     }
 
     if (searchName && searchName.trim()) {
@@ -268,7 +287,7 @@ const PaymentsList = ({
     window.open(url, "_blank");
   };
 
-  if (!payments || payments.length === 0 || filteredPayments.length === 0) {
+  if (!payments || payments.length === 0) {
     return null;
   }
 

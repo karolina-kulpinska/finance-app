@@ -231,6 +231,7 @@
     "total": "Total:",
     "downloadFile": "Download file",
     "removeList": "Delete list",
+    "removeListConfirm": "Are you sure you want to delete this list?",
     "removeFromFamily": "Remove from family",
     "addToFamily": "Add to family",
     "addReceipt": "Add receipt",

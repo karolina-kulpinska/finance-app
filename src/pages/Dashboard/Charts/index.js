@@ -10,6 +10,7 @@ import {
 } from "../../../features/payments/paymentSlice";
 import { selectCurrency, formatAmount } from "../../../features/currency/currencySlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
+import { getDisplayCategory } from "../List/constants";
 import * as S from "./styled";
 
 const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
@@ -33,7 +34,7 @@ const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
     }
 
     if (categoryFilter !== "all") {
-      filtered = filtered.filter((p) => p.category === categoryFilter);
+      filtered = filtered.filter((p) => getDisplayCategory(p) === categoryFilter);
     }
 
     if (dateFilter !== "all") {
@@ -54,7 +55,7 @@ const Charts = ({ onBeforeCategorySelect, payments: paymentsProp = null }) => {
     };
 
     filteredPayments.forEach((payment) => {
-      const category = payment.category || "other";
+      const category = getDisplayCategory(payment);
       if (stats[category]) {
         stats[category].amount += payment.amount;
         stats[category].count += 1;

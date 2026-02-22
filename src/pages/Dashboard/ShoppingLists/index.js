@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../api/firebase";
@@ -6,8 +7,10 @@ import { openStorageDownloadUrl } from "../../../utils/firebaseStorageDownload";
 import { selectUser } from "../../../features/auth/authSlice";
 import { ListView } from "./ListView";
 import { ListDetailView } from "./ListDetailView";
+import * as S from "./styled";
 
 const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBack }) => {
+  const { t } = useTranslation();
   const user = useSelector(selectUser);
   const [lists, setLists] = useState(() => {
     try {
@@ -48,6 +51,7 @@ const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBac
   const [newItemPrice, setNewItemPrice] = useState("");
   const [shareWithFamily, setShareWithFamily] = useState(sharedOnly);
   const [receiptUploadingListId, setReceiptUploadingListId] = useState(null);
+  const [deleteListConfirmId, setDeleteListConfirmId] = useState(null);
 
   const displayLists = sharedOnly
     ? lists.filter((l) => l.sharedWithFamily === true)
@@ -177,18 +181,51 @@ const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBac
     if (selectedList?.id === listId) {
       setSelectedList(null);
     }
+    setDeleteListConfirmId(null);
+  };
+
+  const handleRequestDeleteList = (listId) => {
+    setDeleteListConfirmId(listId);
   };
 
   const handleDownloadReceipt = (url) => {
     openStorageDownloadUrl(url);
   };
 
-  if (selectedList) {
-    const list = lists.find((l) => l.id === selectedList.id);
-    if (!list) return null;
+  return (
+    <>
+      {deleteListConfirmId && (
+        <S.ConfirmOverlay
+          onClick={() => setDeleteListConfirmId(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-list-title"
+        >
+          <S.ConfirmModalBox onClick={(e) => e.stopPropagation()}>
+            <S.ConfirmTitle id="delete-list-title">{t("common.confirmation")}</S.ConfirmTitle>
+            <S.ConfirmMessage>{t("shopping.removeListConfirm")}</S.ConfirmMessage>
+            <S.ConfirmButtonGroup>
+              <S.ConfirmCancelBtn onClick={() => setDeleteListConfirmId(null)}>
+                {t("common.cancel")}
+              </S.ConfirmCancelBtn>
+              <S.ConfirmDeleteBtn onClick={() => handleDeleteList(deleteListConfirmId)}>
+                {t("common.delete")}
+              </S.ConfirmDeleteBtn>
+            </S.ConfirmButtonGroup>
+          </S.ConfirmModalBox>
+        </S.ConfirmOverlay>
+      )}
+      {renderDetailOrList()}
+    </>
+  );
 
-    return (
-      <ListDetailView
+  function renderDetailOrList() {
+    if (selectedList) {
+      const list = lists.find((l) => l.id === selectedList.id);
+      if (!list) return null;
+
+      return (
+        <ListDetailView
         list={list}
         lists={lists}
         setLists={setLists}
@@ -203,15 +240,15 @@ const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBac
         onReceiptUpload={handleReceiptUpload}
         receiptUploading={receiptUploadingListId === list.id}
         onDownloadReceipt={handleDownloadReceipt}
-        onDeleteList={handleDeleteList}
-      />
-    );
-  }
+        onDeleteList={handleRequestDeleteList}
+        />
+      );
+    }
 
-  const listsEmpty = sharedOnly ? displayLists.length === 0 : lists.length === 0;
+    const listsEmpty = sharedOnly ? displayLists.length === 0 : lists.length === 0;
 
-  return (
-    <ListView
+    return (
+      <ListView
       showAddForm={showAddForm}
       onToggleAddForm={() => setShowAddForm(!showAddForm)}
       newListName={newListName}
@@ -223,8 +260,8 @@ const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBac
       sharedOnly={sharedOnly}
       listsEmpty={listsEmpty}
       onSelectList={setSelectedList}
-    />
-  );
-};
+      />
+    );
+  }
 
 export default ShoppingLists;

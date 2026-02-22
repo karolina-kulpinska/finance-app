@@ -145,6 +145,8 @@ const Filters = ({
                   yearDropdownItemNumber={100}
                   scrollableYearDropdown
                   withPortal
+                  readOnly
+                  inputMode="none"
                 />
               </S.DatePickerWrap>
               <S.AmountSeparator>-</S.AmountSeparator>
@@ -161,6 +163,8 @@ const Filters = ({
                   yearDropdownItemNumber={100}
                   scrollableYearDropdown
                   withPortal
+                  readOnly
+                  inputMode="none"
                 />
               </S.DatePickerWrap>
               <S.SearchButton onClick={() => {}} type="button">

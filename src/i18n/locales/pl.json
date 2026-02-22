@@ -228,6 +228,7 @@
     "total": "Suma:",
     "downloadFile": "Pobierz plik",
     "removeList": "Usuń listę",
+    "removeListConfirm": "Czy na pewno chcesz usunąć tę listę?",
     "removeFromFamily": "Usuń z rodziny",
     "addToFamily": "Dodaj do rodziny",
     "addReceipt": "Dodaj paragon",

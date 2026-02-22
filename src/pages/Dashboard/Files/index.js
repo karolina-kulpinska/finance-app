@@ -327,6 +327,8 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
               showYearDropdown
               dropdownMode="select"
               withPortal
+              readOnly
+              inputMode="none"
             />
           </S.DatePickerWrap>
           <S.DateSeparator>-</S.DateSeparator>
@@ -341,6 +343,8 @@ const Files = ({ sharedOnly = false, payments: paymentsProp = null, isDemo = fal
               showYearDropdown
               dropdownMode="select"
               withPortal
+              readOnly
+              inputMode="none"
             />
           </S.DatePickerWrap>
           <S.SearchButton onClick={handleSearch} type="button">

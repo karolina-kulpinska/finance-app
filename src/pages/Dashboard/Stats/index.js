@@ -9,6 +9,7 @@ import {
 } from "../../../features/payments/paymentSlice";
 import { selectCurrency, formatAmount } from "../../../features/currency/currencySlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
+import { getDisplayCategory } from "../List/constants";
 import * as S from "./styled";
 
 const Stats = ({ payments: paymentsProp = null }) => {
@@ -31,7 +32,7 @@ const Stats = ({ payments: paymentsProp = null }) => {
     }
 
     if (categoryFilter !== "all") {
-      filtered = filtered.filter((p) => p.category === categoryFilter);
+      filtered = filtered.filter((p) => getDisplayCategory(p) === categoryFilter);
     }
 
     if (dateFilter !== "all") {

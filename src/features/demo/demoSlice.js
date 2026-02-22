@@ -55,6 +55,23 @@ const demoSlice = createSlice({
         saveDemoData({ payments: state.payments, shoppingLists: state.shoppingLists });
       }
     },
+    updateDemoPaymentsBatch: (state, { payload }) => {
+      const { ids, updates } = payload;
+      ids.forEach((id) => {
+        const index = state.payments.findIndex((p) => p.id === id);
+        if (index !== -1) {
+          state.payments[index] = { ...state.payments[index], ...updates };
+        }
+      });
+      state.hasUnsavedData = true;
+      saveDemoData({ payments: state.payments, shoppingLists: state.shoppingLists });
+    },
+    deleteDemoPaymentsBatch: (state, { payload }) => {
+      const ids = Array.isArray(payload) ? payload : [payload];
+      state.payments = state.payments.filter((p) => !ids.includes(p.id));
+      state.hasUnsavedData = true;
+      saveDemoData({ payments: state.payments, shoppingLists: state.shoppingLists });
+    },
     deleteDemoPayment: (state, { payload }) => {
       state.payments = state.payments.filter((p) => p.id !== payload);
       state.hasUnsavedData = true;
@@ -107,6 +124,8 @@ const demoSlice = createSlice({
 export const {
   addDemoPayment,
   updateDemoPayment,
+  updateDemoPaymentsBatch,
+  deleteDemoPaymentsBatch,
   deleteDemoPayment,
   toggleDemoPaymentStatus,
   addDemoShoppingList,

@@ -80,6 +80,8 @@ export const FamilyPaymentsFilters = ({
                 dropdownMode="select"
                 yearDropdownItemNumber={100}
                 scrollableYearDropdown
+                withPortal
+                popperClassName="family-filters-datepicker-popper"
               />
             </S.DateWrap>
             <S.Separator>-</S.Separator>
@@ -95,6 +97,8 @@ export const FamilyPaymentsFilters = ({
                 dropdownMode="select"
                 yearDropdownItemNumber={100}
                 scrollableYearDropdown
+                withPortal
+                popperClassName="family-filters-datepicker-popper"
               />
             </S.DateWrap>
           </S.DateRow>

@@ -347,12 +347,6 @@
     "durationRequired": "Podaj okres trwania",
     "minDuration": "Minimum 1 miesiąc",
     "minDurationYear": "Minimum 1 rok",
-    "editInsuranceScope": "Zakres edycji",
-    "editInsuranceSingle": "Tylko tę płatność",
-    "editInsuranceAll": "Wszystkie w serii",
-    "editInsuranceEarlier": "Wcześniejsze (przed datą)",
-    "editInsuranceLater": "Późniejsze (od daty)",
-    "editInsuranceSplitDate": "Data podziału",
     "policyNumber": "Numer polisy (opcjonalnie)",
     "policyPlaceholder": "np. POL/2026/12345",
     "typeInstallments": "Raty",
@@ -364,6 +358,12 @@
     "typeInsurance": "Ubezpieczenie",
     "typeInsuranceDesc": "Opłaty cykliczne co miesiąc",
     "typeOther": "Inne",
-    "typeOtherDesc": "Pozostałe płatności"
+    "typeOtherDesc": "Pozostałe płatności",
+    "seriesEditTitle": "Zakres edycji",
+    "seriesEditSingle": "Tylko tę ratę",
+    "seriesEditAll": "Wszystkie raty ({{count}})",
+    "seriesEditRange": "Zakres rat od X do Y",
+    "seriesEditRangeFrom": "Od raty",
+    "seriesEditRangeTo": "Do raty"
   }
 }

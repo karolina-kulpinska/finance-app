@@ -66,6 +66,11 @@ export const PaymentDetailModal = ({
                 {t("paymentCard.installment")} {payment.installmentInfo.current}/{payment.installmentInfo.total}
               </S.InstallmentBadge>
             )}
+            {payment.paymentType === "insurance" && payment.insuranceInfo && (
+              <S.InstallmentBadge>
+                {payment.insuranceInfo.current}/{payment.insuranceInfo.total}
+              </S.InstallmentBadge>
+            )}
             {payment.sharedWithFamily && <S.FamilyBadge>👨‍👩‍👧‍👦</S.FamilyBadge>}
           </S.ModalTitle>
           <S.CloseButton onClick={onClose}>✕</S.CloseButton>

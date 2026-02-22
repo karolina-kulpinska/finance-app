@@ -23,6 +23,7 @@ import {
   updatePaymentStatusRequest,
   updatePaymentRequest,
   updatePaymentsBatchRequest,
+  changeSeriesCountRequest,
   updatePaymentSuccess,
   selectPayments,
 } from "./paymentSlice";
@@ -119,7 +120,6 @@ function* addPaymentHandler({ payload }) {
       isInstallment: payload.isInstallment || false,
       installmentInfo: payload.installmentInfo || null,
       isRecurring: payload.isRecurring || false,
-      insuranceInfo: payload.insuranceInfo || null,
       policyNumber: payload.policyNumber || null,
       accountNumber: payload.accountNumber || null,
       createdAt: serverTimestamp(),
@@ -273,6 +273,8 @@ function* updatePaymentHandler({ payload }) {
       attachmentName,
       accountNumber: updateData.accountNumber || null,
       policyNumber: updateData.policyNumber || null,
+      ...(updateData.installmentInfo && { installmentInfo: updateData.installmentInfo }),
+      ...(updateData.insuranceInfo && { insuranceInfo: updateData.insuranceInfo }),
     };
 
     const paymentRef = payment?._source === "old" || payment?.source === "old"
@@ -300,35 +302,36 @@ function* updatePaymentHandler({ payload }) {
 
 function* updatePaymentsBatchHandler({ payload }) {
   try {
-    const { updates } = payload;
+    const { ids, updates } = payload;
     const user = yield select(selectUser);
     const paymentData = yield select(selectPayments);
+    if (!user || !ids?.length) return;
 
-    for (const { id, ...updateData } of updates) {
+    const updateData = {
+      amount: updates.amount != null ? parseFloat(updates.amount) : undefined,
+      notes: updates.notes,
+      sharedWithFamily: Boolean(updates.sharedWithFamily),
+      policyNumber: updates.policyNumber ?? null,
+      accountNumber: updates.accountNumber ?? null,
+    };
+    const cleanUpdates = Object.fromEntries(
+      Object.entries(updateData).filter(([, v]) => v !== undefined)
+    );
+
+    for (const id of ids) {
       const payment = paymentData.find((p) => p.id === id);
+      if (!payment) continue;
       const paymentRef =
         payment?._source === "old" || payment?.source === "old"
           ? doc(db, "payments", id)
           : doc(db, "users", user.uid, "payments", id);
-      const paymentUpdateData = {
-        name: updateData.name,
-        amount: parseFloat(updateData.amount),
-        date: updateData.date,
-        category: updateData.category || "other",
-        priority: updateData.priority || "normal",
-        notes: updateData.notes || "",
-        bank: updateData.bank || null,
-        sharedWithFamily: Boolean(updateData.sharedWithFamily),
-        accountNumber: updateData.accountNumber || null,
-        policyNumber: updateData.policyNumber || null,
-      };
-      yield call(updateDoc, paymentRef, paymentUpdateData);
+      yield call(updateDoc, paymentRef, cleanUpdates);
     }
 
     yield put(updatePaymentSuccess());
     yield put(
       showNotification({
-        message: "Płatności zostały zaktualizowane!",
+        message: `${ids.length} płatności zostało zaktualizowanych!`,
         type: "success",
       })
     );
@@ -342,6 +345,82 @@ function* updatePaymentsBatchHandler({ payload }) {
   }
 }
 
+function* changeSeriesCountHandler({ payload }) {
+  try {
+    const { toDelete, toUpdate, toAdd } = payload;
+    const user = yield select(selectUser);
+    const paymentData = yield select(selectPayments);
+    if (!user) return;
+
+    for (const id of toDelete || []) {
+      const payment = paymentData.find((p) => p.id === id);
+      const paymentDoc = payment?._source === "old" || payment?.source === "old"
+        ? doc(db, "payments", id)
+        : doc(db, "users", user.uid, "payments", id);
+      yield call(deleteDoc, paymentDoc);
+    }
+
+    for (const item of toUpdate || []) {
+      const { id, ...updates } = item;
+      const payment = paymentData.find((p) => p.id === id);
+      const paymentRef = payment?._source === "old" || payment?.source === "old"
+        ? doc(db, "payments", id)
+        : doc(db, "users", user.uid, "payments", id);
+      const updateData = {
+        name: updates.name,
+        amount: parseFloat(updates.amount),
+        date: updates.date,
+        notes: updates.notes ?? "",
+        sharedWithFamily: Boolean(updates.sharedWithFamily),
+        ...(updates.installmentInfo && { installmentInfo: updates.installmentInfo }),
+        ...(updates.insuranceInfo && { insuranceInfo: updates.insuranceInfo }),
+        ...(updates.policyNumber != null && { policyNumber: updates.policyNumber }),
+        ...(updates.accountNumber != null && { accountNumber: updates.accountNumber }),
+      };
+      yield call(updateDoc, paymentRef, updateData);
+    }
+
+    for (const item of toAdd || []) {
+      const paymentData = {
+        name: item.name,
+        amount: parseFloat(item.amount),
+        date: item.date,
+        category: item.category || "other",
+        priority: item.priority || "normal",
+        notes: item.notes || "",
+        bank: item.bank || null,
+        paymentType: item.paymentType || null,
+        sharedWithFamily: Boolean(item.sharedWithFamily),
+        isInstallment: item.isInstallment || false,
+        installmentInfo: item.installmentInfo || null,
+        isRecurring: item.isRecurring || false,
+        policyNumber: item.policyNumber ?? null,
+        accountNumber: item.accountNumber ?? null,
+        createdAt: serverTimestamp(),
+        paid: false,
+        attachmentUrl: null,
+        attachmentName: null,
+      };
+      yield call(addDoc, collection(db, "users", user.uid, "payments"), paymentData);
+    }
+
+    yield put(updatePaymentSuccess());
+    yield put(
+      showNotification({
+        message: "Seria płatności została zaktualizowana!",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    yield put(
+      showNotification({
+        message: "Nie udało się zaktualizować serii płatności.",
+        type: "error",
+      })
+    );
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(addPaymentRequest.type, addPaymentHandler);
   yield takeLatest(fetchPaymentsRequest.type, fetchPaymentsHandler);
@@ -349,4 +428,5 @@ export function* paymentSaga() {
   yield takeLatest(updatePaymentStatusRequest.type, updateStatusHandler);
   yield takeLatest(updatePaymentRequest.type, updatePaymentHandler);
   yield takeLatest(updatePaymentsBatchRequest.type, updatePaymentsBatchHandler);
+  yield takeLatest(changeSeriesCountRequest.type, changeSeriesCountHandler);
 }

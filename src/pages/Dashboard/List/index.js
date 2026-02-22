@@ -14,7 +14,54 @@ import { showConfirm } from "../../../features/notification/confirmSlice";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import { PaymentCard } from "./PaymentCard";
 import { PaymentDetailModal } from "./PaymentDetailModal";
+import { SeriesEditChoiceModal } from "../../../components/InsuranceEditChoiceModal";
 import * as S from "./styled";
+
+const getRelatedSeriesPayments = (payment, allPayments) => {
+  if (!payment || !allPayments?.length) return [payment];
+  if (payment.paymentType === "insurance") {
+    const groupId = payment.insuranceInfo?.groupId;
+    if (groupId) {
+      return allPayments
+        .filter((p) => p.paymentType === "insurance" && p.insuranceInfo?.groupId === groupId)
+        .sort((a, b) => (a.insuranceInfo?.current || 0) - (b.insuranceInfo?.current || 0));
+    }
+    const match = payment.name?.match(/^(.+)\s+\((\d+)\/(\d+)\)$/);
+    if (!match) return [payment];
+    const [, baseName, , total] = match;
+    const totalNum = parseInt(total, 10);
+    return allPayments
+      .filter((p) => {
+        if (p.paymentType !== "insurance") return false;
+        const m = p.name?.match(/^(.+)\s+\((\d+)\/(\d+)\)$/);
+        return m && m[1] === baseName && parseInt(m[3], 10) === totalNum;
+      })
+      .sort((a, b) => (a.insuranceInfo?.current || 0) - (b.insuranceInfo?.current || 0));
+  }
+  if (payment.paymentType === "installments" && payment.installmentInfo) {
+    const orig = payment.installmentInfo.originalName;
+    const tot = payment.installmentInfo.total;
+    return allPayments
+      .filter(
+        (p) =>
+          p.paymentType === "installments" &&
+          p.installmentInfo?.originalName === orig &&
+          p.installmentInfo?.total === tot
+      )
+      .sort((a, b) => (a.installmentInfo?.current || 0) - (b.installmentInfo?.current || 0));
+  }
+  const match = payment.name?.match(/^(.+)\s+\(Rata\s+(\d+)\/(\d+)\)$/);
+  if (!match) return [payment];
+  const [, baseName, , total] = match;
+  const totalNum = parseInt(total, 10);
+  return allPayments
+    .filter((p) => {
+      if (p.paymentType !== "installments") return false;
+      const m = p.name?.match(/^(.+)\s+\(Rata\s+(\d+)\/(\d+)\)$/);
+      return m && m[1] === baseName && parseInt(m[3], 10) === totalNum;
+    })
+    .sort((a, b) => (a.installmentInfo?.current || 0) - (b.installmentInfo?.current || 0));
+};
 
 const PaymentsList = ({
   collapseAll = false,
@@ -26,6 +73,7 @@ const PaymentsList = ({
   sharedOnly = false,
   payments: paymentsProp = null,
   dateFilterOverride = null,
+  isDemo = false,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -40,6 +88,7 @@ const PaymentsList = ({
   const [selectedIds, setSelectedIds] = React.useState([]);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = React.useState(false);
   const [selectedPayment, setSelectedPayment] = React.useState(null);
+  const [insuranceEditChoicePayment, setInsuranceEditChoicePayment] = React.useState(null);
 
   React.useEffect(() => {
     if (collapseAll) {
@@ -129,7 +178,6 @@ const PaymentsList = ({
     statusFilter,
     categoryFilter,
     dateFilter,
-    dateFilterOverride,
     minDate,
     maxDate,
     minAmount,
@@ -148,8 +196,23 @@ const PaymentsList = ({
   };
 
   const handleEdit = (payment) => {
+    const isSeries =
+      (payment?.paymentType === "installments" && payment.installmentInfo?.total > 1) ||
+      (payment?.paymentType === "insurance" && (payment.insuranceInfo || /\(\d+\/\d+\)$/.test(payment.name || "")));
+    if (isSeries) {
+      setSelectedPayment(null);
+      setInsuranceEditChoicePayment(payment);
+      return;
+    }
     setSelectedPayment(null);
     dispatch(openEditModal(payment));
+  };
+
+  const handleSeriesEditChoose = (scope) => {
+    if (!insuranceEditChoicePayment) return;
+    const payload = { ...insuranceEditChoicePayment, _editScope: scope };
+    dispatch(openEditModal(payload));
+    setInsuranceEditChoicePayment(null);
   };
 
   const handleDelete = (paymentId) => {
@@ -301,6 +364,14 @@ const PaymentsList = ({
           onEdit={handleEdit}
           onDelete={handleDelete}
           onDownload={handleDownload}
+        />
+      )}
+      {insuranceEditChoicePayment && (
+        <SeriesEditChoiceModal
+          payment={insuranceEditChoicePayment}
+          relatedPayments={getRelatedSeriesPayments(insuranceEditChoicePayment, payments)}
+          onChoose={handleSeriesEditChoose}
+          onClose={() => setInsuranceEditChoicePayment(null)}
         />
       )}
     </S.ListContainer>

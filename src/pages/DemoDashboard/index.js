@@ -180,6 +180,7 @@ const DemoDashboard = () => {
               minAmount={minAmount}
               maxAmount={maxAmount}
               searchName={searchName}
+              isDemo
             />
             {categoryFilter === "all" && (
               <Charts

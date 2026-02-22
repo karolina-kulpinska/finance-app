@@ -21,4 +21,9 @@ export const GlobalStyle = createGlobalStyle`
   button {
     cursor: pointer;
   }
+
+  /* Kalendarz w filtrach rodziny - powyżej nagłówka i nawigacji */
+  .family-filters-datepicker-popper {
+    z-index: 1100 !important;
+  }
 `;

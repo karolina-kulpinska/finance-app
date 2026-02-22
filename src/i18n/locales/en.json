@@ -350,12 +350,6 @@
     "durationRequired": "Enter duration",
     "minDuration": "Minimum 1 month",
     "minDurationYear": "Minimum 1 year",
-    "editInsuranceScope": "Edit scope",
-    "editInsuranceSingle": "This payment only",
-    "editInsuranceAll": "All in series",
-    "editInsuranceEarlier": "Earlier (before date)",
-    "editInsuranceLater": "Later (from date)",
-    "editInsuranceSplitDate": "Split date",
     "policyNumber": "Policy number (optional)",
     "policyPlaceholder": "e.g. POL/2026/12345",
     "typeInstallments": "Installments",
@@ -367,6 +361,12 @@
     "typeInsurance": "Insurance",
     "typeInsuranceDesc": "Monthly recurring payments",
     "typeOther": "Other",
-    "typeOtherDesc": "Other payments"
+    "typeOtherDesc": "Other payments",
+    "seriesEditTitle": "Edit scope",
+    "seriesEditSingle": "Only this installment",
+    "seriesEditAll": "All installments ({{count}})",
+    "seriesEditRange": "Range from X to Y",
+    "seriesEditRangeFrom": "From installment",
+    "seriesEditRangeTo": "To installment"
   }
 }

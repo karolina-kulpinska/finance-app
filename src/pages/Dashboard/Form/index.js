@@ -6,6 +6,7 @@ import {
   addPaymentRequest,
   updatePaymentRequest,
   updatePaymentsBatchRequest,
+  changeSeriesCountRequest,
   toggleModal,
   selectEditingPayment,
   selectPayments,
@@ -13,6 +14,8 @@ import {
 import {
   addDemoPayment,
   updateDemoPayment,
+  updateDemoPaymentsBatch,
+  deleteDemoPaymentsBatch,
 } from "../../../features/demo/demoSlice";
 import { selectIsPro } from "../../../features/subscription/subscriptionSlice";
 import { compressImage, validateFile } from "../../../utils/imageCompression";
@@ -38,38 +41,69 @@ const toLocalDateString = (d) => {
 };
 const parseDateString = (s) => (s ? new Date(s + "T12:00:00") : null);
 
-const getInsuranceSiblings = (payments, payment) => {
-  if (!payments?.length || payment?.paymentType !== "insurance") return [];
-  if (payment.insuranceInfo?.groupId) {
-    return payments.filter(
-      (p) => p.paymentType === "insurance" && p.insuranceInfo?.groupId === payment.insuranceInfo.groupId
-    );
+const getRelatedSeriesPayments = (payment, allPayments) => {
+  if (!payment || !allPayments?.length) return [payment];
+  if (payment.paymentType === "insurance") {
+    const groupId = payment.insuranceInfo?.groupId;
+    if (groupId) {
+      return allPayments
+        .filter((p) => p.paymentType === "insurance" && p.insuranceInfo?.groupId === groupId)
+        .sort((a, b) => (a.insuranceInfo?.current || 0) - (b.insuranceInfo?.current || 0));
+    }
+    const match = payment.name?.match(/^(.+)\s+\((\d+)\/(\d+)\)$/);
+    if (!match) return [payment];
+    const [, baseName, , total] = match;
+    const totalNum = parseInt(total, 10);
+    return allPayments
+      .filter((p) => {
+        if (p.paymentType !== "insurance") return false;
+        const m = p.name?.match(/^(.+)\s+\((\d+)\/(\d+)\)$/);
+        return m && m[1] === baseName && parseInt(m[3], 10) === totalNum;
+      })
+      .sort((a, b) => (a.insuranceInfo?.current || 0) - (b.insuranceInfo?.current || 0));
   }
-  const match = payment.name?.match(/^(.+?) \((\d+)\/(\d+)\)$/);
+  if (payment.paymentType === "installments" && payment.installmentInfo) {
+    const orig = payment.installmentInfo.originalName;
+    const tot = payment.installmentInfo.total;
+    return allPayments
+      .filter(
+        (p) =>
+          p.paymentType === "installments" &&
+          p.installmentInfo?.originalName === orig &&
+          p.installmentInfo?.total === tot
+      )
+      .sort((a, b) => (a.installmentInfo?.current || 0) - (b.installmentInfo?.current || 0));
+  }
+  const match = payment.name?.match(/^(.+)\s+\(Rata\s+(\d+)\/(\d+)\)$/);
   if (!match) return [payment];
   const [, baseName, , total] = match;
   const totalNum = parseInt(total, 10);
-  return payments.filter((p) => {
-    if (p.paymentType !== "insurance") return false;
-    const m = p.name?.match(/^(.+?) \((\d+)\/(\d+)\)$/);
-    return m && m[1] === baseName && parseInt(m[3], 10) === totalNum;
-  });
+  return allPayments
+    .filter((p) => {
+      if (p.paymentType !== "installments") return false;
+      const m = p.name?.match(/^(.+)\s+\(Rata\s+(\d+)\/(\d+)\)$/);
+      return m && m[1] === baseName && parseInt(m[3], 10) === totalNum;
+    })
+    .sort((a, b) => (a.installmentInfo?.current || 0) - (b.installmentInfo?.current || 0));
 };
+
+const getCurrentNumber = (p) =>
+  p.installmentInfo?.current ?? p.insuranceInfo?.current ?? 0;
 
 const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const currency = useSelector(selectCurrency);
-  const payments = useSelector(selectPayments);
   const editingPayment = useSelector(selectEditingPayment);
+  const storePayments = useSelector(selectPayments);
+  const demoPayments = useSelector((s) => s.demo?.payments || []);
+  const payments = isDemo ? demoPayments : storePayments;
   const isPro = useSelector(selectIsPro);
   const effectivePaymentType = editingPayment
     ? (editingPayment.paymentType || "other")
     : (paymentType || "other");
   const [isCompressing, setIsCompressing] = useState(false);
   const [fileInfo, setFileInfo] = useState(null);
-  const [insuranceEditScope, setInsuranceEditScope] = useState("single");
-  const [insuranceSplitDate, setInsuranceSplitDate] = useState("");
   const {
     register,
     control,
@@ -117,7 +151,8 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
       }
       if (editingPayment.paymentType === "insurance") {
         setValue("policyNumber", editingPayment.policyNumber || "");
-        if (editingPayment.duration) setValue("duration", String(editingPayment.duration));
+        const dur = editingPayment.duration ?? editingPayment.insuranceInfo?.total;
+        if (dur) setValue("duration", String(dur));
         setValue("insuranceInterval", editingPayment.insuranceInterval || "month");
       }
 
@@ -202,13 +237,139 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
     if (isDemo) {
       // Tryb demo - zapisz do localStorage
       if (editingPayment) {
-        dispatch(
-          updateDemoPayment({
-            id: editingPayment.id,
-            ...data,
-            sharedWithFamily: Boolean(data.sharedWithFamily),
-          }),
-        );
+        const scope = editingPayment._editScope;
+        const isSeries = effectivePaymentType === "installments" || effectivePaymentType === "insurance";
+        const isSeriesBatch = isSeries && scope && scope !== "single";
+
+        const related = getRelatedSeriesPayments(editingPayment, payments);
+        const newCount = effectivePaymentType === "installments"
+          ? (parseInt(data.installments, 10) || related.length)
+          : (parseInt(data.duration, 10) || related.length);
+        const oldCount = related.length;
+        const canChangeCount = (scope === "single" || (scope?.type === "all"));
+        const isCountChange = canChangeCount && newCount !== oldCount;
+
+        if (isCountChange) {
+              const baseName = data.name || (related[0].installmentInfo?.originalName ?? related[0].insuranceInfo?.originalName ?? "");
+              const amount = effectivePaymentType === "installments"
+                ? (parseFloat(data.installmentAmount) || related[0].amount)
+                : (parseFloat(data.amount) || related[0].amount);
+              const shared = Boolean(data.sharedWithFamily);
+              const notes = data.notes ?? "";
+
+              if (newCount < oldCount) {
+                const toDelete = related.slice(newCount).map((p) => p.id);
+                dispatch(deleteDemoPaymentsBatch(toDelete));
+                for (let i = 0; i < newCount; i++) {
+                  const p = related[i];
+                  const updates = {
+                    name: effectivePaymentType === "installments" ? `${baseName} (Rata ${i + 1}/${newCount})` : `${baseName} (${i + 1}/${newCount})`,
+                    amount,
+                    notes,
+                    sharedWithFamily: shared,
+                  };
+                  if (effectivePaymentType === "installments") {
+                    updates.installmentInfo = { ...p.installmentInfo, total: newCount };
+                  } else {
+                    updates.insuranceInfo = { ...p.insuranceInfo, total: newCount };
+                    updates.policyNumber = data.policyNumber ?? p.policyNumber ?? null;
+                    updates.accountNumber = data.accountNumber ?? p.accountNumber ?? null;
+                  }
+                  dispatch(updateDemoPayment({ id: p.id, ...updates }));
+                }
+              } else {
+                for (let i = 0; i < oldCount; i++) {
+                  const p = related[i];
+                  const updates = {
+                    name: effectivePaymentType === "installments" ? `${baseName} (Rata ${i + 1}/${newCount})` : `${baseName} (${i + 1}/${newCount})`,
+                    amount,
+                    notes,
+                    sharedWithFamily: shared,
+                  };
+                  if (effectivePaymentType === "installments") {
+                    updates.installmentInfo = { ...p.installmentInfo, total: newCount };
+                  } else {
+                    updates.insuranceInfo = { ...p.insuranceInfo, total: newCount };
+                    updates.policyNumber = data.policyNumber ?? p.policyNumber ?? null;
+                    updates.accountNumber = data.accountNumber ?? p.accountNumber ?? null;
+                  }
+                  dispatch(updateDemoPayment({ id: p.id, ...updates }));
+                }
+                const first = related[0];
+                const startDate = new Date(first.date || data.date);
+                const isYearly = effectivePaymentType === "insurance" && (data.insuranceInterval === "year" || first.insuranceInterval === "year");
+                const groupId = first.insuranceInfo?.groupId || `ins_${Date.now()}`;
+
+                for (let i = oldCount; i < newCount; i++) {
+                  const d = new Date(startDate);
+                  if (effectivePaymentType === "installments") {
+                    d.setMonth(startDate.getMonth() + i);
+                  } else if (isYearly) {
+                    d.setFullYear(startDate.getFullYear() + i);
+                  } else {
+                    d.setMonth(startDate.getMonth() + i);
+                  }
+                  const newItem = effectivePaymentType === "installments"
+                    ? {
+                        name: `${baseName} (Rata ${i + 1}/${newCount})`,
+                        amount,
+                        date: d.toISOString().split("T")[0],
+                        paymentType: "installments",
+                        isInstallment: true,
+                        sharedWithFamily: shared,
+                        notes,
+                        installmentInfo: { current: i + 1, total: newCount, originalName: baseName },
+                      }
+                    : {
+                        ...data,
+                        name: `${baseName} (${i + 1}/${newCount})`,
+                        amount,
+                        date: d.toISOString().split("T")[0],
+                        paymentType: "insurance",
+                        insuranceInterval: isYearly ? "year" : "month",
+                        isRecurring: true,
+                        sharedWithFamily: shared,
+                        notes,
+                        policyNumber: data.policyNumber ?? null,
+                        accountNumber: data.accountNumber ?? null,
+                        insuranceInfo: { originalName: baseName, current: i + 1, total: newCount, groupId },
+                      };
+                  delete newItem.category;
+                  delete newItem.duration;
+                  dispatch(addDemoPayment(newItem));
+                }
+              }
+        } else if (isSeriesBatch) {
+          let targetPayments = related;
+          if (scope.type === "range") {
+            targetPayments = related.filter((p) => {
+              const cur = getCurrentNumber(p);
+              return cur >= scope.from && cur <= scope.to;
+            });
+          }
+          if (targetPayments.length > 0) {
+            const batchUpdates = {
+              amount: effectivePaymentType === "installments"
+                ? (data.installmentAmount != null ? parseFloat(data.installmentAmount) : undefined)
+                : (data.amount != null ? parseFloat(data.amount) : undefined),
+              notes: data.notes ?? "",
+              sharedWithFamily: Boolean(data.sharedWithFamily),
+            };
+            if (effectivePaymentType === "insurance") {
+              batchUpdates.policyNumber = data.policyNumber ?? null;
+              batchUpdates.accountNumber = data.accountNumber ?? null;
+            }
+            dispatch(updateDemoPaymentsBatch({ ids: targetPayments.map((p) => p.id), updates: batchUpdates }));
+          }
+        } else {
+          dispatch(
+            updateDemoPayment({
+              id: editingPayment.id,
+              ...data,
+              sharedWithFamily: Boolean(data.sharedWithFamily),
+            }),
+          );
+        }
         dispatch(
           showNotification({
             message: "Płatność została zaktualizowana!",
@@ -298,25 +459,137 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
 
     // Normalny tryb - zapisz do Firebase
     if (editingPayment) {
-      let category = data.category ?? editingPayment.category ?? "other";
-      if (effectivePaymentType === "bills") category = "bills";
-      else if (effectivePaymentType === "shopping") category = "shopping";
-      const updatePayload = {
-        id: editingPayment.id,
-        ...data,
-        category,
-        sharedWithFamily: Boolean(data.sharedWithFamily),
-        attachmentUrl: editingPayment.attachmentUrl,
-        attachmentName: editingPayment.attachmentName,
-        oldAttachmentUrl: editingPayment.attachmentUrl,
-      };
-      if (effectivePaymentType === "installments" && data.installmentAmount != null) {
-        updatePayload.amount = parseFloat(data.installmentAmount);
+      const scope = editingPayment._editScope;
+      const isSeries = effectivePaymentType === "installments" || effectivePaymentType === "insurance";
+      const isSeriesBatch = isSeries && scope && scope !== "single";
+      const related = getRelatedSeriesPayments(editingPayment, payments);
+      const newCount = effectivePaymentType === "installments"
+        ? (parseInt(data.installments, 10) || related.length)
+        : (parseInt(data.duration, 10) || related.length);
+      const oldCount = related.length;
+      const canChangeCount = (scope === "single" || (scope?.type === "all"));
+      const isCountChange = isSeries && canChangeCount && newCount !== oldCount;
+
+      if (isCountChange) {
+            const baseName = data.name || (related[0].installmentInfo?.originalName ?? related[0].insuranceInfo?.originalName ?? "");
+            const amount = effectivePaymentType === "installments"
+              ? (parseFloat(data.installmentAmount) || related[0].amount)
+              : (parseFloat(data.amount) || related[0].amount);
+            const shared = Boolean(data.sharedWithFamily);
+            const notes = data.notes ?? "";
+
+            const toDelete = newCount < oldCount ? related.slice(newCount).map((p) => p.id) : [];
+            const toUpdate = related
+              .slice(0, newCount < oldCount ? newCount : oldCount)
+              .map((p, i) => {
+                const update = {
+                  id: p.id,
+                  name: effectivePaymentType === "installments" ? `${baseName} (Rata ${i + 1}/${newCount})` : `${baseName} (${i + 1}/${newCount})`,
+                  amount,
+                  date: p.date,
+                  notes,
+                  sharedWithFamily: shared,
+                };
+                if (effectivePaymentType === "installments") {
+                  update.installmentInfo = { ...p.installmentInfo, total: newCount };
+                } else {
+                  update.insuranceInfo = { ...p.insuranceInfo, total: newCount };
+                  update.policyNumber = data.policyNumber ?? p.policyNumber ?? null;
+                  update.accountNumber = data.accountNumber ?? p.accountNumber ?? null;
+                }
+                return update;
+              });
+            const toAdd = [];
+            if (newCount > oldCount) {
+              const first = related[0];
+              const startDate = new Date(first.date || data.date);
+              const isYearly = effectivePaymentType === "insurance" && (data.insuranceInterval === "year" || first.insuranceInterval === "year");
+              const groupId = first.insuranceInfo?.groupId || `ins_${Date.now()}`;
+
+              for (let i = oldCount; i < newCount; i++) {
+                const d = new Date(startDate);
+                if (effectivePaymentType === "installments") {
+                  d.setMonth(startDate.getMonth() + i);
+                } else if (isYearly) {
+                  d.setFullYear(startDate.getFullYear() + i);
+                } else {
+                  d.setMonth(startDate.getMonth() + i);
+                }
+                const newItem = effectivePaymentType === "installments"
+                  ? {
+                      name: `${baseName} (Rata ${i + 1}/${newCount})`,
+                      amount,
+                      date: d.toISOString().split("T")[0],
+                      category: first.category || "other",
+                      priority: first.priority || "normal",
+                      paymentType: "installments",
+                      isInstallment: true,
+                      sharedWithFamily: shared,
+                      notes,
+                      installmentInfo: { current: i + 1, total: newCount, originalName: baseName },
+                    }
+                  : {
+                      name: `${baseName} (${i + 1}/${newCount})`,
+                      amount,
+                      date: d.toISOString().split("T")[0],
+                      category: first.category || "other",
+                      priority: first.priority || "normal",
+                      paymentType: "insurance",
+                      insuranceInterval: isYearly ? "year" : "month",
+                      isRecurring: true,
+                      sharedWithFamily: shared,
+                      notes,
+                      policyNumber: data.policyNumber ?? first.policyNumber ?? null,
+                      accountNumber: data.accountNumber ?? first.accountNumber ?? null,
+                      insuranceInfo: { originalName: baseName, current: i + 1, total: newCount, groupId },
+                    };
+                toAdd.push(newItem);
+              }
+            }
+        dispatch(changeSeriesCountRequest({ toDelete, toUpdate, toAdd }));
+      } else if (isSeriesBatch) {
+        let targetPayments = related;
+        if (scope.type === "range") {
+          targetPayments = related.filter((p) => {
+            const cur = getCurrentNumber(p);
+            return cur >= scope.from && cur <= scope.to;
+          });
+        }
+        if (targetPayments.length > 0) {
+          const batchUpdates = {
+            amount: effectivePaymentType === "installments"
+              ? (data.installmentAmount != null ? parseFloat(data.installmentAmount) : undefined)
+              : (data.amount != null ? parseFloat(data.amount) : undefined),
+            notes: data.notes ?? "",
+            sharedWithFamily: Boolean(data.sharedWithFamily),
+          };
+          if (effectivePaymentType === "insurance") {
+            batchUpdates.policyNumber = data.policyNumber ?? null;
+            batchUpdates.accountNumber = data.accountNumber ?? null;
+          }
+          dispatch(updatePaymentsBatchRequest({ ids: targetPayments.map((p) => p.id), updates: batchUpdates }));
+        }
+      } else {
+        let category = data.category ?? editingPayment.category ?? "other";
+        if (effectivePaymentType === "bills") category = "bills";
+        else if (effectivePaymentType === "shopping") category = "shopping";
+        const updatePayload = {
+          id: editingPayment.id,
+          ...data,
+          category,
+          sharedWithFamily: Boolean(data.sharedWithFamily),
+          attachmentUrl: editingPayment.attachmentUrl,
+          attachmentName: editingPayment.attachmentName,
+          oldAttachmentUrl: editingPayment.attachmentUrl,
+        };
+        if (effectivePaymentType === "installments" && data.installmentAmount != null) {
+          updatePayload.amount = parseFloat(data.installmentAmount);
+        }
+        if (effectivePaymentType === "insurance" && data.amount != null) {
+          updatePayload.amount = parseFloat(data.amount);
+        }
+        dispatch(updatePaymentRequest(updatePayload));
       }
-      if (effectivePaymentType === "insurance" && data.amount != null) {
-        updatePayload.amount = parseFloat(data.amount);
-      }
-      dispatch(updatePaymentRequest(updatePayload));
     } else {
       if (effectivePaymentType === "installments") {
         const installments = parseInt(data.installments) || 0;

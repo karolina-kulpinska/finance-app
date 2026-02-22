@@ -114,6 +114,7 @@ export const MainView = ({
               />
               <PaymentsList
                 sharedOnly
+                isDemo={isDemo}
                 dateFilterOverride={familyDatePreset === "custom" ? "all" : familyDatePreset}
                 minDate={familyDatePreset === "custom" ? familyMinDate || undefined : undefined}
                 maxDate={familyDatePreset === "custom" ? familyMaxDate || undefined : undefined}

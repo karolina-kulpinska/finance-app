@@ -123,6 +123,8 @@ exports.createCheckoutSession = onCall(
         cancel_url: cancelUrl,
         client_reference_id: uid,
         metadata: { firebaseUid: uid },
+        payment_method_collection: "always",
+        excluded_payment_method_types: ["customer_balance"],
       });
 
       return { url: session.url };

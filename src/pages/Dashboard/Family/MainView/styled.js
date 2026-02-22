@@ -18,12 +18,12 @@ export const PanelHeader = styled.div`
 `;
 
 export const BackButton = styled.button`
-  padding: 4px 8px;
+  padding: 6px 10px;
   background: white;
   border: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};
   border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 800;
   color: #000;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -186,6 +186,56 @@ export const LinkUrl = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: "SF Mono", "Monaco", "Consolas", monospace;
+`;
+
+export const RenameForm = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+`;
+
+export const RenameLabel = styled.label`
+  font-size: 13px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors?.text || "#333"};
+`;
+
+export const RenameInput = styled.input`
+  padding: 10px 12px;
+  border: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: #2c5282;
+    box-shadow: 0 0 0 2px rgba(44, 82, 130, 0.15);
+  }
+`;
+
+export const RenameButton = styled.button`
+  padding: 10px 16px;
+  background: #2c5282;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  transition: all 0.2s ease;
+  font-family: inherit;
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+
+  &:hover:not(:disabled) {
+    background: #234a72;
+    box-shadow: 0 2px 8px rgba(44, 82, 130, 0.25);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.99);
+  }
 `;
 
 export const DeleteFamilyButton = styled.button`

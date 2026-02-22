@@ -22,8 +22,8 @@ export const BackButton = styled.button`
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 800;
   color: ${({ theme }) => theme.colors.text};
   cursor: pointer;
   transition: all 0.3s ease;

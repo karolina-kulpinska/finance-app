@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PaymentsList from "../../List";
 import ShoppingLists from "../../ShoppingLists";
 import Files from "../../Files";
@@ -23,10 +23,16 @@ export const MainView = ({
   onCopyInviteLink,
   getInviteLink,
   onRemoveMember,
+  onRenameFamily,
   onDeleteFamily,
   isDemo = false,
 }) => {
   const [activePanel, setActivePanel] = useState(null);
+  const [editName, setEditName] = useState(family?.name || "");
+
+  useEffect(() => {
+    setEditName(family?.name || "");
+  }, [family?.name]);
 
   const cards = [
     { key: "members", label: "Członkowie" },
@@ -76,9 +82,27 @@ export const MainView = ({
             </S.LinkBox>
           )}
           {activePanel === "danger" && (
-            <S.DeleteFamilyButton onClick={onDeleteFamily} disabled={isDemo}>
-              Usuń rodzinę
-            </S.DeleteFamilyButton>
+            <>
+              {onRenameFamily && (
+                <S.RenameForm>
+                  <S.RenameLabel>Zmień nazwę rodziny</S.RenameLabel>
+                  <S.RenameInput
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="np. Rodzina Kowalskich"
+                  />
+                  <S.RenameButton
+                    onClick={() => onRenameFamily(editName)}
+                    disabled={!editName.trim() || editName.trim() === family?.name}
+                  >
+                    Zapisz nazwę
+                  </S.RenameButton>
+                </S.RenameForm>
+              )}
+              <S.DeleteFamilyButton onClick={onDeleteFamily} disabled={isDemo}>
+                Usuń rodzinę
+              </S.DeleteFamilyButton>
+            </>
           )}
         </S.PanelContent>
       </S.Container>

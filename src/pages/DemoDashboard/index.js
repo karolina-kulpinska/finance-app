@@ -158,18 +158,7 @@ const DemoDashboard = () => {
             {categoryFilter !== "all" && (
               <S.CategoryBackBar>
                 <S.CategoryBackButton
-                  onClick={() => {
-                    dispatch(setCategoryFilter("all"));
-                    const pos = scrollBeforeCategoryRef.current;
-                    requestAnimationFrame(() => {
-                      requestAnimationFrame(() => {
-                        window.scrollTo({
-                          top: pos ?? 0,
-                          behavior: "instant",
-                        });
-                      });
-                    });
-                  }}
+                  onClick={() => navigate(-1)}
                 >
                   ← Wróć
                 </S.CategoryBackButton>

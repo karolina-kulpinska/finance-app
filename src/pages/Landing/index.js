@@ -15,7 +15,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate(toDashboard(), { replace: false });
+      navigate(toDashboard(), { replace: true });
     }
   }, [user, navigate]);
 

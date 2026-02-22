@@ -20,12 +20,12 @@ export const Title = styled.h2`
 `;
 
 export const BackButton = styled.button`
-  padding: 4px 8px;
+  padding: 6px 10px;
   background: white;
   border: 1px solid ${({ theme }) => theme.colors?.border || "#e0e0e0"};
   border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 800;
   color: #000;
   cursor: pointer;
   transition: all 0.2s ease;

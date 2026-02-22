@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../api/firebase";
@@ -8,6 +9,7 @@ import { ListView } from "./ListView";
 import { ListDetailView } from "./ListDetailView";
 
 const ShoppingLists = ({ sharedOnly = false }) => {
+  const navigate = useNavigate();
   const user = useSelector(selectUser);
   const [lists, setLists] = useState(() => {
     try {
@@ -190,7 +192,7 @@ const ShoppingLists = ({ sharedOnly = false }) => {
         newItemPrice={newItemPrice}
         setNewItemName={setNewItemName}
         setNewItemPrice={setNewItemPrice}
-        onBack={() => setSelectedList(null)}
+        onBack={() => navigate(-1)}
         onAddItem={handleAddItem}
         onTogglePurchased={handleTogglePurchased}
         onDeleteItem={handleDeleteItem}

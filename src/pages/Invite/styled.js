@@ -181,8 +181,8 @@ export const BackButton = styled.button`
   background: #667eea;
   border: none;
   border-radius: 12px;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 800;
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;

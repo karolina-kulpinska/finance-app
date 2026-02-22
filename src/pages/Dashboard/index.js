@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../api/firebase";
@@ -31,6 +32,7 @@ import TermsModal from "../../components/TermsModal";
 import * as S from "./styled";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const isModalOpen = useSelector(selectIsModalOpen);
@@ -155,18 +157,7 @@ const Dashboard = () => {
             {categoryFilter !== "all" && (
               <S.CategoryBackBar>
                 <S.CategoryBackButton
-                  onClick={() => {
-                    dispatch(setCategoryFilter("all"));
-                    const pos = scrollBeforeCategoryRef.current;
-                    requestAnimationFrame(() => {
-                      requestAnimationFrame(() => {
-                        window.scrollTo({
-                          top: pos ?? 0,
-                          behavior: "instant",
-                        });
-                      });
-                    });
-                  }}
+                  onClick={() => navigate(-1)}
                 >
                   ← Wróć
                 </S.CategoryBackButton>

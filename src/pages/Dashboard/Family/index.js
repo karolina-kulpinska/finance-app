@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import { db, getSendFamilyInviteEmail } from "../../../api/firebase";
@@ -23,6 +24,7 @@ const generateInviteToken = () =>
   Math.random().toString(36).substring(2) + Date.now().toString(36);
 
 const Family = ({ isDemo = false }) => {
+  const navigate = useNavigate();
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const [family, setFamily] = useState(null);
@@ -195,6 +197,21 @@ const Family = ({ isDemo = false }) => {
     }
   };
 
+  const handleRenameFamily = async (newName) => {
+    if (isDemo) {
+      dispatch(showNotification({ message: "W trybie demo nie możesz zmieniać nazwy rodziny.", type: "info" }));
+      return;
+    }
+    if (!family?.id || !newName?.trim()) return;
+    try {
+      await updateDoc(doc(db, "families", family.id), { name: newName.trim() });
+      setFamily({ ...family, name: newName.trim() });
+      dispatch(showNotification({ message: "✅ Nazwa rodziny została zmieniona!", type: "success" }));
+    } catch (error) {
+      dispatch(showNotification({ message: `❌ Nie udało się zmienić nazwy: ${error.message}`, type: "error" }));
+    }
+  };
+
   const handleDeleteFamily = async () => {
     if (isDemo) {
       dispatch(showNotification({ message: "W trybie demo nie możesz usuwać rodziny.", type: "info" }));
@@ -235,7 +252,7 @@ const Family = ({ isDemo = false }) => {
         familyName={familyName}
         setFamilyName={setFamilyName}
         onCreateFamily={handleCreateFamily}
-        onBack={() => setActiveView("main")}
+        onBack={() => navigate(-1)}
       />
     );
   }
@@ -250,7 +267,7 @@ const Family = ({ isDemo = false }) => {
         inviteEmail={inviteEmail}
         setInviteEmail={setInviteEmail}
         onInviteMember={handleInviteMember}
-        onBack={() => setActiveView("main")}
+        onBack={() => navigate(-1)}
       />
     );
   }
@@ -278,6 +295,7 @@ const Family = ({ isDemo = false }) => {
       onCopyInviteLink={handleCopyInviteLink}
       getInviteLink={getInviteLink}
       onRemoveMember={handleRemoveMember}
+      onRenameFamily={isDemo ? undefined : handleRenameFamily}
       onDeleteFamily={handleDeleteFamily}
       isDemo={isDemo}
     />

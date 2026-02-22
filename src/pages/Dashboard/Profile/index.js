@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
 import { selectPayments } from "../../../features/payments/paymentSlice";
@@ -32,6 +33,7 @@ import { SubscriptionSection } from "./SubscriptionSection";
 import * as S from "./styled";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const payments = useSelector(selectPayments);
@@ -346,7 +348,7 @@ const Profile = () => {
       <S.Container>
         <SectionLayout
           title="Dane osobowe"
-          onBack={() => setActiveSection(null)}
+          onBack={() => navigate(-1)}
         >
           <PersonalForm
             editName={editName}
@@ -362,7 +364,7 @@ const Profile = () => {
   if (activeSection === "security") {
     return (
       <S.Container>
-        <SectionLayout title="Zmiana hasła" onBack={() => setActiveSection(null)}>
+        <SectionLayout title="Zmiana hasła" onBack={() => navigate(-1)}>
           <SecurityForm
             oldPassword={oldPassword}
             newPassword={newPassword}
@@ -382,7 +384,7 @@ const Profile = () => {
       <S.Container>
         <SectionLayout
           title="Eksport danych"
-          onBack={() => setActiveSection(null)}
+          onBack={() => navigate(-1)}
         >
           <ExportSection
             onExportData={handleExportData}
@@ -396,7 +398,7 @@ const Profile = () => {
   if (activeSection === "delete") {
     return (
       <S.Container>
-        <SectionLayout title="Usuń konto" onBack={() => setActiveSection(null)}>
+        <SectionLayout title="Usuń konto" onBack={() => navigate(-1)}>
           <DeleteSection onDelete={handleDeleteAccount} />
         </SectionLayout>
       </S.Container>
@@ -408,7 +410,7 @@ const Profile = () => {
       <S.Container>
         <SectionLayout
           title="Subskrypcja"
-          onBack={() => setActiveSection(null)}
+          onBack={() => navigate(-1)}
         >
           <SubscriptionSection
             onManageSubscription={handleManageSubscription}

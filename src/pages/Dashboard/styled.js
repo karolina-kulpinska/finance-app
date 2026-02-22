@@ -130,8 +130,8 @@ export const CategoryBackButton = styled.button`
   padding: 6px 0;
   background: none;
   border: none;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   color: #3182ce;
   cursor: pointer;
   font-family: inherit;

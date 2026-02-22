@@ -313,8 +313,12 @@ const Profile = () => {
     }
   };
 
-  const adminEmail = process.env.REACT_APP_ADMIN_EMAIL?.trim?.();
-  const isAdmin = adminEmail && user?.email && user.email.toLowerCase() === adminEmail.toLowerCase();
+  const adminEmailsRaw = process.env.REACT_APP_ADMIN_EMAILS || process.env.REACT_APP_ADMIN_EMAIL || "";
+  const adminEmails = adminEmailsRaw
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  const isAdmin = adminEmails.length > 0 && user?.email && adminEmails.includes(user.email.toLowerCase());
 
   const handleSyncAfterPayment = async () => {
     try {

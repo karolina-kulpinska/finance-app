@@ -125,6 +125,7 @@ exports.createCheckoutSession = onCall(
         metadata: { firebaseUid: uid },
         payment_method_collection: "always",
         excluded_payment_method_types: ["customer_balance"],
+        allow_promotion_codes: true,
       });
 
       return { url: session.url };

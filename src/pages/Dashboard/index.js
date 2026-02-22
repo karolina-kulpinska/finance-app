@@ -96,6 +96,12 @@ const Dashboard = () => {
   }, [dispatch, user?.uid]);
 
   const handleTabChange = (newTab) => {
+    const sameTab =
+      newTab === activeTab &&
+      !viewState.familyPanel &&
+      !viewState.profileSection &&
+      !viewState.shoppingListId;
+    if (sameTab) return;
     scrollPositions.current[activeTab] = window.scrollY ?? document.documentElement.scrollTop;
     pushView({
       tab: newTab,

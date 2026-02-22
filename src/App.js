@@ -69,19 +69,6 @@ function App() {
     return () => unsubscribe();
   }, [dispatch]);
 
-  // Obsługa nawigacji wstecz w przeglądarce
-  useEffect(() => {
-    const handlePopState = (event) => {
-      // React Router automatycznie obsługuje popstate, ale możemy dodać dodatkową logikę jeśli potrzeba
-      // W HashRouter, historia jest automatycznie zarządzana przez React Router
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);
-
   if (!authChecked) {
     return <LoadingScreen>Ładowanie...</LoadingScreen>;
   }

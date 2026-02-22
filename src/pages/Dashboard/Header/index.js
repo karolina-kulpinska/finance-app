@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../../features/auth/authSlice";
@@ -43,6 +43,15 @@ const Header = ({
     }
     return () => document.removeEventListener("click", handleClickOutside);
   }, [showLangDropdown]);
+
+  const handleBackClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setShowLangDropdown(false);
+      if (onBack) onBack();
+    },
+    [onBack]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined" || !user?.uid) return;
@@ -170,7 +179,7 @@ const Header = ({
         </S.TitleSection>
         <S.Actions>
           {showBack && onBack && (
-            <S.FilterToggleButton onClick={onBack} type="button">
+            <S.FilterToggleButton onClick={handleBackClick} type="button">
               ← {t("common.back")}
             </S.FilterToggleButton>
           )}

@@ -30,6 +30,8 @@ export const BackButton = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: #f8f9fa;

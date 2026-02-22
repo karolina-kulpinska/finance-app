@@ -148,6 +148,8 @@ export const Actions = styled.div`
   display: flex;
   gap: 12px;
   align-items: center;
+  position: relative;
+  z-index: 110;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     flex-direction: column;

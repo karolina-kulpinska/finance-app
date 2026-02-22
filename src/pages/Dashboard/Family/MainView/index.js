@@ -57,7 +57,17 @@ export const MainView = ({
     return (
       <S.Container>
         <S.PanelHeader>
-          <S.BackButton onClick={() => (onOpenPanel ? handleBack() : setPanel(null))}>←</S.BackButton>
+          <S.BackButton
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onOpenPanel) handleBack();
+              else setPanel(null);
+            }}
+          >
+            ←
+          </S.BackButton>
           <S.PanelTitle>{t(PANEL_KEYS[panel])}</S.PanelTitle>
         </S.PanelHeader>
 

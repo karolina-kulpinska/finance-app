@@ -9,7 +9,16 @@ export const InviteForm = ({
 }) => (
   <S.Container>
     <S.Header>
-      <S.BackButton onClick={onBack}>←</S.BackButton>
+      <S.BackButton
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (onBack) onBack();
+        }}
+      >
+        ←
+      </S.BackButton>
       <S.Title>Zaproś członka</S.Title>
     </S.Header>
 

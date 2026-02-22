@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { FaUniversity } from "react-icons/fa";
 import { getBankConfig } from "../../../../utils/bankIcons";
-import { getCategoryLabel, getPriorityLabel } from "../constants";
+import { getCategoryLabel, getDisplayCategory } from "../constants";
 import { selectCurrency, formatAmount } from "../../../../features/currency/currencySlice";
 import { isOverdue, getOverdueDays } from "../utils";
 import * as S from "./styled";
@@ -19,7 +19,7 @@ export const PaymentCard = ({
   onDelete,
   onDownload,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currency = useSelector(selectCurrency);
   const overdue = isOverdue(payment);
   const overdueDays = overdue ? getOverdueDays(payment) : 0;
@@ -45,7 +45,6 @@ export const PaymentCard = ({
       id={`payment-${payment.id}`}
       $paid={payment.paid}
       $overdue={overdue}
-      $priority={payment.priority}
       $expanded={isExpanded}
       onClick={() => onCardClick(payment.id)}
     >
@@ -60,7 +59,7 @@ export const PaymentCard = ({
         </S.CardCheckboxWrapper>
       )}
       <S.PaymentIcon>
-        {getCategoryLabel(payment.category, t).split(" ")[0]}
+        {getCategoryLabel(getDisplayCategory(payment), t).split(" ")[0]}
       </S.PaymentIcon>
       <S.CompactInfo>
         <S.CompactName $paid={payment.paid} $overdue={overdue}>
@@ -91,13 +90,7 @@ export const PaymentCard = ({
         <S.ExpandedDetails onClick={(e) => e.stopPropagation()}>
           <S.DetailRow>
             <S.DetailLabel>{t("paymentCard.category")}</S.DetailLabel>
-            <S.DetailValue>{getCategoryLabel(payment.category, t)}</S.DetailValue>
-          </S.DetailRow>
-          <S.DetailRow>
-            <S.DetailLabel>{t("paymentCard.priority")}</S.DetailLabel>
-            <S.PriorityBadge $priority={payment.priority}>
-              {getPriorityLabel(payment.priority, t)}
-            </S.PriorityBadge>
+            <S.DetailValue>{getCategoryLabel(getDisplayCategory(payment), t)}</S.DetailValue>
           </S.DetailRow>
           <S.DetailRow>
             <S.DetailLabel>{t("paymentCard.status")}</S.DetailLabel>
@@ -105,7 +98,7 @@ export const PaymentCard = ({
               {payment.paid ? `✅ ${t("filters.paid")}` : `⏳ ${t("filters.toPay")}`}
             </S.DetailValue>
           </S.DetailRow>
-          {payment.bank && (
+          {payment.bank && i18n.language?.startsWith("pl") && (
             <S.DetailRow>
               <S.DetailLabel>{t("paymentCard.payment")}</S.DetailLabel>
               {renderBankIcon()}

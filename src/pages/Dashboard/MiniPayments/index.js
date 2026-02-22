@@ -8,6 +8,7 @@ import {
   selectDateFilter,
 } from "../../../features/payments/paymentSlice";
 import { selectCurrency, formatAmount } from "../../../features/currency/currencySlice";
+import { getDisplayCategory } from "../List/constants";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
 import * as S from "./styled";
 
@@ -72,7 +73,7 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
           <S.PaymentsList>
             {upcomingPayments.map((payment) => (
               <S.MiniPaymentCard key={payment.id} $paid={payment.paid} onClick={() => onPaymentClick(payment.id)}>
-                <S.PaymentIcon>{getCategoryIcon(payment.category)}</S.PaymentIcon>
+                <S.PaymentIcon>{getCategoryIcon(getDisplayCategory(payment))}</S.PaymentIcon>
                 <S.PaymentInfo>
                   <S.PaymentName>
                     {payment.name}
@@ -95,7 +96,7 @@ const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {
           <S.PaymentsList>
             {recentPaidPayments.map((payment) => (
               <S.MiniPaymentCard key={payment.id} $paid={payment.paid} onClick={() => onPaymentClick(payment.id)}>
-                <S.PaymentIcon>{getCategoryIcon(payment.category)}</S.PaymentIcon>
+                <S.PaymentIcon>{getCategoryIcon(getDisplayCategory(payment))}</S.PaymentIcon>
                 <S.PaymentInfo>
                   <S.PaymentName>
                     {payment.name}

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { FaUniversity } from "react-icons/fa";
 import { getBankConfig } from "../../../../utils/bankIcons";
-import { getCategoryLabel, getPriorityLabel } from "../constants";
+import { getCategoryLabel, getDisplayCategory } from "../constants";
 import { selectCurrency, formatAmount } from "../../../../features/currency/currencySlice";
 import { isOverdue, getOverdueDays } from "../utils";
 import * as S from "./styled";
@@ -16,7 +16,7 @@ export const PaymentDetailModal = ({
   onDelete,
   onDownload,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currency = useSelector(selectCurrency);
 
   useEffect(() => {
@@ -87,14 +87,7 @@ export const PaymentDetailModal = ({
 
             <S.DetailRow>
               <S.DetailLabel>{t("paymentCard.category")}</S.DetailLabel>
-              <S.DetailValue>{getCategoryLabel(payment.category, t)}</S.DetailValue>
-            </S.DetailRow>
-
-            <S.DetailRow>
-              <S.DetailLabel>{t("paymentCard.priority")}</S.DetailLabel>
-              <S.PriorityBadge $priority={payment.priority}>
-                {getPriorityLabel(payment.priority, t)}
-              </S.PriorityBadge>
+              <S.DetailValue>{getCategoryLabel(getDisplayCategory(payment), t)}</S.DetailValue>
             </S.DetailRow>
 
             <S.DetailRow>
@@ -104,7 +97,7 @@ export const PaymentDetailModal = ({
               </S.StatusBadge>
             </S.DetailRow>
 
-            {payment.bank && (
+            {payment.bank && i18n.language?.startsWith("pl") && (
               <S.DetailRow>
                 <S.DetailLabel>{t("paymentCard.paymentMethod")}</S.DetailLabel>
                 {renderBankIcon()}

@@ -1,3 +1,14 @@
+/** Dla płatności z paymentType "bills"/"shopping" ale category "other" – zwraca prawidłową kategorię do wyświetlenia */
+export const getDisplayCategory = (payment) => {
+  if (!payment) return "other";
+  const cat = payment.category || "other";
+  if (cat !== "other") return cat;
+  const pt = payment.paymentType;
+  if (pt === "bills") return "bills";
+  if (pt === "shopping") return "shopping";
+  return cat;
+};
+
 export const getCategoryLabel = (category, t) => {
   if (!t) {
     const fallback = { bills: "Rachunki", shopping: "Zakupy", other: "Inne" };

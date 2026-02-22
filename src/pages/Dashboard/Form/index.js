@@ -19,6 +19,7 @@ import { selectCurrency } from "../../../features/currency/currencySlice";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { pl, enUS } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
+import BankSelector from "../../../components/BankSelector";
 import { TypeSpecificFields } from "./TypeSpecificFields";
 import { AttachmentField } from "./AttachmentField";
 import * as S from "./styled";
@@ -256,10 +257,13 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
 
     // Normalny tryb - zapisz do Firebase
     if (editingPayment) {
+      let category = data.category ?? editingPayment.category ?? "other";
+      if (effectivePaymentType === "bills") category = "bills";
+      else if (effectivePaymentType === "shopping") category = "shopping";
       const updatePayload = {
         id: editingPayment.id,
         ...data,
-        category: data.category ?? editingPayment.category ?? "other",
+        category,
         sharedWithFamily: Boolean(data.sharedWithFamily),
         attachmentUrl: editingPayment.attachmentUrl,
         attachmentName: editingPayment.attachmentName,
@@ -331,7 +335,11 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
           paymentType: effectivePaymentType,
           sharedWithFamily: Boolean(data.sharedWithFamily),
         };
-        if (effectivePaymentType !== "other") {
+        if (effectivePaymentType === "bills") {
+          paymentData.category = "bills";
+        } else if (effectivePaymentType === "shopping") {
+          paymentData.category = "shopping";
+        } else if (effectivePaymentType !== "other") {
           delete paymentData.category;
         }
         dispatch(addPaymentRequest(paymentData));
@@ -451,6 +459,22 @@ const AddPaymentForm = ({ paymentType, onClose, isDemo = false }) => {
               totalInstallmentAmount={totalInstallmentAmount}
               totalInsuranceAmount={totalInsuranceAmount}
             />
+
+            {i18n.language?.startsWith("pl") &&
+              effectivePaymentType !== "installments" &&
+              effectivePaymentType !== "insurance" && (
+                <S.FormGroup $fullWidth>
+                  <S.Label>{t("form.paymentMethod")}</S.Label>
+                  <Controller
+                    name="bank"
+                    control={control}
+                    defaultValue="other"
+                    render={({ field }) => (
+                      <BankSelector value={field.value} onChange={field.onChange} />
+                    )}
+                  />
+                </S.FormGroup>
+              )}
 
             <S.FormGroup $fullWidth>
               <S.Label>{t("form.notes")}</S.Label>

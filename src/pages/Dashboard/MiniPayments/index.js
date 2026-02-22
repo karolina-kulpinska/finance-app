@@ -10,7 +10,6 @@ import {
 import { selectCurrency, formatAmount } from "../../../features/currency/currencySlice";
 import { getDisplayCategory } from "../List/constants";
 import { getDateRange, isDateInRange } from "../../../utils/dateFilters";
-import { getDisplayCategory } from "../List/constants";
 import * as S from "./styled";
 
 const MiniPayments = ({ onPaymentClick, payments: paymentsProp = null }) => {

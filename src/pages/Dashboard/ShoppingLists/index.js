@@ -263,5 +263,6 @@ const ShoppingLists = ({ sharedOnly = false, selectedListId, onSelectList, onBac
       />
     );
   }
+};
 
 export default ShoppingLists;

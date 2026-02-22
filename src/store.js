@@ -12,6 +12,7 @@ import { paymentSaga } from "./features/payments/paymentSaga";
 import notificationReducer from "./features/notification/notificationSlice";
 import confirmReducer from "./features/notification/confirmSlice";
 import demoReducer from "./features/demo/demoSlice";
+// eslint-disable-next-line no-unused-vars -- used in reducer config
 import currencyReducer from "./features/currency/currencySlice";
 
 const sagaMiddleware = createSagaMiddleware({

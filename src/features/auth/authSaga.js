@@ -1,5 +1,11 @@
 import { call, put, takeLatest } from "redux-saga/effects";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+} from "firebase/auth";
 import { auth, googleProvider } from "../../api/firebase";
 import {
   loginRequest,
@@ -12,11 +18,6 @@ import { showNotification } from "../notification/notificationSlice";
 function* loginHandler({ payload }) {
   try {
     const { email, password, remember } = payload;
-    const {
-      setPersistence,
-      browserLocalPersistence,
-      browserSessionPersistence,
-    } = require("firebase/auth");
     yield call(
       setPersistence,
       auth,

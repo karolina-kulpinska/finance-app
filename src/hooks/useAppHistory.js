@@ -27,6 +27,7 @@ export function useAppHistory(initialView = DEFAULT_VIEW) {
       stack = [{ ...initialView }];
       setViewState(stack[0]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- init once on mount
   }, []);
 
   const pushView = useCallback((patch) => {

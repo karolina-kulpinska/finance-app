@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import {
   toggleModal,
   selectIsModalOpen,
@@ -32,8 +33,38 @@ import { ProfileMain } from "../Dashboard/Profile/ProfileMain";
 import { Container as ProfileContainer } from "../Dashboard/Profile/styled";
 import BottomNav from "../../components/BottomNav";
 import SaveDataModal from "../../components/SaveDataModal";
+import { toRegulamin, toPrivacy } from "../../routes";
 import { useAppHistory } from "../../hooks/useAppHistory";
 import * as S from "../Dashboard/styled";
+
+const DemoFooter = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
+  margin-top: 40px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+    padding: 16px;
+  }
+`;
+
+const DemoFooterLink = styled.a`
+  color: #667eea;
+  text-decoration: none;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #764ba2;
+    text-decoration: underline;
+  }
+`;
 
 const DemoDashboard = () => {
   const { t } = useTranslation();
@@ -91,7 +122,8 @@ const DemoDashboard = () => {
   }, [hasUnsavedData]);
 
   const handleTabChange = (newTab) => {
-    scrollPositions.current[activeTab] = window.scrollY ?? document.documentElement.scrollTop;
+    scrollPositions.current[activeTab] =
+      window.scrollY ?? document.documentElement.scrollTop;
     pushView({
       tab: newTab,
       familyView: null,
@@ -170,7 +202,9 @@ const DemoDashboard = () => {
           <>
             {categoryFilter !== "all" && (
               <S.CategoryBackBar>
-                <S.CategoryBackButton onClick={() => dispatch(setCategoryFilter("all"))}>
+                <S.CategoryBackButton
+                  onClick={() => dispatch(setCategoryFilter("all"))}
+                >
                   ← Wróć
                 </S.CategoryBackButton>
               </S.CategoryBackBar>
@@ -200,7 +234,9 @@ const DemoDashboard = () => {
         return (
           <ShoppingLists
             selectedListId={viewState.shoppingListId}
-            onSelectList={(list) => pushView({ tab: "shopping", shoppingListId: list?.id ?? null })}
+            onSelectList={(list) =>
+              pushView({ tab: "shopping", shoppingListId: list?.id ?? null })
+            }
             onBack={goBack}
           />
         );
@@ -208,7 +244,8 @@ const DemoDashboard = () => {
         return (
           <>
             <S.DemoInfoBar>
-              W trybie demo widzisz podgląd. Nie możesz tworzyć rodzin ani dodawać członków.
+              W trybie demo widzisz podgląd. Nie możesz tworzyć rodzin ani
+              dodawać członków.
             </S.DemoInfoBar>
             <Family isDemo />
           </>
@@ -236,9 +273,10 @@ const DemoDashboard = () => {
                 onSectionSelect={() =>
                   dispatch(
                     showNotification({
-                      message: "Zarejestruj się, aby edytować profil i korzystać z tych funkcji.",
+                      message:
+                        "Zarejestruj się, aby edytować profil i korzystać z tych funkcji.",
                       type: "info",
-                    })
+                    }),
                   )
                 }
                 onContact={() =>
@@ -246,7 +284,7 @@ const DemoDashboard = () => {
                     showNotification({
                       message: "Zarejestruj się, aby skontaktować się z nami.",
                       type: "info",
-                    })
+                    }),
                   )
                 }
                 onAbout={() =>
@@ -254,7 +292,7 @@ const DemoDashboard = () => {
                     showNotification({
                       message: "📱 " + t("profile.version"),
                       type: "success",
-                    })
+                    }),
                   )
                 }
                 isDemo
@@ -286,10 +324,16 @@ const DemoDashboard = () => {
             onToggleFilters={() => setShowFilters(!showFilters)}
             showFilters={showFilters}
             hideFilters={
-              activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"
+              activeTab === "shopping" ||
+              activeTab === "family" ||
+              activeTab === "files" ||
+              activeTab === "profile"
             }
             hideAddPayment={
-              activeTab === "shopping" || activeTab === "family" || activeTab === "files" || activeTab === "profile"
+              activeTab === "shopping" ||
+              activeTab === "family" ||
+              activeTab === "files" ||
+              activeTab === "profile"
             }
           />
         </S.HeaderCenter>
@@ -324,6 +368,37 @@ const DemoDashboard = () => {
           <AdBanner />
         </S.RightAdArea>
       </S.DesktopLayout>
+      <BottomNav
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        isDemo
+        onExitDemo={handleBackToLanding}
+      />
+      {showTypeSelector && (
+        <PaymentTypeSelector
+          onSelectType={handleSelectType}
+          onClose={() => setShowTypeSelector(false)}
+        />
+      )}
+      {isModalOpen && (
+        <AddPaymentForm
+          paymentType={selectedPaymentType}
+          onClose={handleCloseForm}
+          isDemo={true}
+        />
+      )}
+      {showSaveModal && (
+        <SaveDataModal
+          onClose={() => setShowSaveModal(false)}
+          onContinue={handleContinueDemo}
+        />
+      )}
+      <DemoFooter>
+        <DemoFooterLink href={`/#${toRegulamin()}`}>Regulamin</DemoFooterLink>
+        <DemoFooterLink href={`/#${toPrivacy()}`}>
+          Polityka Prywatności
+        </DemoFooterLink>
+      </DemoFooter>
       <BottomNav
         activeTab={activeTab}
         onTabChange={handleTabChange}

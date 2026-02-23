@@ -443,7 +443,7 @@ dispatch(
         userEmail={userEmail}
         isDemo={isDemo}
         onSectionSelect={(s) => (useHistory ? onNavigate({ profileSection: s }) : setLocalSection(s))}
-        onContact={() => window.open("mailto:pomoc@finanseapp.pl", "_blank")}
+        onContact={() => window.open("mailto:biuroobslugi.kontakt@gmail.com", "_blank")}
         onAbout={() =>
           dispatch(
             showNotification({

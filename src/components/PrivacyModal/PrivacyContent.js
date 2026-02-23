@@ -147,7 +147,7 @@ const PrivacyContent = () => {
         </S.Paragraph>
         <S.List>
           <S.ListItem>a) Funkcje dostępne w panelu Użytkownika (edycja danych, eksport danych, usunięcie konta);</S.ListItem>
-          <S.ListItem>b) Kontakt z Administratorem na adres e-mail: kulpinska.karolinaa@gmail.com.</S.ListItem>
+          <S.ListItem>b) Kontakt z Administratorem na adres e-mail: biuroobslugi.kontakt@gmail.com.</S.ListItem>
         </S.List>
         <S.Paragraph>
           7.3. Administrator rozpatruje wnioski dotyczące realizacji praw Użytkownika w terminie 30 dni roboczych od otrzymania wniosku.
@@ -207,7 +207,7 @@ const PrivacyContent = () => {
       <S.Section>
         <S.SectionTitle>11. KONTAKT</S.SectionTitle>
         <S.Paragraph>
-          11.1. Wszelkie zapytania dotyczące ochrony prywatności, realizacji praw Użytkownika lub przetwarzania danych osobowych należy kierować na adres e-mail: kulpinska.karolinaa@gmail.com.
+          11.1. Wszelkie zapytania dotyczące ochrony prywatności, realizacji praw Użytkownika lub przetwarzania danych osobowych należy kierować na adres e-mail:biuroobslugi.kontakt@gmail.com          .
         </S.Paragraph>
         <S.Paragraph>
           11.2. Administrator odpowiada na zapytania w terminie 30 dni roboczych od otrzymania wiadomości.

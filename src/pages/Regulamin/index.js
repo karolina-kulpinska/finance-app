@@ -127,7 +127,7 @@ const Regulamin = () => {
             <S.ContactInfo>
               <div>Administrator: Karolina Kulpińska</div>
               <div>Adres zamieszkania: Goworowice 63/6, 48-388 Kamiennik</div>
-              <div>Adres e-mail do kontaktu: kulpinska.karolinaa@gmail.com</div>
+              <div>Adres e-mail do kontaktu: biuroobslugi.kontakt@gmail.com</div>
               <div>Adres do korespondencji: jw.</div>
             </S.ContactInfo>
           </S.Section>

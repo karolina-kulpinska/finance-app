@@ -1,0 +1,16 @@
+{
+  "appId": "pl.smartbudget.app",
+  "appName": "SmartBudget",
+  "webDir": "build",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "*"
+    ]
+  },
+  "plugins": {
+    "GooglePlayBilling": {
+      "skipMissingPackage": true
+    }
+  }
+}

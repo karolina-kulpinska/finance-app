@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import { Capacitor } from "@capacitor/core";
 import { selectUser } from "../../../features/auth/authSlice";
 import {
   selectIsPro,
@@ -10,6 +11,7 @@ import {
   getCreateCheckoutSession,
   getVerifyAndSetProFromStripe,
 } from "../../../api/firebase";
+import paymentAdapter from "../../../api/paymentAdapter";
 import { LANGUAGES } from "../../../i18n";
 import * as S from "./styled";
 
@@ -96,28 +98,42 @@ const Header = ({
       onOpenUpgrade();
       return;
     }
-    const base =
-      window.location.origin +
-      window.location.pathname +
-      (window.location.hash || "");
-    const sep = base.includes("?") ? "&" : "?";
-    const successUrl =
-      base + sep + "payment=success&session_id={CHECKOUT_SESSION_ID}";
-    const cancelUrl = base + sep + "payment=cancel";
+
+    // Sprawdź platformę
+    const isNative = Capacitor.isNativePlatform();
+
     try {
-      const createCheckout = getCreateCheckoutSession();
-      const { data } = await createCheckout({
-        successUrl,
-        cancelUrl,
-      });
-      if (data?.url) {
-        window.location.assign(data.url);
-        return;
+      if (isNative) {
+        // 📱 Mobilna: Google Play Billing
+        const result = await paymentAdapter.purchaseSubscription(user.uid);
+        if (result.platform === "google_play") {
+          // Odśwież stan subskrypcji
+          dispatch(fetchSubscriptionRequest({ uid: user.uid }));
+        }
+      } else {
+        // 🌐 Web: Stripe
+        const base =
+          window.location.origin +
+          window.location.pathname +
+          (window.location.hash || "");
+        const sep = base.includes("?") ? "&" : "?";
+        const successUrl =
+          base + sep + "payment=success&session_id={CHECKOUT_SESSION_ID}";
+        const cancelUrl = base + sep + "payment=cancel";
+        const createCheckout = getCreateCheckoutSession();
+        const { data } = await createCheckout({
+          successUrl,
+          cancelUrl,
+        });
+        if (data?.url) {
+          window.location.assign(data.url);
+          return;
+        }
+        setUpgradeError(
+          "Brak linku do płatności. Sprawdź docs/STRIPE_SETUP.md.",
+        );
+        setShowUpgradeTip(true);
       }
-      setUpgradeError(
-        "Brak linku do płatności. Sprawdź docs/STRIPE_SETUP.md.",
-      );
-      setShowUpgradeTip(true);
     } catch (e) {
       setUpgradeError(e?.message || String(e));
       setShowUpgradeTip(true);

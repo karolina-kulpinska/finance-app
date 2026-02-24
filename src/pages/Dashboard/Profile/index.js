@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
+import { Capacitor } from "@capacitor/core";
 import { selectUser } from "../../../features/auth/authSlice";
 import { selectPayments } from "../../../features/payments/paymentSlice";
 import {
@@ -18,6 +19,7 @@ import {
   getSetCurrentUserPro,
   getVerifyAndSetProFromStripe,
 } from "../../../api/firebase";
+import paymentAdapter from "../../../api/paymentAdapter";
 import {
   selectIsPro,
   fetchSubscriptionRequest,
@@ -226,53 +228,73 @@ dispatch(
   };
 
   const handleManageSubscription = async () => {
+    const isNative = Capacitor.isNativePlatform();
+
     try {
-      if (isPro) {
-        // Otwórz Customer Portal dla użytkowników Pro (bez obecnego hasha – Stripe wymaga poprawnego return_url)
-        const returnUrl =
-          window.location.origin + window.location.pathname + "#/dashboard/profile";
-        
-        const createPortalSession = getCreateCustomerPortalSession();
-        const { data } = await createPortalSession({
-          returnUrl,
-        });
-        
-        if (data?.url) {
-          window.location.assign(data.url);
-        } else {
+      if (isNative) {
+        // 📱 Mobilna: Google Play Billing
+        if (isPro) {
           dispatch(
             showNotification({
-              message: "❌ " + t("profile.subscriptionPortalError"),
-              type: "error",
+              message: "ℹ️ Zarządzaj subskrypcją w ustawieniach Google Play",
+              type: "info",
             })
           );
+        } else {
+          const result = await paymentAdapter.purchaseSubscription(user.uid);
+          if (result.platform === "google_play") {
+            dispatch(fetchSubscriptionRequest({ uid: user.uid }));
+          }
         }
       } else {
-        // Otwórz Checkout Session dla użytkowników Free
-        const base =
-          window.location.origin +
-          window.location.pathname +
-          (window.location.hash || "");
-        const sep = base.includes("?") ? "&" : "?";
-        const successUrl =
-          base + sep + "payment=success&session_id={CHECKOUT_SESSION_ID}";
-        const cancelUrl = base + sep + "payment=cancel";
-        
-        const createCheckout = getCreateCheckoutSession();
-        const { data } = await createCheckout({
-          successUrl,
-          cancelUrl,
-        });
-        
-        if (data?.url) {
-          window.location.assign(data.url);
+        // 🌐 Web: Stripe
+        if (isPro) {
+          // Otwórz Customer Portal dla użytkowników Pro
+          const returnUrl =
+            window.location.origin + window.location.pathname + "#/dashboard/profile";
+          
+          const createPortalSession = getCreateCustomerPortalSession();
+          const { data } = await createPortalSession({
+            returnUrl,
+          });
+          
+          if (data?.url) {
+            window.location.assign(data.url);
+          } else {
+            dispatch(
+              showNotification({
+                message: "❌ " + t("profile.subscriptionPortalError"),
+                type: "error",
+              })
+            );
+          }
         } else {
-          dispatch(
-            showNotification({
-              message: "❌ Nie udało się otworzyć strony płatności",
-              type: "error",
-            })
-          );
+          // Otwórz Checkout Session dla użytkowników Free
+          const base =
+            window.location.origin +
+            window.location.pathname +
+            (window.location.hash || "");
+          const sep = base.includes("?") ? "&" : "?";
+          const successUrl =
+            base + sep + "payment=success&session_id={CHECKOUT_SESSION_ID}";
+          const cancelUrl = base + sep + "payment=cancel";
+          
+          const createCheckout = getCreateCheckoutSession();
+          const { data } = await createCheckout({
+            successUrl,
+            cancelUrl,
+          });
+          
+          if (data?.url) {
+            window.location.assign(data.url);
+          } else {
+            dispatch(
+              showNotification({
+                message: "❌ Nie udało się otworzyć strony płatności",
+                type: "error",
+              })
+            );
+          }
         }
       }
     } catch (error) {

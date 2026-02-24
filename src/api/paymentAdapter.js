@@ -28,7 +28,8 @@ class PaymentAdapter {
   async purchaseSubscription(userId) {
     if (isNative) {
       try {
-        const purchase = await googlePlayBilling.purchaseProduct("pro_plan_monthly");
+        const purchase =
+          await googlePlayBilling.purchaseProduct("pro_plan_monthly");
         return {
           platform: "google_play",
           purchaseData: purchase,

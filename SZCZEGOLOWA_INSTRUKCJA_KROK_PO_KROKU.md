@@ -12,6 +12,7 @@ npm run cap:sync
 ```
 
 **Co czekać:**
+
 - Pojawi się tekst: `Copying web assets...`
 - Na końcu: `✓ Copying web assets from build to android`
 
@@ -20,6 +21,7 @@ npm run cap:sync
 ### Krok 2: Otwórz Android Studio
 
 **W PowerShell:**
+
 ```powershell
 npm run cap:open:android
 ```
@@ -27,6 +29,7 @@ npm run cap:open:android
 **Czekaj:** Android Studio otworzy się automatycznie (1-2 minuty)
 
 **Jeśli się nie otworzy:**
+
 1. Otwórz Android Studio (ikonka na pulpicie)
 2. **File** → **Open**
 3. Wyszukaj: `c:\Projekt\moja-aplikacja-finansowa\android`
@@ -39,6 +42,7 @@ npm run cap:open:android
 **Czekaj:** Projekt się ładuje (~2-3 minuty)
 
 Zobaczysz:
+
 - Lewa strona: drzewo folderów (`android`, `app`, `src` itd.)
 - Górę: menu (`File`, `Edit`, `Build` itd.)
 - Środek: kod projektu
@@ -48,6 +52,7 @@ Zobaczysz:
 ### Krok 4: Budowanie Bundle'a
 
 **Górne menu:**
+
 1. Kliknij: **Build**
 2. Kliknij: **Build Bundle(s) / APK(s)**
 
@@ -65,6 +70,7 @@ Zobaczysz pasek postępu na dole.
 ### Krok 5: Potwierdzenie
 
 **Po skończeniu pojawi się okno:**
+
 ```
 Build Complete: Finished 'bundleRelease' in X minutes
 ```
@@ -72,6 +78,7 @@ Build Complete: Finished 'bundleRelease' in X minutes
 **Kliknij:** **Locate** lub **Show in Explorer**
 
 Plik `.aab` będzie w:
+
 ```
 c:\Projekt\moja-aplikacja-finansowa\android\app\release\app-release.aab
 ```
@@ -96,6 +103,7 @@ c:\Projekt\moja-aplikacja-finansowa\android\app\release\app-release.aab
 ### Krok 2: Wybierz aplikację
 
 **Na głównej stronie:**
+
 1. Zobaczysz listę aplikacji
 2. Szukaj: **Mój Smart Budget**
 3. Kliknij na nią
@@ -107,10 +115,12 @@ c:\Projekt\moja-aplikacja-finansowa\android\app\release\app-release.aab
 ### Krok 3: Przejdź do Internal Testing
 
 **Po lewej stronie menu:**
+
 1. Zjedź do: **Testuj i publikuj**
 2. Kliknij: **Internal testing**
 
 **Powinieneś zobaczyć tekst:**
+
 ```
 Internal testing
 Nieopublikowane wydania
@@ -121,6 +131,7 @@ Nieopublikowane wydania
 ### Krok 4: Utwórz nowe wydanie
 
 **Przycisk w górze:**
+
 1. Kliknij: **Utwórz wydanie**
 
 **Pojawi się okno "Create release"**
@@ -143,6 +154,7 @@ Nieopublikowane wydania
 **Czekaj:** Plik się uploaduje (1-2 minuty)
 
 **Powinna pojawić się zielona informacja:**
+
 ```
 ✓ App bundle successfully uploaded
 ```
@@ -154,6 +166,7 @@ Nieopublikowane wydania
 **W tym samym oknie:**
 
 1. **Version name:** Wpisz
+
    ```
    1.0.0
    ```
@@ -171,6 +184,7 @@ Nieopublikowane wydania
 ### Krok 7: Zapisz
 
 **Przycisk na dole:**
+
 1. Kliknij: **Zapisz**
 
 **Czekaj:** Zmiany się zapisują
@@ -180,10 +194,12 @@ Nieopublikowane wydania
 ### Krok 8: Przegląd i publikacja
 
 **Po zapisaniu:**
+
 1. Pojawi się przycisk: **Przegląd i publikacja**
 2. Kliknij go
 
 **Pojawi się checklist (powinno być wszystko zielone):**
+
 ```
 ✓ Aplikacja
 ✓ Zawartość z oceną wiekową
@@ -198,9 +214,11 @@ Nieopublikowane wydania
 ### Krok 9: Publikuj
 
 **Na dole okna:**
+
 1. Kliknij: **Publikuj**
 
 **Pojawi się potwierdzenie:**
+
 ```
 Wydanie opublikowane
 ```
@@ -214,6 +232,7 @@ Wydanie opublikowane
 ### Krok 1: Wróć do Internal Testing
 
 **Po lewej stronie:**
+
 1. Kliknij: **Internal testing** (już tam jesteś pewnie)
 
 ---
@@ -221,6 +240,7 @@ Wydanie opublikowane
 ### Krok 2: Sekcja Testerów
 
 **Zjedź w dół i szukaj:**
+
 ```
 Testerzy
 ```
@@ -237,8 +257,8 @@ Zobaczysz: **Utwórz listę testerów** lub **Edytuj**
    ```
    kulpinska.karolinaa@gmail.com
    ```
-   
 2. Jeśli więcej osób testuje, dodaj:
+
    ```
    osoba2@gmail.com
    osoba3@gmail.com
@@ -251,6 +271,7 @@ Zobaczysz: **Utwórz listę testerów** lub **Edytuj**
 ### Krok 4: Testerzy dostaną email
 
 **Co dalej:**
+
 - Testerzy dostaną email z linkiem do instalacji
 - Na ich Play Store pojawi się: **Mój Smart Budget (Test Build)**
 - Mogą pobrać i testować
@@ -262,6 +283,7 @@ Zobaczysz: **Utwórz listę testerów** lub **Edytuj**
 ### Krok 1: Zaloguj się w Play Store
 
 Na telefonie testera:
+
 1. Otwórz **Google Play**
 2. Zaloguj się emailem: `kulpinska.karolinaa@gmail.com`
 3. Szukaj: **Mój Smart Budget**
@@ -293,10 +315,12 @@ Powinna pojawić się wersja testowa!
 ### Utwórz Subskrypcję w Google Play Console
 
 **W Google Play Console:**
+
 1. **Zarabiaj** → **Produkty w aplikacji**
 2. Kliknij: **Utwórz subskrypcję** (lub "Nowy produkt" → "Subskrypcja")
 
 **Uzupełnij:**
+
 - **Nazwa:** Pro Plan
 - **Identyfikator produktu:** `pro_plan_monthly`
 - **Cena:** 9.99 zł (lub Twoja cena)
@@ -319,18 +343,22 @@ Google zweryfikuje ~24-48 godzin i opublikuje dla wszystkich!
 ## ❓ PROBLEMY?
 
 ### Problem: "Brak uprawnienia do aplikacji"
+
 - Upewnij się że jesteś zalogowany na właściwy email
 - Spam folder - sprawdzić czy email z zaproszeniem tam nie wylądował
 
 ### Problem: Layout wygląda inaczej
+
 - Google zmienia interfejs
 - Szukaj sekcji: "Internal testing", "Products", "Release"
 
 ### Problem: Build nie chce się skompilować
+
 - Sprawdzić logi w Android Studio (dół ekranu)
 - Spróbować: **Build** → **Clean Project**
 
 ### Problem: Plik `.aab` jest zbyt mały lub pusty
+
 - Skompiluj ponownie Bundle
 - Sprawdź czy wszystko się skompilowało bez błędów
 

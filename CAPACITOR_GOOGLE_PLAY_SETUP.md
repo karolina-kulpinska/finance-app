@@ -9,6 +9,7 @@ npx cap init
 ```
 
 **Pytania podczas `cap init`:**
+
 - App name: `SmartBudget`
 - App Package ID: `pl.smartbudget.app`
 - Web dir: `build`
@@ -56,6 +57,7 @@ npx cap open android
 ```
 
 Wtedy:
+
 1. W Android Studio → Build → Build Bundle(s) / APK(s)
 2. Generujesz APK lub Bundle
 3. Wysyłasz do Google Play Console
@@ -80,4 +82,3 @@ Wtedy:
 5. Ustaw cenę (np. 9.99 PLN/miesiąc)
 
 To ID (`pro_plan_monthly`) używasz w kodzie!
-

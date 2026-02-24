@@ -1,6 +1,9 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { getCurrentUserSubscriptions, getCurrentUserPayments } from "@invertase/firestore-stripe-payments";
+import {
+  getCurrentUserSubscriptions,
+  getCurrentUserPayments,
+} from "@invertase/firestore-stripe-payments";
 import { Capacitor } from "@capacitor/core";
 import { db } from "../../api/firebase";
 import stripePayments from "../../api/stripePayments";
@@ -27,7 +30,9 @@ function* fetchSubscriptionHandler({ payload }) {
       // 📱 Mobilna aplikacja: sprawdzaj Google Play Billing
       try {
         yield call(() => paymentAdapter.initialize());
-        const subStatus = yield call(() => paymentAdapter.checkSubscriptionStatus(uid));
+        const subStatus = yield call(() =>
+          paymentAdapter.checkSubscriptionStatus(uid),
+        );
         if (subStatus.isPro) {
           yield put(setPlan("pro"));
           return;
@@ -38,8 +43,12 @@ function* fetchSubscriptionHandler({ payload }) {
     } else {
       // 🌐 Web: sprawdzaj Stripe
       try {
-        const subs = yield call(getCurrentUserSubscriptions, stripePayments, { status: "active" });
-        const payments = yield call(getCurrentUserPayments, stripePayments, { status: "succeeded" });
+        const subs = yield call(getCurrentUserSubscriptions, stripePayments, {
+          status: "active",
+        });
+        const payments = yield call(getCurrentUserPayments, stripePayments, {
+          status: "succeeded",
+        });
         if (subs && subs.length > 0) {
           yield put(setSubscriptionDetails(subs[0]));
           return;
@@ -48,8 +57,7 @@ function* fetchSubscriptionHandler({ payload }) {
           yield put(setPlan("pro"));
           return;
         }
-      } catch (_) {
-      }
+      } catch (_) {}
     }
 
     // Fallback: sprawdzaj Firestore (dla obu platform)

@@ -35,7 +35,12 @@ import { SubscriptionSection } from "./SubscriptionSection";
 import { NotificationsSection } from "./NotificationsSection";
 import * as S from "./styled";
 
-const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo = false }) => {
+const Profile = ({
+  activeSection: activeSectionProp,
+  onNavigate,
+  onBack,
+  isDemo = false,
+}) => {
   const { t } = useTranslation();
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
@@ -45,7 +50,9 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
   const [localSection, setLocalSection] = useState(null);
   const useHistory = Boolean(onNavigate && onBack);
   const activeSection = useHistory ? (activeSectionProp ?? null) : localSection;
-  const setActiveSection = useHistory ? (s) => (s ? onNavigate({ profileSection: s }) : onBack()) : setLocalSection;
+  const setActiveSection = useHistory
+    ? (s) => (s ? onNavigate({ profileSection: s }) : onBack())
+    : setLocalSection;
   const handleBack = useHistory ? onBack : () => setLocalSection(null);
   const [editName, setEditName] = useState(user?.displayName || "");
   const [oldPassword, setOldPassword] = useState("");
@@ -67,7 +74,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: t("profile.noPaymentsExport"),
           type: "error",
-        })
+        }),
       );
       return;
     }
@@ -77,14 +84,14 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: "✅ " + t("profile.exportSuccess"),
           type: "success",
-        })
+        }),
       );
     } catch (error) {
       dispatch(
         showNotification({
           message: "❌ Błąd eksportu PDF",
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -95,7 +102,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: t("profile.nameRequired"),
           type: "error",
-        })
+        }),
       );
       return;
     }
@@ -105,7 +112,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: "✅ " + t("profile.nameUpdated"),
           type: "success",
-        })
+        }),
       );
       setActiveSection(null);
     } catch (error) {
@@ -113,7 +120,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: "❌ " + t("profile.updateError") + ": " + error.message,
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -124,7 +131,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: "❌ " + t("profile.passwordsMismatch"),
           type: "error",
-        })
+        }),
       );
       return;
     }
@@ -133,14 +140,14 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: "❌ " + t("profile.passwordMinLength"),
           type: "error",
-        })
+        }),
       );
       return;
     }
     try {
       const credential = EmailAuthProvider.credential(
         auth.currentUser.email,
-        oldPassword
+        oldPassword,
       );
       await reauthenticateWithCredential(auth.currentUser, credential);
       await updatePassword(auth.currentUser, newPassword);
@@ -148,7 +155,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: "✅ " + t("profile.passwordChanged"),
           type: "success",
-        })
+        }),
       );
       setOldPassword("");
       setNewPassword("");
@@ -163,7 +170,7 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: errorMessage,
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -187,14 +194,14 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
         showNotification({
           message: "✅ " + t("profile.dataExported"),
           type: "success",
-        })
+        }),
       );
     } catch (error) {
       dispatch(
         showNotification({
           message: "❌ " + t("profile.dataExportError"),
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -203,7 +210,9 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
     const confirmed = window.confirm("⚠️ " + t("profile.deleteConfirm"));
     if (!confirmed) return;
 
-    const doubleConfirm = window.confirm("🚨 " + t("profile.deleteConfirmFinal"));
+    const doubleConfirm = window.confirm(
+      "🚨 " + t("profile.deleteConfirmFinal"),
+    );
     if (!doubleConfirm) return;
 
     try {
@@ -214,15 +223,16 @@ const Profile = ({ activeSection: activeSectionProp, onNavigate, onBack, isDemo 
           showNotification({
             message: "❌ " + t("profile.mustReLogin"),
             type: "error",
-          })
+          }),
         );
       } else {
-dispatch(
-        showNotification({
-          message: "❌ " + t("profile.deleteAccountError") + ": " + error.message,
-          type: "error",
-        })
-      );
+        dispatch(
+          showNotification({
+            message:
+              "❌ " + t("profile.deleteAccountError") + ": " + error.message,
+            type: "error",
+          }),
+        );
       }
     }
   };
@@ -238,7 +248,7 @@ dispatch(
             showNotification({
               message: "ℹ️ Zarządzaj subskrypcją w ustawieniach Google Play",
               type: "info",
-            })
+            }),
           );
         } else {
           const result = await paymentAdapter.purchaseSubscription(user.uid);
@@ -251,13 +261,15 @@ dispatch(
         if (isPro) {
           // Otwórz Customer Portal dla użytkowników Pro
           const returnUrl =
-            window.location.origin + window.location.pathname + "#/dashboard/profile";
-          
+            window.location.origin +
+            window.location.pathname +
+            "#/dashboard/profile";
+
           const createPortalSession = getCreateCustomerPortalSession();
           const { data } = await createPortalSession({
             returnUrl,
           });
-          
+
           if (data?.url) {
             window.location.assign(data.url);
           } else {
@@ -265,7 +277,7 @@ dispatch(
               showNotification({
                 message: "❌ " + t("profile.subscriptionPortalError"),
                 type: "error",
-              })
+              }),
             );
           }
         } else {
@@ -278,13 +290,13 @@ dispatch(
           const successUrl =
             base + sep + "payment=success&session_id={CHECKOUT_SESSION_ID}";
           const cancelUrl = base + sep + "payment=cancel";
-          
+
           const createCheckout = getCreateCheckoutSession();
           const { data } = await createCheckout({
             successUrl,
             cancelUrl,
           });
-          
+
           if (data?.url) {
             window.location.assign(data.url);
           } else {
@@ -292,7 +304,7 @@ dispatch(
               showNotification({
                 message: "❌ Nie udało się otworzyć strony płatności",
                 type: "error",
-              })
+              }),
             );
           }
         }
@@ -302,7 +314,7 @@ dispatch(
         showNotification({
           message: "❌ Błąd: " + (error.message || String(error)),
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -316,7 +328,7 @@ dispatch(
           showNotification({
             message: "✅ Plan Pro został przyznany!",
             type: "success",
-          })
+          }),
         );
         dispatch(fetchSubscriptionRequest({ uid: user?.uid }));
       } else {
@@ -324,7 +336,7 @@ dispatch(
           showNotification({
             message: data?.message || "Nie udało się przyznać Pro.",
             type: "error",
-          })
+          }),
         );
       }
     } catch (error) {
@@ -332,17 +344,23 @@ dispatch(
         showNotification({
           message: "❌ Błąd: " + (error.message || String(error)),
           type: "error",
-        })
+        }),
       );
     }
   };
 
-  const adminEmailsRaw = process.env.REACT_APP_ADMIN_EMAILS || process.env.REACT_APP_ADMIN_EMAIL || "";
+  const adminEmailsRaw =
+    process.env.REACT_APP_ADMIN_EMAILS ||
+    process.env.REACT_APP_ADMIN_EMAIL ||
+    "";
   const adminEmails = adminEmailsRaw
     .split(",")
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
-  const isAdmin = adminEmails.length > 0 && user?.email && adminEmails.includes(user.email.toLowerCase());
+  const isAdmin =
+    adminEmails.length > 0 &&
+    user?.email &&
+    adminEmails.includes(user.email.toLowerCase());
 
   const handleSyncAfterPayment = async () => {
     try {
@@ -350,9 +368,11 @@ dispatch(
       const { data } = await verify();
       dispatch(
         showNotification({
-          message: data?.planSet ? "✅ Plan Pro został aktywowany!" : "Nie znaleziono płatności. Spróbuj odświeżyć stronę.",
+          message: data?.planSet
+            ? "✅ Plan Pro został aktywowany!"
+            : "Nie znaleziono płatności. Spróbuj odświeżyć stronę.",
           type: data?.planSet ? "success" : "info",
-        })
+        }),
       );
       if (data?.planSet) dispatch(fetchSubscriptionRequest({ uid: user?.uid }));
     } catch (error) {
@@ -360,7 +380,7 @@ dispatch(
         showNotification({
           message: "❌ Błąd: " + (error.message || String(error)),
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -368,10 +388,7 @@ dispatch(
   if (activeSection === "personal") {
     return (
       <S.Container>
-        <SectionLayout
-          title="Dane osobowe"
-          onBack={handleBack}
-        >
+        <SectionLayout title="Dane osobowe" onBack={handleBack}>
           <PersonalForm
             editName={editName}
             onEditNameChange={setEditName}
@@ -404,10 +421,7 @@ dispatch(
   if (activeSection === "export") {
     return (
       <S.Container>
-        <SectionLayout
-          title="Eksport danych"
-          onBack={handleBack}
-        >
+        <SectionLayout title="Eksport danych" onBack={handleBack}>
           <ExportSection
             onExportData={handleExportData}
             onExportPDF={handleExportPaymentsPDF}
@@ -430,10 +444,7 @@ dispatch(
   if (activeSection === "notifications") {
     return (
       <S.Container>
-        <SectionLayout
-          title={t("profile.notifications")}
-          onBack={handleBack}
-        >
+        <SectionLayout title={t("profile.notifications")} onBack={handleBack}>
           <NotificationsSection isDemo={isDemo} />
         </SectionLayout>
       </S.Container>
@@ -443,10 +454,7 @@ dispatch(
   if (activeSection === "subscription") {
     return (
       <S.Container>
-        <SectionLayout
-          title="Subskrypcja"
-          onBack={handleBack}
-        >
+        <SectionLayout title="Subskrypcja" onBack={handleBack}>
           <SubscriptionSection
             onManageSubscription={handleManageSubscription}
             onGrantProForOwner={isAdmin ? handleGrantProForOwner : null}
@@ -464,14 +472,18 @@ dispatch(
         userName={userName}
         userEmail={userEmail}
         isDemo={isDemo}
-        onSectionSelect={(s) => (useHistory ? onNavigate({ profileSection: s }) : setLocalSection(s))}
-        onContact={() => window.open("mailto:biuroobslugi.kontakt@gmail.com", "_blank")}
+        onSectionSelect={(s) =>
+          useHistory ? onNavigate({ profileSection: s }) : setLocalSection(s)
+        }
+        onContact={() =>
+          window.open("mailto:biuroobslugi.kontakt@gmail.com", "_blank")
+        }
         onAbout={() =>
           dispatch(
             showNotification({
               message: "📱 " + t("profile.version"),
               type: "success",
-            })
+            }),
           )
         }
       />

@@ -36,7 +36,10 @@ const Header = ({
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target)) {
+      if (
+        langDropdownRef.current &&
+        !langDropdownRef.current.contains(e.target)
+      ) {
         setShowLangDropdown(false);
       }
     };
@@ -52,14 +55,15 @@ const Header = ({
       setShowLangDropdown(false);
       if (onBack) onBack();
     },
-    [onBack]
+    [onBack],
   );
 
   useEffect(() => {
     if (typeof window === "undefined" || !user?.uid) return;
     const search = window.location.search || "";
     const hash = window.location.hash || "";
-    const hasPaymentSuccess = search.includes("payment=success") || hash.includes("payment=success");
+    const hasPaymentSuccess =
+      search.includes("payment=success") || hash.includes("payment=success");
     if (!hasPaymentSuccess) return;
     const cleanHash = hash.split("?")[0] || "#/dashboard";
     window.history.replaceState({}, "", window.location.pathname + cleanHash);
@@ -143,7 +147,10 @@ const Header = ({
   const proOrUpgrade = isPro ? (
     <S.ProBadge>Pro</S.ProBadge>
   ) : (
-    <S.UpgradeButton onClick={handleUpgradeClick} aria-label={t("header.upgradePro")}>
+    <S.UpgradeButton
+      onClick={handleUpgradeClick}
+      aria-label={t("header.upgradePro")}
+    >
       {t("header.upgradePro")}
     </S.UpgradeButton>
   );
@@ -154,7 +161,10 @@ const Header = ({
         <S.TitleSection>
           <S.TitleRow>
             <S.Brand>
-              <S.Logo src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`} alt={t("appName")} />
+              <S.Logo
+                src={`${process.env.PUBLIC_URL || ""}/smartbudget-logo.png`}
+                alt={t("appName")}
+              />
               <S.Title>{t("appName")}</S.Title>
             </S.Brand>
             <S.HeaderRight>
@@ -190,7 +200,9 @@ const Header = ({
             </S.HeaderRight>
           </S.TitleRow>
           <S.Subtitle>
-            {t("header.welcome", { name: user?.displayName || t("header.user") })}
+            {t("header.welcome", {
+              name: user?.displayName || t("header.user"),
+            })}
           </S.Subtitle>
         </S.TitleSection>
         <S.Actions>
@@ -201,7 +213,9 @@ const Header = ({
           )}
           <S.ProDesktop>{proOrUpgrade}</S.ProDesktop>
           {!hideAddPayment && (
-            <S.AddButton onClick={onAddPayment}>{t("header.addPayment")}</S.AddButton>
+            <S.AddButton onClick={onAddPayment}>
+              {t("header.addPayment")}
+            </S.AddButton>
           )}
           {!hideFilters && (
             <S.FilterToggleButton onClick={onToggleFilters}>

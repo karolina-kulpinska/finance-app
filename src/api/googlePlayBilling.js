@@ -38,8 +38,9 @@ class GooglePlayBillingService {
   }
 
   async purchaseProduct(sku) {
-    if (!this.isAvailable) throw new Error("Google Play Billing niedostępna (web)");
-    
+    if (!this.isAvailable)
+      throw new Error("Google Play Billing niedostępna (web)");
+
     throw new Error("Google Play Billing będzie dostępny w aplikacji mobilnej");
   }
 
